@@ -1,7 +1,8 @@
 import React from 'react';
-import { createRoot } from 'react-dom';
+//import createRoot from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import './App.css';
-import App from './App';
+import App from './App.js';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom'; 
 
@@ -9,15 +10,14 @@ import { BrowserRouter } from 'react-router-dom';
 // It is responsible for rendering the root component (in this case, App) into the DOM.
 // It sets up the root element (usually an HTML element with an id of 'root') where the React app will be mounted.
 
+//const root = createRoot(document.getElementById('root'));
 const root = createRoot(document.getElementById('root'));
-// const root = createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <App />
     </BrowserRouter>
   </React.StrictMode>,
-  document.getElementById('root')
 );
 
 // If you want to start measuring performance in your app, pass a function

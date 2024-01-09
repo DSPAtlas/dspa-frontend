@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
+
 import Home from './components/Home';
 import Search from './components/Search';
 import Tables from './components/Tables';
@@ -10,8 +10,10 @@ import Tables from './components/Tables';
 
 const App = () => {
   return (
-    <Router>
       <div>
+        <header>
+        <div class="logo">Dynamic Structural Proteome Atlas</div>
+        </header>
         <nav>
           <ul>
             <li>
@@ -25,51 +27,15 @@ const App = () => {
             </li>
           </ul>
         </nav>
-
         <Routes>
-          <Route path="/search">
-            <Search />
-          </Route>
-          <Route path="/tables">
-            <Tables />
-          </Route>
-          <Route path="/">
-            <Home />
-          </Route>
+          <Route path="/" exact element={Home()} />
+          <Route path="/search" element={Search()} />
+          <Route path="/tables" element={Tables()} />
         </Routes>
-      </div>
-    </Router>
+        </div>
   );
 };
 
 export default App;
 
-// function App() {
-//   const [activeTab, setActiveTab] = useState('home');
 
-//   const handleTabClick = (tab) => {
-//     setActiveTab(tab);
-//     if (tab === 'search') {
-//       // Trigger the search functionality here
-//       // For example, you can call a function in the Search component
-//       // Make sure to import the necessary functions from the Search component
-//       // Search.handleSearch(); // Call the handleSearch function directly if it's static
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <div>
-//         <button onClick={() => handleTabClick('home')}>Home</button>
-//         <button onClick={() => handleTabClick('search')}>Search</button>
-//         <button onClick={() => handleTabClick('tables')}>Tables</button>
-//       </div>
-
-//       {activeTab === 'home' && <Home />}
-//       {activeTab === 'search' && <Search />}
-//       {activeTab === 'tables' && <Tables />}
-//     </div>
-//   );
-// }
-
-// export default App;

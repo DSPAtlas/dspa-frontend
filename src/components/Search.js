@@ -24,7 +24,7 @@ const Search = () => {
           onChange={(e) => setProteinName(e.target.value)}
           placeholder="Enter protein name"
         />
-        <button onClick={handleSearch}>Search</button>
+        <button onClick={handleSearch()}>Search</button>
         {result && (
           <div>
             <h2>Search Result:</h2>
