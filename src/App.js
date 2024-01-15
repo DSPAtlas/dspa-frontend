@@ -12,7 +12,7 @@ const App = () => {
   return (
       <div>
         <header>
-        <div class="logo">Dynamic Structural Proteome Atlas</div>
+          <div class="logo">Dynamic Structural Proteome Atlas</div>
         </header>
         <nav>
           <ul>
