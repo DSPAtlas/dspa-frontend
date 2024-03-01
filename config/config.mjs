@@ -26,6 +26,6 @@ const config = {
     },
     frontend: {
       path: '../dspa-frontend/'
-    }
+    },
   };
   export default config;
