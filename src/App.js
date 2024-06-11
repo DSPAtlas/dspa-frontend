@@ -2,11 +2,6 @@ import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 
 import Home from './components/Home';
 import Search from './components/Search';
-import Tables from './components/Tables';
-
-// This file contains the main component of your React application, which is the App component in your case.
-// It defines the structure and behavior of your application, including the state, rendering logic, and any other related components.
-
 
 const App = () => {
   return (
@@ -30,7 +25,7 @@ const App = () => {
         <Routes>
           <Route path="/" exact element={Home()} />
           <Route path="/search" element={Search()} />
-          <Route path="/tables" element={Tables()} />
+          <Route path="/tables" element={Search()} />
         </Routes>
         </div>
   );

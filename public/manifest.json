@@ -1,9 +1,9 @@
 {
-  "short_name": "React App",
+  "short_name": "DSPA Atlas",
   "name": "Create React App Sample",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "public/images/dspa.webp",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
