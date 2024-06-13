@@ -8,11 +8,11 @@ const NotFound = () => <div>Page not found.</div>;
 const App = () => {
   return (
       <div>
-        <header>
+        <header className="app-header">
           <div class="logo">Dynamic Structural Proteome Atlas</div>
         </header>
-        <nav>
-          <ul>
+        <nav className='main-nav'>
+          <ul className='nav-links'>
             <li>
               <Link to="/">Home</Link>
             </li>
