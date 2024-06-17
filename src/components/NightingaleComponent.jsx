@@ -5,12 +5,14 @@ import "@nightingale-elements/nightingale-manager";
 import "@nightingale-elements/nightingale-colored-sequence";
 import "@nightingale-elements/nightingale-track";
 import "@nightingale-elements/nightingale-structure";
+import "@nightingale-elements/nightingale-msa";
 
 const NightingaleComponent = ({ proteinData}) => {
 
     const seqContainer = useRef(null);
     const residuelevelContainer = useRef(null);
     const featuresContainer = useRef(null);
+    const multipleExperimentsContainer = useRef(null);
     const sequenceLength = proteinData.proteinSequence.length;
 
     console.log(proteinData);
@@ -29,6 +31,15 @@ const NightingaleComponent = ({ proteinData}) => {
                 residuelevelContainer.current.data = proteinData.barcodeSequence;
             }
         });
+    }, [proteinData.barcodeSequence]);
+
+    useEffect(() => {
+        customElements.whenDefined("nightingale-msa").then(() => {
+            if (multipleExperimentsContainer.current) {
+                multipleExperimentsContainer.current.data = [{name: "LIP1",sequence: proteinData.barcodeSequence, },{name: "LIP2",
+                    sequence: proteinData.barcodeSequence,  }, ];
+            }
+        });   
     }, [proteinData.barcodeSequence]);
 
     useEffect(() => {
@@ -128,6 +139,19 @@ const NightingaleComponent = ({ proteinData}) => {
                     ></nightingale-colored-sequence>
                 </td>
             </tr>
+            <tr>
+            <td>Multiple LiP Experiments</td>
+            <td>
+                    <nightingale-msa
+                        ref={multipleExperimentsContainer}
+                        id="msa"
+                        height="200"
+                        width="800"
+                        color-scheme="clustal"
+                        label-width="200"
+                    ></nightingale-msa>
+                    </td>
+                </tr>
                 <tr>
                 <td>Domain</td>
                 <td>
