@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import config from '../config.json';
 import NightingaleComponent from './NightingaleComponent';
+import FunctionalComponent from './FunctionalComponent';
 
 const ProteinVisualization = () => {
   const [selectedOrganism, setSelectedOrganism] = useState('559292'); // Default to Saccharomyces cerevisiae S288C
@@ -70,6 +71,8 @@ return (
             <h3>UniProt ID {proteinData.proteinName}</h3>
             <p>Taxonomy: {proteinData.taxonomy || 'N/A'}</p> {/* assuming you have taxonomy info in your data */}
             <NightingaleComponent proteinData={proteinData} />
+            <h2>Functional LiP Results</h2>
+            <FunctionalComponent proteinData={proteinData} />
           </div>
         )
       )}

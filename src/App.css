@@ -1,73 +1,30 @@
-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+td {
+  padding: 5px;
 }
-
-header {
-  display: grid;
-  grid-template-columns: auto 1fr; /* Two columns: auto for logo, 1fr for navigation */
-  align-items: center;
-  background-color: #333;
-  color: white;
-  padding: 10px;
-  width: 100%;
+td:first-child {
+  background-color: lightcyan;
+  font: 0.8em sans-serif;
+  white-space: nowrap;
 }
-
-.logo {
-  font-size: 1.5em;
+td:nth-child(2) {
+  background-color: aliceblue;
 }
-
-
-nav {
-  background-color: #333333;
-  color: #fff;
-  padding: 15px 20px;
-}
-
-nav ul { /* ul are unorderd lists */
-  list-style: none;
-  display: flex;
-  justify-content: flex-end;
-}
-
-nav li { /* targeting list items */
-  margin-right: 20px;
-}
-
-nav a { /* anchor element */
-  text-decoration: none;
-  color: #fff;
-  font-weight: bold;
+tr:nth-child(-n + 3) > td {
+  background-color: transparent;
 }
 
 body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
+  font-family: sans-serif;
+  -webkit-font-smoothing: auto;
+  -moz-font-smoothing: auto;
+  -moz-osx-font-smoothing: grayscale;
+  font-smoothing: auto;
+  text-rendering: optimizeLegibility;
+  font-smooth: always;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
-.search-container {
-  text-align: center;
-}
-
-.search-container form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-input {
-  padding: 8px;
-  font-size: 14px;
-  margin-bottom: 8px;
-}
-
-button {
-  padding: 8px 12px;
-  font-size: 14px;
+h1 {
+  font-size: 1.5rem;
 }
