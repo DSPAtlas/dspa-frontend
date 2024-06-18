@@ -2,19 +2,19 @@ td {
   padding: 5px;
 }
 td:first-child {
-  background-color: lightcyan;
-  font: 0.8em sans-serif;
+  background-color: rgb(235, 190, 234);
+  font: 0.8em helvetica;
   white-space: nowrap;
 }
 td:nth-child(2) {
-  background-color: aliceblue;
+  background-color: rgb(235, 233, 234);
 }
 tr:nth-child(-n + 3) > td {
   background-color: transparent;
 }
 
 body {
-  font-family: sans-serif;
+  font-family: Helvetica, sans-serif;
   -webkit-font-smoothing: auto;
   -moz-font-smoothing: auto;
   -moz-osx-font-smoothing: grayscale;
@@ -27,4 +27,21 @@ body {
 
 h1 {
   font-size: 1.5rem;
+}
+
+.structure-viewer-container {
+  position: relative; /* Change to desired background color */
+  background-color: "rgb(235, 190, 234)";
+}
+
+/* If the structure colors are styled with CSS */
+nightingale-structure {
+  width: 100%;
+  color: #000000; /* Change to desired structure color */
+  background-color: "rgb(235, 190, 234)";
+
+}
+
+nightingale-manager {
+  background-color: transparent;
 }
