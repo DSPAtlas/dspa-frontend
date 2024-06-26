@@ -10,18 +10,18 @@ const App = () => {
   return (
     <div>
     <header className="app-header">
-      <div className="logo">Dynamic Structural Proteome Atlas</div>
+      <div className="navbar-top">
+        <div className="navigation-bar navigation-white navigation-card">
+          <a href="/" className="navigation-bar-item navigation-button navigation-wide">Dynamic Structural Proteome Atlas</a>
+          <div className="navigation-right navigation-hide-small">
+            <a href="/" className="navigation-bar-item navigation-button">HOME</a>
+            <a href="/search" className="navigation-bar-item navigation-button"> SEARCH</a>
+            <a href="/search" className="navigation-bar-item navigation-button"> ABOUT</a>
+            <a href="/search" className="navigation-bar-item navigation-button"> CONTACT</a>
+          </div>
+        </div>  
+      </div>    
     </header>
-    <nav className='topnav'>
-      <ul>
-        <li>
-          <Link to="/">Home</Link>
-        </li>
-        <li>
-          <Link to="/search">Search</Link>
-        </li>
-      </ul>
-    </nav>
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/search" element={<ProteinSearch />} />

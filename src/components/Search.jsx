@@ -36,15 +36,6 @@ const ProteinSearch = () => {
 
   return (
     <div>
-    <header className="app-header">
-      <div className="logo">Dynamic Structural Proteome Atlas</div>
-      <nav className="topnav">
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/search">Search</a></li>
-        </ul>
-      </nav>
-    </header>
     <div className="form-container">
       <form onSubmit={handleSubmit}>
         <div className="form-group">

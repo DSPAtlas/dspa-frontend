@@ -46,15 +46,6 @@ const ProteinVisualization = () => {
 
 return (
     <>
-    <header className="app-header">
-        <div className="logo">Dynamic Structural Proteome Atlas</div>
-        <nav className="topnav">
-          <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/search">Search</a></li>
-          </ul>
-        </nav>
-    </header>
     <div className="search-container">
         <form onSubmit={handleSubmit}>
             <select name="taxonomyID" value={selectedOrganism} onChange={handleOrganismChange}>

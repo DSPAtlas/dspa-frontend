@@ -5,18 +5,12 @@ import "@nightingale-elements/nightingale-sequence";
 function Home() {
   return (
     <>
-      <header className="app-header">
-        <div className="logo">Dynamic Structural Proteome Atlas</div>
-        <nav className="topnav">
-          <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/search">Search</a></li>
-          </ul>
-        </nav>
-      </header>
-      <main>
-        <h1>Welcome to Our Atlas</h1>
-        <p>Explore our comprehensive database.</p>
+      <main className="dspa-background-grey">
+      <div className="dspa-display-left dspa-text-white dspa-background-grey">
+          <span className="dspa-jumbo dspa-hide-small">Dynamic Structural Proteome Atlas</span><br />
+          <span className="dspa-xxlarge dspa-hide-large dspa-hide-medium">Dynamic Structural Proteome Atlas</span><br />
+          <span class="dspa-large">Explore our comprehensive database.</span>
+        </div>
       </main>
     </>
   );
