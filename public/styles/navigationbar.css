@@ -1,0 +1,44 @@
+/* Add a black background color to the top navigation */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333; /* To give the entire header a uniform background */
+  padding: 0 16px; /* Add padding on the sides */
+}
+
+.logo {
+  color: #f2f2f2; /* Make DSPA text light */
+  font-size: 20px; /* Larger text for the logo */
+}
+
+.topnav {
+  overflow: hidden;
+}
+
+.topnav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+}
+  
+  /* Style the links inside the navigation bar */
+.topnav a {
+    float: none; /* Remove float, using flexbox now */
+    color: #f2f2f2;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover */
+  }
+  
+.topnav a:hover {
+    background-color: #FF5733 ;
+    color: green;
+}
+
+.topnav a.active {
+    background-color:#FF5733 ;
+    color: white;
+}

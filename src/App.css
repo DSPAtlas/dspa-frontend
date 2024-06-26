@@ -1,3 +1,120 @@
+/* Home */
+/*landing page dark background
+h1 center in the middle 
+navigation bar at the top - with light background color 
+modern landing page
+logo above h1 in the center
+
+*/
+
+/* Style for form elements */
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  line-height: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.button {
+  padding: 10px 15px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.form-label {
+  margin-bottom: 5px;
+  display: block;
+  font-weight: bold;
+}
+
+.form-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 50%;
+  margin: 20px auto;
+}
+/* Reset some default browser styles */
+body, h1, p, ul {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Helvetica, Arial, sans-serif; /* Use a neutral font */
+  color: white; /* Light text on dark background */
+  background-color: #333; /* Dark background for the page */
+}
+
+/* Header styles */
+header.app-header {
+  background-color: #f9f9f9; /* Light background for the navigation bar */
+  color: #333; /* Dark text on light background */
+  padding: 10px 20px; /* Padding around content in header */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Subtle shadow to lift the header */
+  position: fixed; /* Fixed at the top */
+  width: 100%; /* Full width */
+  top: 0;
+  left: 0;
+  z-index: 1000; /* Make sure it stays on top */
+}
+
+.logo {
+  text-align: center; /* Center the logo text */
+  font-size: 24px; /* Larger font size for visibility */
+  font-weight: bold; /* Make the font bold */
+  margin-bottom: 20px; /* Space below the logo */
+}
+
+nav.main-nav ul {
+  list-style: none; /* Remove default list styling */
+  display: flex; /* Layout the links in a row */
+  justify-content: center; /* Center navigation links horizontally */
+  gap: 20px; /* Space between each link */
+}
+
+nav.main-nav a {
+  text-decoration: none; /* Remove underline from links */
+  color: #333; /* Dark text color */
+  font-weight: bold; /* Bold font for links */
+  padding: 5px 10px; /* Padding for clickable area */
+}
+
+/* Main content styles */
+main {
+  text-align: center; /* Center text */
+  padding-top: 100px; /* Push down from the header */
+  height: 100vh; /* Full height to push footer to the bottom */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+h1 {
+  font-size: 48px; /* Large font size for heading */
+  margin-bottom: 20px; /* Space below the heading */
+}
+
+
+
+
+/* ----------------------Landing Page end ----------------*/
+
+
 td {
   padding: 5px;
 }
@@ -34,6 +151,8 @@ h1 {
   background-color: "rgb(235, 190, 234)";
 }
 
+
+
 /* If the structure colors are styled with CSS */
 nightingale-structure {
   width: 100%;
@@ -42,6 +161,5 @@ nightingale-structure {
 
 }
 
-nightingale-manager {
-  background-color: transparent;
-}
+
+

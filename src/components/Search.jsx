@@ -36,16 +36,26 @@ const ProteinSearch = () => {
 
   return (
     <div>
+    <header className="app-header">
+      <div className="logo">Dynamic Structural Proteome Atlas</div>
+      <nav className="topnav">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/search">Search</a></li>
+        </ul>
+      </nav>
+    </header>
+    <div className="form-container">
       <form onSubmit={handleSubmit}>
-        <label>
-          Organism ID:
-          <input type="text" value={selectedOrganism} onChange={handleOrganismChange} />
-        </label>
-        <label>
-          Protein Name:
-          <input type="text" value={searchTerm} onChange={handleProteinNameChange} />
-        </label>
-        <button type="submit">Search</button>
+        <div className="form-group">
+          <label className="form-label">Organism ID:</label>
+          <input type="text" className="form-control" value={selectedOrganism} onChange={handleOrganismChange} />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Protein Name:</label>
+          <input type="text" className="form-control" value={searchTerm} onChange={handleProteinNameChange} />
+        </div>
+        <button type="submit" className="button">Search</button>
       </form>
       {error && <p>Error: {error}</p>}
       {searchResults && searchResults.table && (
@@ -70,6 +80,7 @@ const ProteinSearch = () => {
           </tbody>
         </table>
       )}
+    </div>
     </div>
   );
 };

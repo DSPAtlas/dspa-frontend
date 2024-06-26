@@ -45,39 +45,48 @@ const ProteinVisualization = () => {
 };
 
 return (
-  <>
+    <>
+    <header className="app-header">
+        <div className="logo">Dynamic Structural Proteome Atlas</div>
+        <nav className="topnav">
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/search">Search</a></li>
+          </ul>
+        </nav>
+    </header>
     <div className="search-container">
-      <form onSubmit={handleSubmit}>
-        <select name="taxonomyID" value={selectedOrganism} onChange={handleOrganismChange}>
-          <option value="10090">Mus musculus</option>
-          <option value="559292">Saccharomyces cerevisiae S288C</option>
-          <option value="9606">Homo Sapiens</option>
-        </select>
-        <input
-          type="text"
-          name="proteinName"
-          value={proteinName}
-          onChange={handleProteinNameChange}
-          required
-          placeholder="Enter protein name..."
-        />
-        <button type="submit">Search</button>
-      </form>
+        <form onSubmit={handleSubmit}>
+            <select name="taxonomyID" value={selectedOrganism} onChange={handleOrganismChange}>
+                <option value="10090">Mus musculus</option>
+                <option value="559292">Saccharomyces cerevisiae S288C</option>
+                <option value="9606">Homo Sapiens</option>
+            </select>
+            <input
+                type="text"
+                name="proteinName"
+                value={proteinName}
+                onChange={handleProteinNameChange}
+                required
+                placeholder="Enter protein name..."
+            />
+            <button type="submit">Search</button>
+        </form>
     </div>
     <div className="result-container">
-      {loading ? <p>Loading...</p> : error ? <p>Error: {error}</p> : (
-        proteinData && proteinData.proteinName && (
-          <div>
-            <h3>UniProt ID {proteinData.proteinName}</h3>
-            <p>Taxonomy: {proteinData.taxonomy || 'N/A'}</p> {/* assuming you have taxonomy info in your data */}
-            <NightingaleComponent proteinData={proteinData} />
-            <h2>Functional LiP Results</h2>
-            <FunctionalComponent proteinData={proteinData} />
-          </div>
-        )
-      )}
+        {loading ? <p>Loading...</p> : error ? <p>Error: {error}</p> : (
+            proteinData && proteinData.proteinName && (
+                <div>
+                    <h3>UniProt ID {proteinData.proteinName}</h3>
+                    <p>Taxonomy: {proteinData.taxonomy || 'N/A'}</p>
+                    <NightingaleComponent proteinData={proteinData} />
+                    <h2>Functional LiP Results</h2>
+                    <FunctionalComponent proteinData={proteinData} />
+                </div>
+            )
+        )}
     </div>
-  </>
+</>
 );
 };
 
