@@ -1,85 +1,77 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, Link} from 'react-router-dom';
 import config from '../config.json';
-import NightingaleComponent from './NightingaleComponent';
-import FunctionalComponent from './FunctionalComponent';
 
-const ProteinVisualization = () => {
+const ProteinSearch = () => {
   const [selectedOrganism, setSelectedOrganism] = useState('559292'); // Default to Saccharomyces cerevisiae S288C
-  const [proteinName, setProteinName] = useState('');
-  const [proteinData, setProteinData] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [proteinName, setProteinName] = useState(''); // Added missing state for proteinName
+  const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
+  const [searchResults, setSearchResults] = useState(null);
 
   const handleOrganismChange = (event) => {
     setSelectedOrganism(event.target.value);
   };
 
   const handleProteinNameChange = (event) => {
-    setProteinName(event.target.value);
+    setSearchTerm(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    fetchProteinData();
+    try {
+      const queryParams = `searchTerm=${encodeURIComponent(searchTerm)}`;
+      const url = `${config.apiEndpoint2}search?${queryParams}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.success) {
+        setSearchResults(data);
+      } else {
+        throw new Error(data.message || 'Failed to fetch data');
+      }
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
-  const fetchProteinData = async () => {
-    setLoading(true);
-    setError('');
-    const queryParams = `taxonomyID=${encodeURIComponent(selectedOrganism)}&proteinName=${encodeURIComponent(proteinName)}`;
-    const url = `${config.apiEndpoint}/v1/proteins?${queryParams}`;
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json(); // This line throws if the response is not JSON.
-        setProteinData(data.proteinData);
-    } catch (error) {
-        console.error("Error fetching data: ", error);
-        setError('Failed to load protein data');
-        setProteinData({});
-    } finally {
-        setLoading(false);
-    }
-};
-
-return (
-  <>
-    <div className="search-container">
+  return (
+    <div>
       <form onSubmit={handleSubmit}>
-        <select name="taxonomyID" value={selectedOrganism} onChange={handleOrganismChange}>
-          <option value="10090">Mus musculus</option>
-          <option value="559292">Saccharomyces cerevisiae S288C</option>
-          <option value="9606">Homo Sapiens</option>
-        </select>
-        <input
-          type="text"
-          name="proteinName"
-          value={proteinName}
-          onChange={handleProteinNameChange}
-          required
-          placeholder="Enter protein name..."
-        />
+        <label>
+          Organism ID:
+          <input type="text" value={selectedOrganism} onChange={handleOrganismChange} />
+        </label>
+        <label>
+          Protein Name:
+          <input type="text" value={searchTerm} onChange={handleProteinNameChange} />
+        </label>
         <button type="submit">Search</button>
       </form>
-    </div>
-    <div className="result-container">
-      {loading ? <p>Loading...</p> : error ? <p>Error: {error}</p> : (
-        proteinData && proteinData.proteinName && (
-          <div>
-            <h3>UniProt ID {proteinData.proteinName}</h3>
-            <p>Taxonomy: {proteinData.taxonomy || 'N/A'}</p> {/* assuming you have taxonomy info in your data */}
-            <NightingaleComponent proteinData={proteinData} />
-            <h2>Functional LiP Results</h2>
-            <FunctionalComponent proteinData={proteinData} />
-          </div>
-        )
+      {error && <p>Error: {error}</p>}
+      {searchResults && searchResults.table && (
+        <table>
+          <thead>
+            <tr>
+              <th>Protein Name</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {searchResults.table.map((entry, index) => (
+              <tr key={index}>
+                <td>
+                  <Link to={`/visualize/${selectedOrganism}/${entry.proteinName}`}>
+                    {entry.proteinName}
+                  </Link>
+                </td>
+                <td>{entry.proteinDescription}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
-  </>
-);
+  );
 };
 
-
-export default ProteinVisualization;
+export default ProteinSearch;

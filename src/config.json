@@ -1,6 +1,7 @@
 
 {
     "apiEndpoint": "http://localhost:3000/api",
+    "apiEndpoint2": "http://localhost:3000/",
     "enableFeatureX": true,
     "theme": "light"
 }

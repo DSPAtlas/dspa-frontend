@@ -56,7 +56,7 @@ const NightingaleComponent = ({ proteinData}) => {
 
     useEffect(() => {
         customElements.whenDefined("nightingale-track").then(() => {
-            if (featuresContainer.current) {
+            if (featuresContainer.current && proteinData.featuresData.features) {
                 const features = proteinData.featuresData.features.map((ft) => ({
                     ...ft,
                     start: ft.start || ft.begin,
