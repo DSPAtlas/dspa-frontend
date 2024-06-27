@@ -1,0 +1,45 @@
+/* Styles for the overall layout container */
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Full viewport height */
+    padding-top: 60px;
+}
+
+/* Styles for the search container */
+.results-search-container {
+    padding: 20px;
+    margin-top: 60px;
+    background-color: #f8f8f8; /* Light grey background for the search area */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+}
+
+/* Search form styling */
+.results-search-container form {
+    display: flex;
+    justify-content: space-between; /* Distribute space between form items */
+    align-items: center; /* Center items vertically */
+    width: 100%; /* Full width of its container */
+}
+
+.results-search-container select,
+.results-search-container input,
+.results-search-container button {
+    flex: 1; /* Each form item will take equal space */
+    margin: 0 10px; /* Margin for spacing between form items */
+    padding: 10px; /* Padding for better touch area */
+}
+
+/* Results container styling */
+.result-container {
+    flex-grow: 1; /* Takes up all remaining space */
+    overflow-y: auto; /* Allows scrolling for overflow content */
+    padding: 20px;
+    background-color: #ffffff; /* White background for results */
+}
+
+/* Basic reset for margins and paddings */
+body, h1, h2, h3, p {
+    margin: 0;
+    padding: 0;
+}

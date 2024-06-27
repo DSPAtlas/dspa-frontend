@@ -28,6 +28,7 @@ const ProteinVisualization = () => {
     setError('');
     const queryParams = `taxonomyID=${encodeURIComponent(selectedOrganism)}&proteinName=${encodeURIComponent(proteinName)}`;
     const url = `${config.apiEndpoint}/v1/proteins?${queryParams}`;
+    console.log(url);
     try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -43,10 +44,11 @@ const ProteinVisualization = () => {
         setLoading(false);
     }
 };
+    
 
 return (
     <>
-    <div className="search-container">
+    <div className="results-search-container">
         <form onSubmit={handleSubmit}>
             <select name="taxonomyID" value={selectedOrganism} onChange={handleOrganismChange}>
                 <option value="10090">Mus musculus</option>
