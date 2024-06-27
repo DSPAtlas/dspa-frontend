@@ -66,7 +66,7 @@ return (
             <button type="submit">Search</button>
         </form>
     </div>
-    <div className="result-container">
+    <div className="nightingale-component-container">
         {loading ? <p>Loading...</p> : error ? <p>Error: {error}</p> : (
             proteinData && proteinData.proteinName && (
                 <div>

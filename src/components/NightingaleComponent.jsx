@@ -88,14 +88,12 @@ const NightingaleComponent = ({ proteinData}) => {
    
     return( 
         <nightingale-manager> 
-            <div style={{ display: 'flex', justifyContent: 'center', height: '30%' }}>
             <nightingale-structure 
                 protein-accession="P25443" 
                 structure-id="AF-P25443-F1" 
                 margin-color="transparent"
-                style={{ height: '500px', width: '1000px', background: 'rgb(235, 190, 234)' }}
+                style={{ height: '500px', width: '1000px', background: 'rgb(235, 150, 234)' }}
             ></nightingale-structure>
-            </div>
         <table>
           <tbody>
             <tr>

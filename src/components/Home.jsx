@@ -3,6 +3,15 @@ import { useEffect, useRef } from "react";
 import "@nightingale-elements/nightingale-sequence";
 
 function Home() {
+  useEffect(() => {
+    // Add the class when the component mounts
+    document.body.classList.add('landing-page');
+
+    // Remove the class when the component unmounts
+    return () => {
+      document.body.classList.remove('landing-page');
+    };
+  }, []);
   return (
     <>
       <main className="dspa-background-grey">

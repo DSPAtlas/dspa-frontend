@@ -8,6 +8,8 @@
 
 /* Styles for the search container */
 .results-search-container {
+    display: flex;
+    justify-content: space-between; 
     padding: 20px;
     margin-top: 60px;
     background-color: #f8f8f8; /* Light grey background for the search area */
@@ -15,9 +17,9 @@
 }
 
 /* Search form styling */
-.results-search-container form {
+.results-search-container form { /* Distribute space between form items */
     display: flex;
-    justify-content: space-between; /* Distribute space between form items */
+    justify-content: space-between; 
     align-items: center; /* Center items vertically */
     width: 100%; /* Full width of its container */
 }
@@ -31,15 +33,81 @@
 }
 
 /* Results container styling */
-.result-container {
-    flex-grow: 1; /* Takes up all remaining space */
+.result-container {/* Takes up all remaining space */
     overflow-y: auto; /* Allows scrolling for overflow content */
     padding: 20px;
     background-color: #ffffff; /* White background for results */
+    -webkit-font-smoothing: auto;
+    -moz-font-smoothing: auto;
+    -moz-osx-font-smoothing: grayscale;
+    font-smoothing: auto;
+    text-rendering: optimizeLegibility;
+    font-smooth: always;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
 }
 
 /* Basic reset for margins and paddings */
 body, h1, h2, h3, p {
     margin: 0;
     padding: 0;
+}
+
+td {
+    padding: 5px;
+  }
+  td:first-child {
+    background-color: lightcyan;
+    font: 0.8em sans-serif;
+    white-space: nowrap;
+  }
+  td:nth-child(2) {
+    background-color: aliceblue;
+  }
+  tr:nth-child(-n + 3) > td {
+    background-color: transparent;
+  }
+
+.nightingale-component-container {
+    width: 100%; /* Adjust this as needed */
+    max-width: 1200px; /* Example max-width that you might find suitable */
+    margin: auto; /* This centers the container if the page width is greater than max-width */
+}
+.nightingale-component {
+    margin: 0;
+    padding: 0;
+}
+
+table, tr, td, th {
+    border-collapse: collapse;
+    padding: 0;
+    margin: 0;
+}
+
+.nightingale-row {
+    display: flex;
+    align-items: center; /* Adjust vertical alignment */
+    justify-content: space-between; /* Adjust horizontal spacing */
+}
+
+.nightingale-item {
+    flex: none; /* Avoids flex items from stretching */
+    margin: 5px; /* Provides a small gap between items */
+}
+
+.domain-row, .site-row, .chain-row {
+    height: 20px; /* Set a fixed height for uniformity */
+}
+
+.nightingale-grid {
+    display: grid;
+    grid-template-rows: repeat(auto-fill, minmax(20px, auto)); /* Creates rows that adapt based on content */
+    grid-gap: 5px; /* Controls the gap between grid items */
+}
+
+.nightingale-flex {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* Ensures that items stretch to fill the horizontal space */
+    gap: 5px; /* Minimal gap between items for a compact layout */
 }

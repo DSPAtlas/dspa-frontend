@@ -29,4 +29,12 @@
 .dspa-dropdown-hover.w3-mobile .dspa-dropdown-content,.dspa-dropdown-click.w3-mobile .dspa-dropdown-content{position:relative}	
 .dspa-hide-small{display:none!important}
 
-.background
+.landing-page {
+    height: 100%;
+    line-height: 1.8;
+  }
+
+.landing-container {
+    height: 100%;
+    line-height: 1.8;
+  }
