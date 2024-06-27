@@ -36,19 +36,32 @@ const ProteinSearch = () => {
 
   return (
     <div>
-    <div className="form-container">
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label className="form-label">Organism ID:</label>
-          <input type="text" className="form-control" value={selectedOrganism} onChange={handleOrganismChange} />
-        </div>
-        <div className="form-group">
-          <label className="form-label">Protein Name:</label>
-          <input type="text" className="form-control" value={searchTerm} onChange={handleProteinNameChange} />
-        </div>
-        <button type="submit" className="button">Search</button>
-      </form>
-      {error && <p>Error: {error}</p>}
+    <div className="search-form-container">
+        <form className="search-form" onSubmit={handleSubmit}>
+            <div className="form-group">
+                <label className="">Organism </label>
+                <select 
+                    className="select-dropdown" 
+                    value={selectedOrganism} 
+                    onChange={handleOrganismChange}
+                >
+                    <option value="10090">Mus musculus</option>
+                    <option value="559292">Saccharomyces cerevisiae S288C</option>
+                    <option value="9606">Homo Sapiens</option>
+                </select>
+            </div>
+            <div className="form-group">
+                <label className="form-label">Protein Name </label>
+                <input 
+                    type="text" 
+                    className="search-form" 
+                    value={searchTerm} 
+                    onChange={handleProteinNameChange} 
+                />
+            </div>
+            <button type="submit" className="search-button">Search</button>
+        </form>
+        {error && <p>Error: {error}</p>}
       {searchResults && searchResults.table && (
         <table>
           <thead>
