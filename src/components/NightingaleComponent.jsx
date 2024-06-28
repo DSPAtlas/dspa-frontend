@@ -16,12 +16,12 @@ const NightingaleComponent = ({ proteinData}) => {
     const multipleExperimentsContainer = useRef(null);
     const sequenceLength = proteinData.proteinSequence.length;
 
-    const margincolorFeatures = "#ff99dd";
+    const margincolorFeatures = "#FF6699";
     const highlightColor = "rgb(235, 190, 234)";
 
     const minWidth = "1000";
 
-    console.log(proteinData);
+    console.log(proteinData.barcodeSequence);
 
     useEffect(() => {
         customElements.whenDefined("nightingale-sequence").then(() => {
@@ -42,12 +42,16 @@ const NightingaleComponent = ({ proteinData}) => {
     useEffect(() => {
         customElements.whenDefined("nightingale-msa").then(() => {
             if (multipleExperimentsContainer.current) {
+                const barcodeSequence1 = "IIIIIIIIIIIISSSSSSSSISSSSSSSSSIIIIIIIISSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSIIIIIIIISSSSSSSSSSSSSSISSSSSSSSSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSIIIIIIIIIIIIIIIIIIIISSSSSSSSSI";
+                const barcodeSequence2 = "IIIIIIIIIIISSSSSSSSSSSSSSSSSSSIIIIIIIISSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSIIIIIIIIIIIIISSSSSSSSIIIIIIIIIIIIIIIIIIIIIIISISSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSIIIIIIIISSSSSSSSSSSSSSISSSSSSSSSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSIIIIIIIIIIIIIIIIIIIISSSSSSSSSI";
+                const barcodeSequence3 = "IIIIIIIIIIIISSSSSSSSISSSSSSSSSIIIIIIIISSSSSSIIIIIIIISIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSIIIIIIIISSSSSSSSSSSSSSISSSSSSSSSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSIIIIIIIIIIIIIIIIIIIISSSSSSSSSI";
+                const barcodeSequence4 = "IIIIIIIIIIIISSSSSSSSIISSSSSSSSIIIIIIIISSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSIIIIIIIIIISIIIIIIIIIIIISSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSIIIIIIIISSSSSSSSSSSSSSISSSSSSSSSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSIIIIIIIIIIIIIIIIIIIISSSSSSSSSI";
                 multipleExperimentsContainer.current.data = 
                 [{name: "1",sequence: proteinData.barcodeSequence, },
-                {name: "2",sequence: proteinData.barcodeSequence, },
-                {name: "3",sequence: proteinData.barcodeSequence, },
-                {name: "4",sequence: proteinData.barcodeSequence, },
-                {name: "5",sequence: proteinData.barcodeSequence, },
+                {name: "LIP2",sequence: barcodeSequence1, },
+                {name: "LIP3",sequence: barcodeSequence2, },
+                {name: "LIP4",sequence: barcodeSequence3, },
+                {name: "LIP5",sequence: barcodeSequence4, },
                 {name: "6",sequence: proteinData.barcodeSequence, },
             ];
             }
@@ -89,10 +93,12 @@ const NightingaleComponent = ({ proteinData}) => {
     return( 
         <nightingale-manager> 
             <nightingale-structure 
-                protein-accession="P25443" 
-                structure-id="AF-P25443-F1" 
+                protein-accession="P02994" 
+                structure-id="AF-P02994-F1" 
                 margin-color="transparent"
-                style={{ height: '500px', width: '1000px', background: 'rgb(235, 150, 234)' }}
+                background-color="white"
+                highlight-color={margincolorFeatures}
+                style={{ height: '500px', width: '1250px' }}
             ></nightingale-structure>
         <table>
           <tbody>
@@ -107,6 +113,7 @@ const NightingaleComponent = ({ proteinData}) => {
                     display-start="1"
                     display-end={sequenceLength} 
                     margin-color="white"
+                    margin-left="50"
                     highlight-color={highlightColor}
                 ></nightingale-navigation>
                </td>
@@ -124,42 +131,42 @@ const NightingaleComponent = ({ proteinData}) => {
                     margin-color="white"
                     highlight-event="onmouseover"
                     highlight-color={highlightColor}
-                    margin-left="20"
+                    margin-left="40"
                 ></nightingale-sequence>
                </td>
-            </tr>
-              <tr>
+            </tr> 
+            {/*  <tr> 
                 <td>Barcode 1</td>
                 <td>
                     <nightingale-colored-sequence
                         ref={residuelevelContainer}
                         sequence={proteinData.barcodeSequence}
                         width={minWidth}
-                        height="40"
+                        height="20"
                         length={sequenceLength} 
                         display-start="1"
                         display-end={sequenceLength} 
                         scale="I:-2,D:0,S:2"
                         highlight-color={highlightColor}
-                        margin-left="20"
+                        margin-left="40"
                         color-range="#ffe6f7:-2,#FF6699:2"
                     ></nightingale-colored-sequence>
                 </td>
-            </tr>
+            </tr> */} 
             <tr>
-                <td>Barcode 2 - Score - formula</td>
+                <td>Barcode - Structural Changes</td>
                 <td>
                     <nightingale-colored-sequence
                         ref={residuelevelContainer}
                         sequence={proteinData.barcodeSequence}
                         width={minWidth}
-                        height="40"
+                        height="20"
                         length={sequenceLength} 
                         display-start="1"
                         display-end={sequenceLength} 
                         scale="I:-2,D:0,S:2"
                         highlight-color={highlightColor}
-                        margin-left="20"
+                        margin-left="40"
                         color-range="#ffe6f7:-2,#FF6699:2"
                     ></nightingale-colored-sequence>
                 </td>
@@ -170,16 +177,17 @@ const NightingaleComponent = ({ proteinData}) => {
                     <nightingale-msa
                         ref={multipleExperimentsContainer}
                         id="msa"
-                        height="120"
+                        height="80"
                         width={minWidth}
-                        label-width="20"
+                        label-width="40"
                         highlight-color={highlightColor}
                         margin-left="0"
+                        color-scheme="hydro" /*hydro mae*/
                         color-range="#ffe6f7:-2,#FF6699:2"
                     ></nightingale-msa>
                     </td>
                 </tr>
-                <tr>
+                   <tr>
                 <td>Domain</td>
                 <td>
                 <nightingale-track
@@ -190,8 +198,7 @@ const NightingaleComponent = ({ proteinData}) => {
                     length={sequenceLength} 
                     display-start="1"
                     display-end={sequenceLength} 
-                    margin-color={margincolorFeatures}
-                    margin-left="20"
+                    margin-left="40"
                     highlight-color={highlightColor}
                     highlight-event="onmouseover"
                 ></nightingale-track>
@@ -206,12 +213,11 @@ const NightingaleComponent = ({ proteinData}) => {
                     min-width={minWidth}
                     height="15"
                     length={sequenceLength} 
-                    display-start="20"
+                    display-start="1"
                     display-end={sequenceLength} 
-                    margin-color={margincolorFeatures}
                     highlight-color={highlightColor}
                     highlight-event="onmouseover"
-                    margin-left="20"
+                    margin-left="40"
                 ></nightingale-track>
                 </td>
             </tr>
@@ -223,12 +229,11 @@ const NightingaleComponent = ({ proteinData}) => {
                     min-width={minWidth}
                     height="15"
                     length={sequenceLength} 
-                    display-start="20"
+                    display-start="1"
                     display-end={sequenceLength} 
-                    margin-color={margincolorFeatures}
                     highlight-color={highlightColor}
                     highlight-event="onmouseover"
-                    margin-left="20"
+                    margin-left="40"
                 ></nightingale-track>
                 </td>
             </tr>
@@ -243,10 +248,9 @@ const NightingaleComponent = ({ proteinData}) => {
                     length={sequenceLength} 
                     display-start="1"
                     display-end={sequenceLength} 
-                    margin-color={margincolorFeatures}
                     highlight-color={highlightColor}
                     highlight-event="onmouseover"
-                    margin-left="20"
+                    margin-left="40"
                 ></nightingale-track>
                 </td>
             </tr>
@@ -260,10 +264,9 @@ const NightingaleComponent = ({ proteinData}) => {
                     length={sequenceLength} 
                     display-start="1"
                     display-end={sequenceLength} 
-                    margin-color={margincolorFeatures}
                     highlight-color={highlightColor}
                     highlight-event="onmouseover"
-                    margin-left="20"
+                    margin-left="40"
                 ></nightingale-track>
                 </td>
             </tr>
@@ -278,10 +281,9 @@ const NightingaleComponent = ({ proteinData}) => {
                     length={sequenceLength} 
                     display-start="1"
                     display-end={sequenceLength} 
-                    margin-color={margincolorFeatures}
                     highlight-color={highlightColor}
                     highlight-event="onmouseover"
-                    margin-left="20"
+                    margin-left="40"
                 ></nightingale-track>
                 </td>
             </tr>
@@ -295,10 +297,9 @@ const NightingaleComponent = ({ proteinData}) => {
                     length={sequenceLength} 
                     display-start="1"
                     display-end={sequenceLength} 
-                    margin-color={margincolorFeatures}
                     highlight-color={highlightColor}
                     highlight-event="onmouseover"
-                    margin-left="20"
+                    margin-left="40"
                 ></nightingale-track>
                 </td>
             </tr>
