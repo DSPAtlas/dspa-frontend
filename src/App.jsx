@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 import Home from './components/Home';
 import ProteinSearch from './components/Search';
 import ProteinVisualization from './components/Result';
+import ExperimentInfo from './components/ExperimentInfo'
 
 const NotFound = () => <div>Page not found.</div>;
 
@@ -26,6 +27,7 @@ const App = () => {
       <Route path="/" element={<Home />} />
       <Route path="/search" element={<ProteinSearch />} />
       <Route path="/visualize/:taxonomyID/:proteinName" element={<ProteinVisualization />} />
+      <Route path="/experiment/:experimentID" element={<ExperimentInfo />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   </div>

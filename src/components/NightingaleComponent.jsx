@@ -24,8 +24,6 @@ const NightingaleComponent = ({proteinData}) => {
 
     const minWidth = "1000";
 
-    console.log(proteinData.barcodeSequence);
-
     useEffect(() => {
         customElements.whenDefined("nightingale-sequence").then(() => {
             if (seqContainer.current) {
