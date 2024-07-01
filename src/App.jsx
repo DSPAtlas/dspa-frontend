@@ -25,7 +25,7 @@ const App = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/search" element={<ProteinSearch />} />
-      <Route path="/visualize/:organismId/:proteinName" element={<ProteinVisualization />} />
+      <Route path="/visualize/:taxonomyID/:proteinName" element={<ProteinVisualization />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   </div>

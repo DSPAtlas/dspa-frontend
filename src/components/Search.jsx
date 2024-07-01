@@ -1,13 +1,65 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, Link} from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import config from '../config.json';
 
+import { useSearchParams } from 'react-router-dom';
+
+function ProteinSearchResult({searchResults}) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedOrganism, setSelectedOrganism] = useState('559292');
+  const [error, setError] = useState('');
+  const [setSearchResults] = useState(null);
+  
+  const navigate = useNavigate();
+
+  const handleLinkClick = (event, taxonomyID, proteinName) => {
+    event.preventDefault();
+    navigate(`/visualize/${taxonomyID}/${encodeURIComponent(proteinName)}`);
+  };
+
+  return (
+    <div>
+    <div className="results-search-container">
+        {searchResults && searchResults.table && searchResults.table.length > 0 ? (
+            <table>
+                <thead>
+                    <tr>
+                        <th>Protein Name</th>
+                        <th>Taxonomy</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {searchResults.table.map((entry, index) => (
+                        <tr key={index}>
+                            <td>
+                                <button onClick={(e) => handleLinkClick(e, entry.taxonomyID, entry.proteinName)}>
+                                    {entry.proteinName}
+                                </button>
+                            </td>
+                            <td>{entry.taxonomyName}</td>
+                            <td>{entry.proteinDescription}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        ) : (
+            <p>No search results to display.</p>
+        )}
+      </div>
+    </div>
+  )
+};
+
+
+
 const ProteinSearch = () => {
-  const [selectedOrganism, setSelectedOrganism] = useState('559292'); // Default to Saccharomyces cerevisiae S288C
-  const [proteinName, setProteinName] = useState(''); // Added missing state for proteinName
+  const [selectedOrganism, setSelectedOrganism] = useState('559292'); 
+  const [proteinName, setProteinName] = useState(''); 
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
   const [searchResults, setSearchResults] = useState(null);
+  const navigate = useNavigate();
 
   const handleOrganismChange = (event) => {
     setSelectedOrganism(event.target.value);
@@ -24,6 +76,8 @@ const ProteinSearch = () => {
       const url = `${config.apiEndpoint2}search?${queryParams}`;
       const response = await fetch(url);
       const data = await response.json();
+      navigate(`/search?searchTerm=${encodeURIComponent(searchTerm)}`);
+      
       if (data.success) {
         setSearchResults(data);
       } else {
@@ -32,6 +86,11 @@ const ProteinSearch = () => {
     } catch (err) {
       setError(err.message);
     }
+  };
+
+  const handleLinkClick = (event, taxonomyID, proteinName) => {
+    event.preventDefault();
+    navigate(`/visualize/${taxonomyID}/${encodeURIComponent(proteinName)}`);
   };
 
   return (
@@ -62,28 +121,7 @@ const ProteinSearch = () => {
             <button type="submit" className="search-button">Search</button>
         </form>
         {error && <p>Error: {error}</p>}
-      {searchResults && searchResults.table && (
-        <table>
-          <thead>
-            <tr>
-              <th>Protein Name</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {searchResults.table.map((entry, index) => (
-              <tr key={index}>
-                <td>
-                  <Link to={`/visualize/${selectedOrganism}/${entry.proteinName}`}>
-                    {entry.proteinName}
-                  </Link>
-                </td>
-                <td>{entry.proteinDescription}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+        {searchResults && <ProteinSearchResult searchResults={searchResults} />}
     </div>
     </div>
   );

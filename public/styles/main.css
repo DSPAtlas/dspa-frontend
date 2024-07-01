@@ -7,4 +7,12 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
 
 .dspa-background-grey {
   background-color: grey;
+  height: 50vh;
+  width: 100%;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
 }
