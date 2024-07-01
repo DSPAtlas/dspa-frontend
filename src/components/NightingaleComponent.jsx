@@ -8,13 +8,16 @@ import "@nightingale-elements/nightingale-structure";
 import "@nightingale-elements/nightingale-msa";
 import Background from 'three/examples/jsm/renderers/common/Background.js';
 
-const NightingaleComponent = ({ proteinData}) => {
+const NightingaleComponent = ({proteinData}) => {
 
     const seqContainer = useRef(null);
     const residuelevelContainer = useRef(null);
     const featuresContainer = useRef(null);
     const multipleExperimentsContainer = useRef(null);
     const sequenceLength = proteinData.proteinSequence.length;
+
+    const proteinName = proteinData.proteinName;
+    const proteinStructureID = `AF-${proteinData.proteinName}-F1`;
 
     const margincolorFeatures = "#FF6699";
     const highlightColor = "rgb(235, 190, 234)";
@@ -42,16 +45,12 @@ const NightingaleComponent = ({ proteinData}) => {
     useEffect(() => {
         customElements.whenDefined("nightingale-msa").then(() => {
             if (multipleExperimentsContainer.current) {
-                const barcodeSequence1 = "IIIIIIIIIIIISSSSSSSSISSSSSSSSSIIIIIIIISSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSIIIIIIIISSSSSSSSSSSSSSISSSSSSSSSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSIIIIIIIIIIIIIIIIIIIISSSSSSSSSI";
-                const barcodeSequence2 = "IIIIIIIIIIISSSSSSSSSSSSSSSSSSSIIIIIIIISSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSIIIIIIIIIIIIISSSSSSSSIIIIIIIIIIIIIIIIIIIIIIISISSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSIIIIIIIISSSSSSSSSSSSSSISSSSSSSSSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSIIIIIIIIIIIIIIIIIIIISSSSSSSSSI";
-                const barcodeSequence3 = "IIIIIIIIIIIISSSSSSSSISSSSSSSSSIIIIIIIISSSSSSIIIIIIIISIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSIIIIIIIISSSSSSSSSSSSSSISSSSSSSSSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSIIIIIIIIIIIIIIIIIIIISSSSSSSSSI";
-                const barcodeSequence4 = "IIIIIIIIIIIISSSSSSSSIISSSSSSSSIIIIIIIISSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSIIIIIIIIIISIIIIIIIIIIIISSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSIIIIIIIISSSSSSSSSSSSSSISSSSSSSSSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSSSSSSSSSSIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIISSSSSSIIIIIIIIIIIIIIIIIIIISSSSSSSSSI";
-                multipleExperimentsContainer.current.data = 
-                [{name: "1",sequence: proteinData.barcodeSequence, },
-                {name: "LIP2",sequence: barcodeSequence1, },
-                {name: "LIP3",sequence: barcodeSequence2, },
-                {name: "LIP4",sequence: barcodeSequence3, },
-                {name: "LIP5",sequence: barcodeSequence4, },
+                multipleExperimentsContainer.current.data = [
+                {name: "1",sequence: proteinData.barcodeSequence, },
+                {name: "LIP2",sequence: proteinData.barcodeSequence, },
+                {name: "LIP3",sequence: proteinData.barcodeSequence, },
+                {name: "LIP4",sequence: proteinData.barcodeSequence, },
+                {name: "LIP5",sequence: proteinData.barcodeSequence, },
                 {name: "6",sequence: proteinData.barcodeSequence, },
             ];
             }
@@ -93,8 +92,8 @@ const NightingaleComponent = ({ proteinData}) => {
     return( 
         <nightingale-manager> 
             <nightingale-structure 
-                protein-accession="P02994" 
-                structure-id="AF-P02994-F1" 
+                protein-accession={proteinName} 
+                structure-id={proteinStructureID}
                 margin-color="transparent"
                 background-color="white"
                 highlight-color={margincolorFeatures}
