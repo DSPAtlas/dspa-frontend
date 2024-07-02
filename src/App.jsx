@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 import Home from './components/Home';
 import ProteinSearch from './components/Search';
 import ProteinVisualization from './components/Result';
-import ExperimentInfo from './components/ExperimentInfo'
+import ExperimentInfo from './components/Experiments'
 
 const NotFound = () => <div>Page not found.</div>;
 
@@ -17,6 +17,7 @@ const App = () => {
           <div className="navigation-right navigation-hide-small">
             <a href="/" className="navigation-bar-item navigation-button">HOME</a>
             <a href="/search" className="navigation-bar-item navigation-button"> SEARCH</a>
+            <a href="/experiment" className="navigation-bar-item navigation-button"> EXPERIMENT</a>
             <a href="/search" className="navigation-bar-item navigation-button"> ABOUT</a>
             <a href="/search" className="navigation-bar-item navigation-button"> CONTACT</a>
           </div>
