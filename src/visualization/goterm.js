@@ -2,6 +2,8 @@ import * as d3 from 'd3';
 
 export function GOEnrichmentVisualization({ goEnrichmentData }) {
     // Set dimensions and margins
+
+
     const margin = { top: 50, right: 30, bottom: 70, left: 300 },
           width = 900 - margin.left - margin.right,
           height = 600 - margin.top - margin.bottom;
@@ -16,7 +18,20 @@ export function GOEnrichmentVisualization({ goEnrichmentData }) {
       .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Scale for x-axis
+    
+    // Create a tooltip div that is hidden by default
+    const tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("position", "absolute")
+        .style("visibility", "hidden")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "1px")
+        .style("border-radius", "5px")
+        .style("padding", "10px")
+        .style("pointer-events", "auto");
+    
+        // Scale for x-axis
     const x = d3.scaleLinear()
         .domain([0, d3.max(goEnrichmentData, d => -Math.log10(d.p_fdr_bh))])
         .range([0, width]);
@@ -42,8 +57,19 @@ export function GOEnrichmentVisualization({ goEnrichmentData }) {
     svg.append("g")
         .call(d3.axisLeft(y))
         .selectAll("text")
-        .style("font-size", "16px");
-
+        .style("font-size", "16px")
+        .on("mouseover", function(event, d) {
+            const data = goEnrichmentData.find(item => item.goName === d);
+            const proteinLinks = data.study_items.split(', ').map(p => `<a href="/visualize/559292/${p}">${p}</a>`).join('<br>');
+            tooltip.html(`<strong>${data.goName}</strong><br>${proteinLinks}`)
+                   .style("visibility", "visible");
+        })
+        .on("mousemove", function(event) {
+            tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+        })
+        .on("mouseout", function() {
+            tooltip.style("visibility", "hidden");
+        });
     // Add bars
     svg.selectAll(".bar")
         .data(goEnrichmentData)
@@ -53,7 +79,18 @@ export function GOEnrichmentVisualization({ goEnrichmentData }) {
         .attr("y", d => y(d.goName))
         .attr("width", d => x(-Math.log10(d.p_fdr_bh)))
         .attr("height", y.bandwidth())
-        .attr("fill", d => color(-Math.log10(d.p_fdr_bh)));
+        .attr("fill", d => color(-Math.log10(d.p_fdr_bh)))
+        .on("mouseover", function(event, d) {
+            const proteinLinks = d.study_items.split(', ').map(p => `<a href="/visualize/559292/${p}">${p}</a>`).join('<br>');
+            tooltip.html(`<strong>${d.goName}</strong><br>${proteinLinks}`)
+                   .style("visibility", "visible");
+        })
+        .on("mousemove", function(event) {
+            tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+        })
+        .on("mouseout", function() {
+            tooltip.style("visibility", "hidden");
+        });
 
     // Add title
     svg.append("text")
@@ -70,4 +107,11 @@ export function GOEnrichmentVisualization({ goEnrichmentData }) {
         .attr("y", height + margin.bottom - 20)
         .attr("text-anchor", "middle")
         .text("-log10(Adj-pValue)");
+    
+    
+    tooltip.on("mouseover", function() {
+            tooltip.style("visibility", "visible");
+        }).on("mouseout", function() {
+            tooltip.style("visibility", "hidden");
+        });
 }

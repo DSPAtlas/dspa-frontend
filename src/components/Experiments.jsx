@@ -66,12 +66,14 @@ const ExperimentInfo = () => {
 
     useEffect(() => {
         if (experimentData && experimentData.goEnrichment) {
+           
+            console.log(experimentData);
             GOEnrichmentVisualization({ goEnrichmentData: experimentData.goEnrichment });
         }
     }, [experimentData]);
 
     return (
-        <div className="result--container">
+        <div className="rnightingale-component-container">
             {loading ? (
                 <p>Loading...</p>
             ) : error ? (
@@ -80,10 +82,11 @@ const ExperimentInfo = () => {
                 experimentData &&
                 experimentData.experimentID && (
                     <div>
-                        <span className="result-header"> </span><br />
-                        <span className="result-header">LiP Experiment ID {experimentData.experimentID}</span><br />
+                        <span className="experiment-header"> </span><br />
+                        <span className="experiment-header">LiP Experiment ID {experimentData.experimentID}</span><br />
                         <span className="result-text">Submission: {experimentData.submission || 'N/A'}</span><br />
                         <span className="result-text">Description: {experimentData.description || 'N/A'}</span><br />
+                        <span className="experiment-header"> </span><br />
                     </div>
                 )
             )}

@@ -5,10 +5,6 @@ import config from '../config.json';
 import { useSearchParams } from 'react-router-dom';
 
 function ProteinSearchResult({searchResults}) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedOrganism, setSelectedOrganism] = useState('559292');
-  const [error, setError] = useState('');
-  const [setSearchResults] = useState(null);
   
   const navigate = useNavigate();
 
@@ -53,9 +49,11 @@ function ProteinSearchResult({searchResults}) {
 
 
 
+
 const ProteinSearch = () => {
   const [selectedOrganism, setSelectedOrganism] = useState('559292'); 
   const [proteinName, setProteinName] = useState(''); 
+  const [experimentID, setExperimentID] = useState('LIP000001'); 
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
   const [searchResults, setSearchResults] = useState(null);
@@ -69,6 +67,10 @@ const ProteinSearch = () => {
     setSearchTerm(event.target.value);
   };
 
+  const handleExperimentIDChange = (event) => {
+    setExperimentID(event.target.value);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -76,10 +78,10 @@ const ProteinSearch = () => {
       const url = `${config.apiEndpoint2}search?${queryParams}`;
       const response = await fetch(url);
       const data = await response.json();
-      navigate(`/search?searchTerm=${encodeURIComponent(searchTerm)}`);
       
       if (data.success) {
         setSearchResults(data);
+        navigate(`/search?searchTerm=${encodeURIComponent(searchTerm)}`);
       } else {
         throw new Error(data.message || 'Failed to fetch data');
       }
@@ -88,41 +90,56 @@ const ProteinSearch = () => {
     }
   };
 
-  const handleLinkClick = (event, taxonomyID, proteinName) => {
+  const handleSubmitExperiment = (event) => {
     event.preventDefault();
-    navigate(`/visualize/${taxonomyID}/${encodeURIComponent(proteinName)}`);
+    navigate(`/experiment/${experimentID}/`);
   };
 
   return (
     <div>
-    <div className="search-form-container">
+      <div className="search-form-container">
         <form className="search-form" onSubmit={handleSubmit}>
-            <div className="form-group">
-                <label className="">Organism </label>
-                <select 
-                    className="select-dropdown" 
-                    value={selectedOrganism} 
-                    onChange={handleOrganismChange}
-                >
-                    <option value="10090">Mus musculus</option>
-                    <option value="559292">Saccharomyces cerevisiae S288C</option>
-                    <option value="9606">Homo Sapiens</option>
-                </select>
-            </div>
-            <div className="form-group">
-                <label className="form-label">Protein Name </label>
-                <input 
-                    type="text" 
-                    className="search-form" 
-                    value={searchTerm} 
-                    onChange={handleProteinNameChange} 
-                />
-            </div>
-            <button type="submit" className="search-button">Search</button>
+          <div className="form-group">
+            <label>Organism</label>
+            <select 
+              className="select-dropdown" 
+              value={selectedOrganism} 
+              onChange={handleOrganismChange}
+            >
+              <option value="10090">Mus musculus</option>
+              <option value="559292">Saccharomyces cerevisiae S288C</option>
+              <option value="9606">Homo Sapiens</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Protein Name</label>
+            <input 
+              type="text" 
+              className="search-form" 
+              value={searchTerm} 
+              onChange={handleProteinNameChange} 
+            />
+          </div>
+          <button type="submit" className="search-button">Search</button>
         </form>
         {error && <p>Error: {error}</p>}
         {searchResults && <ProteinSearchResult searchResults={searchResults} />}
-    </div>
+      </div>
+      <div className="search-experiment-form-container">
+        <form className="search-form" onSubmit={handleSubmitExperiment}>
+          <div className="form-group">
+            <label>LiP Experiment</label>
+            <select 
+              className="select-dropdown" 
+              value={experimentID} 
+              onChange={handleExperimentIDChange}>
+              <option value="LIP000001">LIP000001</option>
+            </select>
+          </div>
+          <button type="submit" className="search-button">Submit</button>
+        </form>
+        {error && <p>Error: {error}</p>}
+      </div>
     </div>
   );
 };
