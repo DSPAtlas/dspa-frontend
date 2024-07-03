@@ -3,7 +3,7 @@
     font-size: 24px; /* Larger font size for emphasis */
     font-weight: bold; /* Bold font for importance */
     margin-bottom: 10px; /* Space below the header */
-    margin-top: 50px;
+    margin-top: 100px;
 }
 
 .result-text{
@@ -14,15 +14,8 @@
 }
 
 .result-container {/* Takes up all remaining space */
-    overflow-y: auto; /* Allows scrolling for overflow content */
-    padding: 2px;
-    background-color: #ffffff; /* White background for results */
-    -webkit-font-smoothing: auto;
-    -moz-font-smoothing: auto;
-    -moz-osx-font-smoothing: grayscale;
-    font-smoothing: auto;
-    text-rendering: optimizeLegibility;
-    font-smooth: always;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
+    width: 100%; /* Adjust this as needed */
+    max-width: 1200px; /* Example max-width that you might find suitable */
+    margin: auto; 
+    margin-top: 50px;
 }

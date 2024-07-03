@@ -73,7 +73,7 @@ const ExperimentInfo = () => {
     }, [experimentData]);
 
     return (
-        <div className="rnightingale-component-container">
+        <div className="result-container">
             {loading ? (
                 <p>Loading...</p>
             ) : error ? (
