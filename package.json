@@ -9,6 +9,7 @@
     "@nightingale-elements/nightingale-msa": "^5.0.0",
     "@nightingale-elements/nightingale-navigation": "^5.0.0",
     "@nightingale-elements/nightingale-sequence": "^5.0.0",
+    "@nightingale-elements/nightingale-sequence-heatmap": "^5.0.0",
     "@nightingale-elements/nightingale-structure": "^5.0.0",
     "@nightingale-elements/nightingale-track": "^5.0.0",
     "@testing-library/jest-dom": "^5.17.0",

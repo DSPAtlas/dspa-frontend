@@ -28,6 +28,7 @@
     padding-top:30px}
 .dspa-dropdown-hover.w3-mobile .dspa-dropdown-content,.dspa-dropdown-click.w3-mobile .dspa-dropdown-content{position:relative}	
 .dspa-hide-small{display:none!important}
+}
 
 .landing-page {
     /*height: 100%;*/
@@ -36,4 +37,4 @@
 
 .landing-container {
     line-height: 1.8;
-  }
+}

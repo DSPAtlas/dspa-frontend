@@ -6,7 +6,9 @@ import "@nightingale-elements/nightingale-colored-sequence";
 import "@nightingale-elements/nightingale-track";
 import "@nightingale-elements/nightingale-structure";
 import "@nightingale-elements/nightingale-msa";
+import "@nightingale-elements/nightingale-sequence-heatmap";
 import Background from 'three/examples/jsm/renderers/common/Background.js';
+import * as d3 from 'd3';
 
 const NightingaleComponent = ({proteinData}) => {
 
@@ -14,6 +16,7 @@ const NightingaleComponent = ({proteinData}) => {
     const residuelevelContainer = useRef(null);
     const featuresContainer = useRef(null);
     const multipleExperimentsContainer = useRef(null);
+    const scoreBarcodeContainer = useRef(null);
     const sequenceLength = proteinData.proteinSequence.length;
 
     const proteinName = proteinData.proteinName;
@@ -23,6 +26,8 @@ const NightingaleComponent = ({proteinData}) => {
     const highlightColor = "rgb(235, 190, 234)";
 
     const minWidth = "1000";
+
+    console.log(proteinData);
 
     useEffect(() => {
         customElements.whenDefined("nightingale-sequence").then(() => {
@@ -86,6 +91,28 @@ const NightingaleComponent = ({proteinData}) => {
             }
         });
     }, [proteinData.featuresData]);
+
+    useEffect(() => {
+        customElements.whenDefined("nightingale-sequence-heatmap").then(() => {
+            if (scoreBarcodeContainer.current){
+                const dataHeatmap = proteinData.differentialAbundanceData.map(entry => {
+                    return {
+                      xValue: entry.index,
+                      score: entry.score === null ? 0 : entry.score,
+                      aminoacid: entry.aminoacid,
+                      detected: entry.detected,
+                      yValue: "Median LiPs"
+                    };
+                  });
+                
+                const xDomain = Array.from({ length: dataHeatmap.length }, (_, index) => index);
+                const yDomain = ["Median LiPs"];
+
+                document.getElementById("id-for-nightingale-sequence-heatmap").setHeatmapData(xDomain, yDomain, dataHeatmap);
+            }
+            
+        });
+    }, [proteinData.differentialAbundanceData])
    
     return( 
         <nightingale-manager> 
@@ -132,24 +159,23 @@ const NightingaleComponent = ({proteinData}) => {
                 ></nightingale-sequence>
                </td>
             </tr> 
-            {/*  <tr> 
-                <td>Barcode 1</td>
+             <tr> 
+            <td>Score-Barcode </td>
                 <td>
-                    <nightingale-colored-sequence
-                        ref={residuelevelContainer}
-                        sequence={proteinData.barcodeSequence}
-                        width={minWidth}
-                        height="20"
-                        length={sequenceLength} 
-                        display-start="1"
-                        display-end={sequenceLength} 
-                        scale="I:-2,D:0,S:2"
-                        highlight-color={highlightColor}
-                        margin-left="40"
-                        color-range="#ffe6f7:-2,#FF6699:2"
-                    ></nightingale-colored-sequence>
+                    <nightingale-sequence-heatmap
+                    ref={scoreBarcodeContainer}
+                    id="id-for-nightingale-sequence-heatmap"
+                    heatmap-id="seq-heatmap"
+                    width={minWidth}
+                    height="40"
+                    display-start="1"
+                    margin-left="40"
+                    display-end={sequenceLength} 
+                    highlight-event="onmouseover"
+                    highlight-color={highlightColor}
+                    ></nightingale-sequence-heatmap>
                 </td>
-            </tr> */} 
+            </tr> 
             <tr>
                 <td>Barcode - Structural Changes</td>
                 <td>
@@ -157,7 +183,7 @@ const NightingaleComponent = ({proteinData}) => {
                         ref={residuelevelContainer}
                         sequence={proteinData.barcodeSequence}
                         width={minWidth}
-                        height="20"
+                        height="40"
                         length={sequenceLength} 
                         display-start="1"
                         display-end={sequenceLength} 
