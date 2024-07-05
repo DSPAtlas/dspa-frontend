@@ -85,6 +85,13 @@ const ExperimentInfo = () => {
                         <span className="experiment-header"> </span><br />
                         <span className="experiment-header">LiP Experiment ID {experimentData.experimentID}</span><br />
                         <span className="result-text">Submission: {experimentData.submission || 'N/A'}</span><br />
+                        <span className="result-text">ProteomeXchange ID: {experimentData.proteomexchangeID || 'N/A'}</span><br />
+                        <span className="result-text">Peptide Atlas ID: {experimentData.peptideatlasID || 'N/A'}</span><br />
+                        <span className="result-text">Taxonomy ID: {experimentData.taxonomyID || 'N/A'}</span><br />
+                        <span className="result-text">Preprocessed: {experimentData.preprocessed || 'N/A'}</span><br />
+                        <span className="result-text">Treatment: {experimentData.treatment || 'N/A'}</span><br />
+                        <span className="result-text">Instrument: {experimentData.instrument || 'N/A'}</span><br />
+                        <span className="result-text">Digestion Enyzme: {experimentData.enzyme || 'N/A'}</span><br />
                         <span className="result-text">Description: {experimentData.description || 'N/A'}</span><br />
                         <span className="experiment-header"> </span><br />
                     </div>

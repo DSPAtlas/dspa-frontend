@@ -5,6 +5,17 @@
     align-items: center; /* Center vertically */
     height: 100vh; /* Take full height of the viewport */
 }
+.search-experiment-form-container {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    height: 100vh; /* Take full height of the viewport */
+    flex-direction: row; 
+}
+
+.form-group {
+    margin: 0 10px; /* Add some margin between the dropdowns */
+}
 
 .search-form {
     display: flex; /* Use flexbox to align form elements */
@@ -14,12 +25,15 @@
     width: auto; /* Adjust width based on content */
     font-size: 1.2rem; /* Increased font size for better readability */
     color: #373D41;
+    flex-direction: row; 
     background-color: #FFF;
     background-clip: padding-box;
     border: 1px solid #C5C5C7;
     border-radius: 6px;
     box-shadow: none;
     margin: 20px; /* Added margin for spacing around the form */
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 /* Styling for the input field and dropdown */

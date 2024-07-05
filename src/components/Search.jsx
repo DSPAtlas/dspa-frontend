@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import config from '../config.json';
+import Select from 'react-select';
 
 import { useSearchParams } from 'react-router-dom';
 
@@ -56,6 +57,9 @@ const ProteinSearch = () => {
   const [experimentID, setExperimentID] = useState('LIP000001'); 
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
+  const [taxonomy, setTaxonomy] = useState([]);
+  const [treatment, setTreatment] = useState([]);
+  const [enzyme, setEnzyme] = useState([]);
   const [searchResults, setSearchResults] = useState(null);
   const navigate = useNavigate();
 
@@ -70,6 +74,19 @@ const ProteinSearch = () => {
   const handleExperimentIDChange = (event) => {
     setExperimentID(event.target.value);
   };
+
+  const handleTaxonomyChange = (selectedOptions) => {
+    setTaxonomy(selectedOptions);
+  };
+
+  const handleTreatmentChange = (selectedOptions) => {
+    setTreatment(selectedOptions);
+  };
+
+  const handleEnzymeChange = (selectedOptions) => {
+    setEnzyme(selectedOptions);
+  };
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -94,6 +111,7 @@ const ProteinSearch = () => {
     event.preventDefault();
     navigate(`/experiment/${experimentID}/`);
   };
+
 
   return (
     <div>
@@ -127,6 +145,7 @@ const ProteinSearch = () => {
       </div>
       <div className="search-experiment-form-container">
         <form className="search-form" onSubmit={handleSubmitExperiment}>
+          
           <div className="form-group">
             <label>LiP Experiment</label>
             <select 
@@ -136,6 +155,52 @@ const ProteinSearch = () => {
               <option value="LIP000001">LIP000001</option>
             </select>
           </div>
+
+        <div className="form-group">
+          <label>Taxonomy</label>
+          <Select
+            isMulti
+            value={taxonomy}
+            onChange={handleTaxonomyChange}
+            options={[
+              { value: '10090', label: 'Mus musculus' },
+              { value: '559292', label: 'Saccharomyces cerevisiae S288C' },
+              { value: '9606', label: 'Homo Sapiens' },
+            ]}
+            className="select-dropdown"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Treatment</label>
+          <Select
+            isMulti
+            value={treatment}
+            onChange={handleTreatmentChange}
+            options={[
+              { value: '', label: 'Osmotic' },
+              { value: '559292', label: ' ' },
+              { value: '9606', label: ' ' },
+            ]}
+            className="select-dropdown"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Digestion Enzyme</label>
+          <Select
+            isMulti
+            value={enzyme}
+            onChange={handleEnzymeChange}
+            options={[
+              { value: '', label: 'Proteinase K' },
+              { value: '559292', label: 'Trypsin' },
+              { value: '9606', label: 'Chymotrypsin' },
+            ]}
+            className="select-dropdown"
+          />
+        </div>
+
           <button type="submit" className="search-button">Submit</button>
         </form>
         {error && <p>Error: {error}</p>}
