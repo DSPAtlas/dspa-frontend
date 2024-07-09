@@ -7,7 +7,8 @@ import NightingaleComponent from './NightingaleComponent';
 function ProteinVisualizationComponents({proteinData, loading, error }) {
 
     const taxonomy = "Saccharomyces cerevisiae S288C";
-    const proteinfunction ="sss";
+    const proteinfunction = proteinData.proteinDescription;
+    console.log(proteinData);
     
     return (
         <div className="nightingale-component-container">
@@ -102,6 +103,7 @@ const ProteinVisualization = () => {
 
     return (
         <>
+        <div className="search-form-container">
             <form onSubmit={handleSubmit}>
                 <select name="taxonomyID" value={taxonomyID} onChange={handleTaxonomyChange}>
                     <option value="10090">Mus musculus</option>
@@ -118,6 +120,7 @@ const ProteinVisualization = () => {
                 />
                 <button type="submit">Search</button>
             </form>
+            </div>
             <div className="results-search-container">
                 {proteinData && <ProteinVisualizationComponents proteinData={proteinData} loading={loading} error={error}/>}
             </div>
