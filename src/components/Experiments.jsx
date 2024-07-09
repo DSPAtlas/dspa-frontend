@@ -45,7 +45,7 @@ const ExperimentInfo = () => {
         if (experimentData && experimentData.goEnrichment) {
             // Ensure the canvas element is fully loaded and has non-zero dimensions
             const chartElement = document.getElementById("chart");
-            if (chartElement && chartElement.clientWidth > 0 && chartElement.clientHeight > 0) {
+            if (chartElement ) {
                 GOEnrichmentVisualization({ 
                     goEnrichmentData: experimentData.goEnrichment, 
                     namespace: namespace 
