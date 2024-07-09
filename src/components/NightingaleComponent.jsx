@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import "@nightingale-elements/nightingale-sequence";
 import "@nightingale-elements/nightingale-navigation";
 import "@nightingale-elements/nightingale-manager";
@@ -7,8 +7,7 @@ import "@nightingale-elements/nightingale-track";
 import "@nightingale-elements/nightingale-structure";
 import "@nightingale-elements/nightingale-msa";
 import "@nightingale-elements/nightingale-sequence-heatmap";
-import Background from 'three/examples/jsm/renderers/common/Background.js';
-import * as d3 from 'd3';
+
 
 const NightingaleComponent = ({proteinData}) => {
 
@@ -24,14 +23,15 @@ const NightingaleComponent = ({proteinData}) => {
 
     const margincolorFeatures = "#FF6699";
     const highlightColor = "rgb(235, 190, 234)";
-
     const minWidth = "1000";
 
-    console.log(proteinData);
+    const checkDimensions = (element) => {
+        return element && element.offsetWidth > 0 && element.offsetHeight > 0;
+    };
 
     useEffect(() => {
         customElements.whenDefined("nightingale-sequence").then(() => {
-            if (seqContainer.current) {
+            if (seqContainer.current && checkDimensions(seqContainer.current)) {
                 seqContainer.current.data = proteinData.proteinSequence;
             }
         });
@@ -39,7 +39,7 @@ const NightingaleComponent = ({proteinData}) => {
 
     useEffect(() => {
         customElements.whenDefined("nightingale-colored-sequence").then(() => {
-            if (residuelevelContainer.current) {
+            if (residuelevelContainer.current && checkDimensions(residuelevelContainer.current)) {
                 residuelevelContainer.current.data = proteinData.barcodeSequence;
             }
         });
@@ -47,7 +47,7 @@ const NightingaleComponent = ({proteinData}) => {
 
     useEffect(() => {
         customElements.whenDefined("nightingale-msa").then(() => {
-            if (multipleExperimentsContainer.current) {
+            if (multipleExperimentsContainer.current && checkDimensions(multipleExperimentsContainer.current)) {
                 multipleExperimentsContainer.current.data = [
                 {name: "1",sequence: proteinData.barcodeSequence, },
                 {name: "LIP2",sequence: proteinData.barcodeSequence, },
@@ -55,64 +55,76 @@ const NightingaleComponent = ({proteinData}) => {
                 {name: "LIP4",sequence: proteinData.barcodeSequence, },
                 {name: "LIP5",sequence: proteinData.barcodeSequence, },
                 {name: "6",sequence: proteinData.barcodeSequence, },
-            ];
+                ];
             }
         });   
     }, [proteinData.barcodeSequence]);
 
     useEffect(() => {
         customElements.whenDefined("nightingale-track").then(() => {
-            if (featuresContainer.current && proteinData.featuresData.features) {
+            if (featuresContainer.current && proteinData.featuresData.features && checkDimensions(featuresContainer.current)) {
                 const features = proteinData.featuresData.features.map((ft) => ({
                     ...ft,
                     start: ft.start || ft.begin,
                   }));
 
                 const domain = document.querySelector("#domain");
-                domain.data = features.filter(({ type }) => type === "DOMAIN");
+                if (domain) domain.data = features.filter(({ type }) => type === "DOMAIN");
                 
                 const region = document.querySelector("#region");
-                region.data = features.filter(({ type }) => type === "REGION");
+                if (region) region.data = features.filter(({ type }) => type === "REGION");
                 
                 const site = document.querySelector("#site");
-                site.data = features.filter(({ type }) => type === "SITE");
+                if (site) site.data = features.filter(({ type }) => type === "SITE");
                 
                 const binding = document.querySelector("#binding");
-                binding.data = features.filter(({ type }) => type === "BINDING");
+                if (binding) binding.data = features.filter(({ type }) => type === "BINDING");
                
                 const chain = document.querySelector("#chain");
-                chain.data = features.filter(({ type }) => type === "CHAIN");
+                if (chain) chain.data = features.filter(({ type }) => type === "CHAIN");
                
                 const disulfide = document.querySelector("#disulfide-bond");
-                disulfide.data = features.filter(({ type }) => type === "DISULFID");
+                if (disulfide) disulfide.data = features.filter(({ type }) => type === "DISULFID");
                
                 const betaStrand = document.querySelector("#beta-strand");
-                betaStrand.data = features.filter(({ type }) => type === "STRAND");
+                if (betaStrand) betaStrand.data = features.filter(({ type }) => type === "STRAND");
             }
         });
     }, [proteinData.featuresData]);
 
     useEffect(() => {
         customElements.whenDefined("nightingale-sequence-heatmap").then(() => {
-            if (scoreBarcodeContainer.current){
-                const dataHeatmap = proteinData.differentialAbundanceData.map(entry => {
-                    return {
-                      xValue: entry.index,
-                      score: entry.score === null ? 0 : entry.score,
-                      aminoacid: entry.aminoacid,
-                      detected: entry.detected,
-                      yValue: "Median LiPs"
-                    };
-                  });
-                
+            if (scoreBarcodeContainer.current && checkDimensions(scoreBarcodeContainer.current)) {
+                const dataHeatmap = proteinData.differentialAbundanceData.map(entry => ({
+                    xValue: entry.index,
+                    score: entry.score === null ? 0 : entry.score,
+                    aminoacid: entry.aminoacid,
+                    detected: entry.detected,
+                    yValue: "Median LiPs"
+                }));
+
+
                 const xDomain = Array.from({ length: dataHeatmap.length }, (_, index) => index);
                 const yDomain = ["Median LiPs"];
 
-                document.getElementById("id-for-nightingale-sequence-heatmap").setHeatmapData(xDomain, yDomain, dataHeatmap);
+                const heatmapElement = document.getElementById("id-for-nightingale-sequence-heatmap");
+                if (heatmapElement && heatmapElement.setHeatmapData) {
+                    heatmapElement.setHeatmapData(xDomain, yDomain, dataHeatmap);
+                }
             }
-            
         });
-    }, [proteinData.differentialAbundanceData])
+    }, [proteinData.differentialAbundanceData]);
+
+    // Check if there is Beta strand data
+    const hasDomainData = proteinData.featuresData.features.some(({ type }) => type === "DOMAIN");
+    const hasRegionData = proteinData.featuresData.features.some(({ type }) => type === "REGION");
+    const hasSiteData = proteinData.featuresData.features.some(({ type }) => type === "SITE");
+    const hasBindingData = proteinData.featuresData.features.some(({ type }) => type === "BINDING");
+    const hasChainData = proteinData.featuresData.features.some(({ type }) => type === "CHAIN");
+    const hasDisulfidData = proteinData.featuresData.features.some(({ type }) => type === "DISULFID");
+    const hasBetaStrandData = proteinData.featuresData.features.some(({ type }) => type === "STRAND");
+
+
    
     return( 
         <nightingale-manager> 
@@ -149,6 +161,7 @@ const NightingaleComponent = ({proteinData}) => {
                     ref={seqContainer}
                     min-width={minWidth}
                     height="40"
+                    width={minWidth}
                     length={sequenceLength} 
                     display-start="1"
                     display-end={sequenceLength} 
@@ -210,6 +223,7 @@ const NightingaleComponent = ({proteinData}) => {
                     ></nightingale-msa>
                     </td>
                 </tr>
+                {hasDomainData && (
                    <tr>
                 <td>Domain</td>
                 <td>
@@ -217,7 +231,7 @@ const NightingaleComponent = ({proteinData}) => {
                     ref={featuresContainer}
                     id="domain"
                     min-width={minWidth}
-                    height="15"
+                    height="25"
                     length={sequenceLength} 
                     display-start="1"
                     display-end={sequenceLength} 
@@ -227,6 +241,8 @@ const NightingaleComponent = ({proteinData}) => {
                 ></nightingale-track>
                 </td>
             </tr>
+        )}
+            {hasRegionData && (
             <tr>
                 <td>Region</td>
                 <td>
@@ -234,7 +250,7 @@ const NightingaleComponent = ({proteinData}) => {
                     ref={featuresContainer}
                     id="region"
                     min-width={minWidth}
-                    height="15"
+                    height="25"
                     length={sequenceLength} 
                     display-start="1"
                     display-end={sequenceLength} 
@@ -244,13 +260,15 @@ const NightingaleComponent = ({proteinData}) => {
                 ></nightingale-track>
                 </td>
             </tr>
+        )}
+            {hasSiteData && (
             <tr>
                 <td>Site</td>
                 <td>
                 <nightingale-track
                     id="site"
                     min-width={minWidth}
-                    height="15"
+                    height="25"
                     length={sequenceLength} 
                     display-start="1"
                     display-end={sequenceLength} 
@@ -260,6 +278,8 @@ const NightingaleComponent = ({proteinData}) => {
                 ></nightingale-track>
                 </td>
             </tr>
+        )}
+            {hasChainData && (
             <tr>
                 <td>Chain</td>
                 <td>
@@ -267,7 +287,7 @@ const NightingaleComponent = ({proteinData}) => {
                     id="chain"
                     layout="non-overlapping"
                     min-width={minWidth}
-                    height="15"
+                    height="25"
                     length={sequenceLength} 
                     display-start="1"
                     display-end={sequenceLength} 
@@ -277,13 +297,15 @@ const NightingaleComponent = ({proteinData}) => {
                 ></nightingale-track>
                 </td>
             </tr>
+        )}
+            {hasBindingData && (
             <tr>
                 <td>Binding site</td>
                 <td>
                 <nightingale-track
                     id="binding"
                     min-width={minWidth}
-                    height="15"
+                    height="25"
                     length={sequenceLength} 
                     display-start="1"
                     display-end={sequenceLength} 
@@ -293,6 +315,8 @@ const NightingaleComponent = ({proteinData}) => {
                 ></nightingale-track>
                 </td>
             </tr>
+            )}
+            {hasDisulfidData && (
             <tr>
                 <td>Disulfide bond</td>
                 <td>
@@ -300,7 +324,7 @@ const NightingaleComponent = ({proteinData}) => {
                     id="disulfide-bond"
                     layout="non-overlapping"
                     min-width={minWidth}
-                    height="15"
+                    height="25"
                     length={sequenceLength} 
                     display-start="1"
                     display-end={sequenceLength} 
@@ -310,13 +334,15 @@ const NightingaleComponent = ({proteinData}) => {
                 ></nightingale-track>
                 </td>
             </tr>
+            )}
+            {hasBetaStrandData && (
             <tr>
                 <td>Beta strand</td>
                 <td>
                 <nightingale-track
                     id="beta-strand"
                     min-width={minWidth}
-                    height="15"
+                    height="25"
                     length={sequenceLength} 
                     display-start="1"
                     display-end={sequenceLength} 
@@ -326,6 +352,7 @@ const NightingaleComponent = ({proteinData}) => {
                 ></nightingale-track>
                 </td>
             </tr>
+            )}
             </tbody>
       </table>
      </nightingale-manager>   

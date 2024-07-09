@@ -1,5 +1,5 @@
 import React from 'react';
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import "@nightingale-elements/nightingale-sequence";
 
 function Home() {

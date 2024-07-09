@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import config from '../config.json';
 import Select from 'react-select';
 
-import { useSearchParams } from 'react-router-dom';
 
 function ProteinSearchResult({searchResults}) {
   
@@ -53,7 +52,6 @@ function ProteinSearchResult({searchResults}) {
 
 const ProteinSearch = () => {
   const [selectedOrganism, setSelectedOrganism] = useState('559292'); 
-  const [proteinName, setProteinName] = useState(''); 
   const [experimentID, setExperimentID] = useState('LIP000001'); 
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');

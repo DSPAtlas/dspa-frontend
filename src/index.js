@@ -1,9 +1,7 @@
-import React, { StrictMode }  from 'react';
-//import createRoot from 'react-dom';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 
 import App from './App.jsx';
-//import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom'; 
 
 // This file serves as the entry point of your React application.

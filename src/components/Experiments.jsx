@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import config from '../config.json';
 import { GOEnrichmentVisualization } from '../visualization/goterm.js'; 
 
@@ -10,7 +10,7 @@ const ExperimentInfo = () => {
     const [namespace, setNamespace] = useState('BP'); 
     const [error, setError] = useState('');
     
-    const fetchExperimentInfo = async () => {
+    const fetchExperimentInfo = useCallback(async () => {
         setLoading(true);
         setError('');
         const queryParams = `experimentID=${encodeURIComponent(experimentID)}`;
@@ -31,11 +31,11 @@ const ExperimentInfo = () => {
         } finally {
             setLoading(false);
         } 
-    };
+    }, [experimentID]);
 
     useEffect(() => {
         fetchExperimentInfo();
-    }, [experimentID]);
+    }, [fetchExperimentInfo]);
 
     const handleNamespaceChange = (event) => {
         setNamespace(event.target.value);
@@ -43,9 +43,16 @@ const ExperimentInfo = () => {
 
     useEffect(() => {
         if (experimentData && experimentData.goEnrichment) {
-            GOEnrichmentVisualization({ 
-                goEnrichmentData: experimentData.goEnrichment, 
-                namespace: namespace });
+            // Ensure the canvas element is fully loaded and has non-zero dimensions
+            const chartElement = document.getElementById("chart");
+            if (chartElement && chartElement.clientWidth > 0 && chartElement.clientHeight > 0) {
+                GOEnrichmentVisualization({ 
+                    goEnrichmentData: experimentData.goEnrichment, 
+                    namespace: namespace 
+                });
+            } else {
+                console.error("Chart element not properly loaded or has zero dimensions");
+            }
         }
     }, [namespace, experimentData]);
 
