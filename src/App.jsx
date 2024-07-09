@@ -5,6 +5,15 @@ import ProteinSearch from './components/Search';
 import ProteinVisualization from './components/Result';
 import ExperimentInfo from './components/Experiments'
 
+
+import "./styles/main.css"
+import "./styles/navigationbar.css"
+import "./styles/home.css"
+import "./styles/result.css"
+import "./styles/search.css"
+import "./styles/experiments.css"
+import "./styles/graphs.css"
+
 const NotFound = () => <div>Page not found.</div>;
 
 const App = () => {
