@@ -1,0 +1,22 @@
+/* styles.css */
+.axis text {
+    font-family: "Raleway", sans-serif; 
+    font-size: 16px;
+}
+
+.title {
+    font-family: "Raleway", sans-serif; 
+}
+
+.xlabel {
+    font-family: "Raleway", sans-serif; 
+}
+
+.ylabel {
+    font-family: "Raleway", sans-serif; 
+}
+
+
+.tooltip {
+    font-family: "Raleway", sans-serif; 
+}

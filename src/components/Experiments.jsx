@@ -6,11 +6,9 @@ import { GOEnrichmentVisualization } from '../visualization/goterm.js';
 const ExperimentInfo = () => {
     const { experimentID } = useParams(); 
     const [loading, setLoading] = useState(false);
-    const [searchResults, setSearchResults] = useState(null);
     const [experimentData, setExperimentData] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [namespace, setNamespace] = useState('BP'); 
     const [error, setError] = useState('');
-    const navigate = useNavigate();
     
     const fetchExperimentInfo = async () => {
         setLoading(true);
@@ -39,38 +37,17 @@ const ExperimentInfo = () => {
         fetchExperimentInfo();
     }, [experimentID]);
 
-    const handleSearchTermChange = (event) => {
-        setSearchTerm(event.target.value);
-    };
-
-    const handleSubmit = async(event) => {
-        event.preventDefault();
-        
-        try {
-            const queryParams = `searchTerm=${encodeURIComponent(searchTerm)}`;
-            const url = `${config.apiEndpoint2}search?${queryParams}`;
-            const response = await fetch(url);
-            const data = await response.json();
-        
-            if (data.success) {
-                setSearchResults(data);
-                navigate(`/search?searchTerm=${encodeURIComponent(searchTerm)}`);  
-            } else {
-                throw new Error(data.message || 'Failed to fetch data');
-            }
-            
-        } catch (err) {
-            setError(err.message);
-        }
+    const handleNamespaceChange = (event) => {
+        setNamespace(event.target.value);
     };
 
     useEffect(() => {
         if (experimentData && experimentData.goEnrichment) {
-           
-            console.log(experimentData);
-            GOEnrichmentVisualization({ goEnrichmentData: experimentData.goEnrichment });
+            GOEnrichmentVisualization({ 
+                goEnrichmentData: experimentData.goEnrichment, 
+                namespace: namespace });
         }
-    }, [experimentData]);
+    }, [namespace, experimentData]);
 
     return (
         <div className="result-container">
@@ -98,7 +75,16 @@ const ExperimentInfo = () => {
                 )
             )}
             <div className="results-experiment-search-container">
-                <div id="chart"></div>
+            <div id="chart"></div>
+                {experimentData && experimentData.goEnrichment && (
+                <div className="namespace-dropdown">
+                        <select value={namespace} onChange={handleNamespaceChange}>
+                            <option value="BP">Biological Process</option>
+                            <option value="MF">Molecular Function</option>
+                            <option value="CC">Cellular Component</option>
+                        </select>
+                    </div>
+                    )}
             </div> 
         </div>
     );

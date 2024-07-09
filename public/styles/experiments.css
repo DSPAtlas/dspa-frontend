@@ -19,3 +19,27 @@
     margin: auto; 
     margin-top: 50px;
 }
+
+
+/* Style for the namespace dropdown container */
+.namespace-dropdown {
+    margin-bottom: 20px;
+}
+
+/* Style for the select dropdown */
+.namespace-dropdown select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+    margin-bottom: 10px;
+    width: 200px;
+}
+
+/* Style for the tooltip */
+.tooltip {
+    font-family: "Raleway", sans-serif;
+    font-size: 14px;
+}

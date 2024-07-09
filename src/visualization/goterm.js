@@ -1,8 +1,9 @@
 import * as d3 from 'd3';
 
-export function GOEnrichmentVisualization({ goEnrichmentData }) {
+export function GOEnrichmentVisualization({ goEnrichmentData, namespace }) {
     // Set dimensions and margins
 
+    const filteredData = goEnrichmentData.filter(d => d.ns === namespace);
 
     const margin = { top: 50, right: 30, bottom: 70, left: 300 },
           width = 900 - margin.left - margin.right,
@@ -33,33 +34,35 @@ export function GOEnrichmentVisualization({ goEnrichmentData }) {
     
         // Scale for x-axis
     const x = d3.scaleLinear()
-        .domain([0, d3.max(goEnrichmentData, d => -Math.log10(d.p_fdr_bh))])
+        .domain([0, d3.max(filteredData, d => -Math.log10(d.p_fdr_bh))])
         .range([0, width]);
 
     // Scale for y-axis
     const y = d3.scaleBand()
-        .domain(goEnrichmentData.map(d => d.goName))
+        .domain(filteredData.map(d => d.goName))
         .range([0, height])
         .padding(0.1);
 
     // Color scale
     const color = d3.scaleSequential(d3.interpolateViridis)
-        .domain([d3.max(goEnrichmentData, d => -Math.log10(d.p_fdr_bh)), 0]);
+        .domain([d3.max(filteredData, d => -Math.log10(d.p_fdr_bh)), 0]);
 
     // Add x-axis
     svg.append("g")
         .attr("transform", `translate(0,${height})`)
         .call(d3.axisBottom(x).tickSize(-height))
         .selectAll("text")
-        .style("font-size", "16px");
+        .style("font-size", "16px")
+        .style("font-family", "Raleway") ;
 
     // Add y-axis
     svg.append("g")
         .call(d3.axisLeft(y))
         .selectAll("text")
         .style("font-size", "16px")
+        .style("font-family", "Raleway") 
         .on("mouseover", function(event, d) {
-            const data = goEnrichmentData.find(item => item.goName === d);
+            const data = filteredData.find(item => item.goName === d);
             const proteinLinks = data.study_items.split(', ').map(p => `<a href="/visualize/559292/${p}">${p}</a>`).join('<br>');
             tooltip.html(`<strong>${data.goName}</strong><br>${proteinLinks}`)
                    .style("visibility", "visible");
@@ -70,9 +73,10 @@ export function GOEnrichmentVisualization({ goEnrichmentData }) {
         .on("mouseout", function() {
             tooltip.style("visibility", "hidden");
         });
+
     // Add bars
     svg.selectAll(".bar")
-        .data(goEnrichmentData)
+        .data(filteredData)
       .enter().append("rect")
         .attr("class", "bar")
         .attr("x", 0)
@@ -98,6 +102,7 @@ export function GOEnrichmentVisualization({ goEnrichmentData }) {
         .attr("x", width / 2)
         .attr("y", -20)
         .attr("text-anchor", "middle")
+        .style("font-family", "Raleway") 
         .text("GO Enrichment Analysis");
 
     // Add x-axis label
@@ -106,6 +111,7 @@ export function GOEnrichmentVisualization({ goEnrichmentData }) {
         .attr("x", width / 2)
         .attr("y", height + margin.bottom - 20)
         .attr("text-anchor", "middle")
+        .style("font-family", "Raleway") 
         .text("-log10(Adj-pValue)");
     
     
