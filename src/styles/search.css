@@ -1,15 +1,50 @@
 /* Container styling to center the form */
-.search-form-container {
+
+.search-form-container, .search-experiment-form-container {
+    margin-top: 50px;
     display: flex;
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
-    height: 100vh; /* Take full height of the viewport */
+    flex-direction: row; 
+    margin: 0 auto; /* Center the containers */
+    padding: 10px 0; /* Minimal padding */
+    width: 100%; /* Ensure full width */
+}
+
+.search-form-container {
+    margin-top: 50px; /* Adjust this value to add space at the top */
+}
+
+.search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Adjust this gap to control spacing between elements */
+}
+
+.form-group {
+    margin: 0; /* Remove default margin */
+}
+
+.select-dropdown {
+    width: 100%;
+}
+
+.search-button {
+    margin-top: 10px; /* Ensure there's a small space above the button */
+}
+
+.results-search-container {
+    margin: 10px 0; /* Adjust this margin to control spacing between the results and forms */
+}
+.search-form-container {
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    
 }
 .search-experiment-form-container {
     display: flex;
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
-    height: 100vh; /* Take full height of the viewport */
     flex-direction: row; 
 }
 
