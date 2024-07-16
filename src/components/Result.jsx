@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import NightingaleComponent from './NightingaleComponent';
 
 
-function ProteinVisualizationComponents({proteinData, loading, error }) {
+function ProteinVisualizationComponents({ proteinData, loading, error }) {
 
     const taxonomy = "Saccharomyces cerevisiae S288C";
     const proteinfunction = proteinData.proteinDescription;
