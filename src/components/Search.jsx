@@ -90,7 +90,7 @@ const ProteinSearch = () => {
     event.preventDefault();
     try {
       const queryParams = `searchTerm=${encodeURIComponent(searchTerm)}`;
-      const url = `${config.apiEndpoint2}search?${queryParams}`;
+      const url = `${config.apiEndpoint}search?${queryParams}`;
       const response = await fetch(url);
       const data = await response.json();
       
