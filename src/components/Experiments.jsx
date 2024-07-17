@@ -14,7 +14,7 @@ const ExperimentInfo = () => {
         setLoading(true);
         setError('');
         const queryParams = `experimentID=${encodeURIComponent(experimentID)}`;
-        const url = `${config.apiEndpoint}/v1/experiments?${queryParams}`;
+        const url = `${config.apiEndpoint}experiments?${queryParams}`;
         console.log(url);
         
         try {

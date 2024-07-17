@@ -3,12 +3,42 @@ import config from '../config.json';
 import { useParams, useNavigate } from 'react-router-dom'; 
 import NightingaleComponent from './NightingaleComponent';
 
+async function getPdbIds(uniprotAccession) {
+    const url = `https://rest.uniprot.org/uniprotkb/${uniprotAccession}.json`;
 
-function ProteinVisualizationComponents({ proteinData, loading, error }) {
+    const alphafoldstructure = [
+        { id: `AF-${uniprotAccession}-F1`, properties: [
+            { key: 'Method', value: 'AlphaFold' }, 
+            { key: 'Resolution', value: ' ' }, 
+            { key: 'Chains', value: ' ' }] },
+       ];
+    
+    try {
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`Failed to retrieve data for accession ${uniprotAccession}`);
+        }
+        
+        const data = await response.json();
+        const pdbIds = data.uniProtKBCrossReferences
+            .filter(ref => ref.database === 'PDB')
+            .map(ref=> ({
+                id: ref.id,
+                properties: ref.properties
+            }));
+        
+        return [...alphafoldstructure, ...pdbIds];
+    } catch (error) {
+        console.error(error);
+        return alphafoldstructure;
+    }
+}
 
+
+function ProteinVisualizationComponents({ proteinData, pdbIds, loading, error }) {
     const taxonomy = "Saccharomyces cerevisiae S288C";
     const proteinfunction = proteinData.proteinDescription;
-    console.log(proteinData);
     
     return (
         <div className="nightingale-component-container">
@@ -19,7 +49,7 @@ function ProteinVisualizationComponents({ proteinData, loading, error }) {
                         <span className="protein-header">UniProt ID {proteinData.proteinName} </span><br />
                         <span className="result-text">Taxonomy: {taxonomy || 'N/A'}</span><br />
                         <span className="result-text">Function: {proteinfunction || 'N/A'}</span><br />
-                        <NightingaleComponent proteinData={proteinData} />
+                        <NightingaleComponent proteinData={proteinData} pdbIds={pdbIds} />
                         <span className="protein-header"> </span><br />
                         <h2>Functional LiP Results</h2>
                     </div>
@@ -34,6 +64,7 @@ const ProteinVisualization = () => {
     const { taxonomyID, proteinName } = useParams(); 
     
     const [proteinData, setProteinData] = useState({});
+    const [pdbIds, setPdbIds] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTaxonomy, setSelectedTaxonomy] = useState('559292'); 
     
@@ -47,7 +78,7 @@ const ProteinVisualization = () => {
         setError('');
         
         const queryParams = `taxonomyID=${encodeURIComponent(taxonomyID)}&proteinName=${encodeURIComponent(proteinName)}`;
-        const url = `${config.apiEndpoint}/v1/proteins?${queryParams}`;
+        const url = `${config.apiEndpoint}proteins?${queryParams}`;
 
         try {
             const response = await fetch(url);
@@ -56,6 +87,9 @@ const ProteinVisualization = () => {
             }
             const data = await response.json(); 
             setProteinData(data.proteinData);
+
+            const pdbIds = await getPdbIds(proteinName);
+            setPdbIds(pdbIds);
            
         } catch (error) {
             console.error("Error fetching data: ", error);
@@ -83,20 +117,9 @@ const ProteinVisualization = () => {
         event.preventDefault();
         
         try {
-            const queryParams = `searchTerm=${encodeURIComponent(searchTerm)}`;
-            const url = `${config.apiEndpoint}search?${queryParams}`;
-            const response = await fetch(url);
-            const data = await response.json();
-        
-        if (data.success) {
-            //setSearchResults(data);
-            navigate(`/search?searchTerm=${encodeURIComponent(searchTerm)}`);
-            
-        } else {
-            throw new Error(data.message || 'Failed to fetch data');
-        }
+            navigate('/search', { state: { searchTerm: searchTerm } });
         } catch (err) {
-        setError(err.message);
+            setError(err.message);
         }
     };
 
@@ -122,7 +145,7 @@ const ProteinVisualization = () => {
             </form>
             </div>
             <div className="results-search-container">
-                {proteinData && <ProteinVisualizationComponents proteinData={proteinData} loading={loading} error={error}/>}
+                {proteinData && <ProteinVisualizationComponents proteinData={proteinData} pdbIds={pdbIds} loading={loading} error={error}/>}
             </div>
         </>
     );

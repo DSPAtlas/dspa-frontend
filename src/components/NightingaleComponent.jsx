@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import "@nightingale-elements/nightingale-sequence";
 import "@nightingale-elements/nightingale-navigation";
 import "@nightingale-elements/nightingale-manager";
@@ -9,7 +9,10 @@ import "@nightingale-elements/nightingale-msa";
 import "@nightingale-elements/nightingale-sequence-heatmap";
 
 
-const NightingaleComponent = ({proteinData}) => {
+const NightingaleComponent = ({proteinData, pdbIds}) => {
+    console.log(pdbIds);
+    console.log("pdb");
+    const [selectedPdbId, setSelectedPdbId] = useState(pdbIds[0]?.id ||'');
 
     const seqContainer = useRef(null);
     const residuelevelContainer = useRef(null);
@@ -19,7 +22,6 @@ const NightingaleComponent = ({proteinData}) => {
     const sequenceLength = proteinData.proteinSequence.length;
 
     const proteinName = proteinData.proteinName;
-    const proteinStructureID = `AF-${proteinData.proteinName}-F1`;
 
     const margincolorFeatures = "#FF6699";
     const highlightColor = "rgb(235, 190, 234)";
@@ -27,6 +29,15 @@ const NightingaleComponent = ({proteinData}) => {
 
     const checkDimensions = (element) => {
         return element && element.offsetWidth > 0 && element.offsetHeight > 0;
+    };
+
+    const handleRowClick = (id) => {
+        setSelectedPdbId(id);
+    };
+
+    const getPropertyValue = (properties, key) => {
+        const property = properties.find(prop => prop.key === key);
+        return property ? property.value : '';
     };
 
     useEffect(() => {
@@ -127,235 +138,268 @@ const NightingaleComponent = ({proteinData}) => {
 
    
     return( 
-        <nightingale-manager> 
-            <nightingale-structure 
-                protein-accession={proteinName} 
-                structure-id={proteinStructureID}
-                margin-color="transparent"
-                background-color="white"
-                highlight-color={margincolorFeatures}
-                style={{ height: '500px', width: '1250px' }}
-            ></nightingale-structure>
-        <table>
-          <tbody>
-            <tr>
-              <td></td>
-              <td>
-                <nightingale-navigation
-                    id="navigation"
-                    min-width={minWidth}
-                    height="40"
-                    length={sequenceLength} 
-                    display-start="1"
-                    display-end={sequenceLength} 
-                    margin-color="white"
-                    margin-left="50"
-                    highlight-color={highlightColor}
-                ></nightingale-navigation>
-               </td>
-            </tr>
-            <tr>
-              <td></td>
-              <td>
-                <nightingale-sequence
-                    ref={seqContainer}
-                    min-width={minWidth}
-                    height="40"
-                    width={minWidth}
-                    length={sequenceLength} 
-                    display-start="1"
-                    display-end={sequenceLength} 
-                    margin-color="white"
-                    highlight-event="onmouseover"
-                    highlight-color={highlightColor}
-                    margin-left="40"
-                ></nightingale-sequence>
-               </td>
-            </tr> 
-             <tr> 
-            <td>Score-Barcode </td>
+        <div>
+            <div className="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Method</th>
+                            <th>Resolution</th>
+                            <th>Chains</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {pdbIds.map((structure) => (
+                            <tr
+                            key={structure.id}
+                            onClick={() => handleRowClick(structure.id)}
+                            style={{
+                                backgroundColor: selectedPdbId === structure.id ? '#f0f0f0' : 'white',
+                                cursor: 'pointer'
+                                    }}
+                                >
+                                <td>{structure.id}</td>
+                                <td>{getPropertyValue(structure.properties, 'Method')}</td>
+                                <td>{getPropertyValue(structure.properties, 'Resolution')}</td>
+                                <td>{getPropertyValue(structure.properties, 'Chains')}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+            <p>Selected PDB ID: {selectedPdbId}</p>
+
+            <nightingale-manager> 
+                <nightingale-structure 
+                    protein-accession={proteinName} 
+                    structure-id={selectedPdbId}
+                    margin-color="transparent"
+                    background-color="white"
+                    highlight-color={margincolorFeatures}
+                    style={{ height: '500px', width: '1250px' }}
+                ></nightingale-structure>
+            <table>
+            <tbody>
+                <tr>
+                <td></td>
                 <td>
-                    <nightingale-sequence-heatmap
-                    ref={scoreBarcodeContainer}
-                    id="id-for-nightingale-sequence-heatmap"
-                    heatmap-id="seq-heatmap"
-                    width={minWidth}
-                    height="40"
-                    display-start="1"
-                    margin-left="40"
-                    display-end={sequenceLength} 
-                    highlight-event="onmouseover"
-                    highlight-color={highlightColor}
-                    ></nightingale-sequence-heatmap>
-                </td>
-            </tr> 
-            <tr>
-                <td>Barcode - Structural Changes</td>
-                <td>
-                    <nightingale-colored-sequence
-                        ref={residuelevelContainer}
-                        sequence={proteinData.barcodeSequence}
-                        width={minWidth}
+                    <nightingale-navigation
+                        id="navigation"
+                        min-width={minWidth}
                         height="40"
                         length={sequenceLength} 
                         display-start="1"
                         display-end={sequenceLength} 
-                        scale="I:-2,D:0,S:2"
+                        margin-color="white"
+                        margin-left="50"
+                        highlight-color={highlightColor}
+                    ></nightingale-navigation>
+                </td>
+                </tr>
+                <tr>
+                <td></td>
+                <td>
+                    <nightingale-sequence
+                        ref={seqContainer}
+                        min-width={minWidth}
+                        height="40"
+                        width={minWidth}
+                        length={sequenceLength} 
+                        display-start="1"
+                        display-end={sequenceLength} 
+                        margin-color="white"
+                        highlight-event="onmouseover"
                         highlight-color={highlightColor}
                         margin-left="40"
-                        color-range="#ffe6f7:-2,#FF6699:2"
-                    ></nightingale-colored-sequence>
+                    ></nightingale-sequence>
                 </td>
-            </tr>
-            <tr>
-            <td>Compare Multiple LiP Experiments</td>
-            <td>
-                    <nightingale-msa
-                        ref={multipleExperimentsContainer}
-                        id="msa"
-                        height="80"
+                </tr> 
+                <tr> 
+                <td>Score-Barcode </td>
+                    <td>
+                        <nightingale-sequence-heatmap
+                        ref={scoreBarcodeContainer}
+                        id="id-for-nightingale-sequence-heatmap"
+                        heatmap-id="seq-heatmap"
                         width={minWidth}
-                        label-width="40"
+                        height="40"
+                        display-start="1"
+                        margin-left="40"
+                        display-end={sequenceLength} 
+                        highlight-event="onmouseover"
                         highlight-color={highlightColor}
-                        margin-left="0"
-                        color-scheme="hydro" /*hydro mae*/
-                        color-range="#ffe6f7:-2,#FF6699:2"
-                    ></nightingale-msa>
+                        ></nightingale-sequence-heatmap>
+                    </td>
+                </tr> 
+                <tr>
+                    <td>Barcode - Structural Changes</td>
+                    <td>
+                        <nightingale-colored-sequence
+                            ref={residuelevelContainer}
+                            sequence={proteinData.barcodeSequence}
+                            width={minWidth}
+                            height="40"
+                            length={sequenceLength} 
+                            display-start="1"
+                            display-end={sequenceLength} 
+                            scale="I:-2,D:0,S:2"
+                            highlight-color={highlightColor}
+                            margin-left="40"
+                            color-range="#ffe6f7:-2,#FF6699:2"
+                        ></nightingale-colored-sequence>
                     </td>
                 </tr>
-                {hasDomainData && (
-                   <tr>
-                <td>Domain</td>
+                <tr>
+                <td>Compare Multiple LiP Experiments</td>
                 <td>
-                <nightingale-track
-                    ref={featuresContainer}
-                    id="domain"
-                    min-width={minWidth}
-                    height="25"
-                    length={sequenceLength} 
-                    display-start="1"
-                    display-end={sequenceLength} 
-                    margin-left="40"
-                    highlight-color={highlightColor}
-                    highlight-event="onmouseover"
-                ></nightingale-track>
-                </td>
-            </tr>
-        )}
-            {hasRegionData && (
-            <tr>
-                <td>Region</td>
-                <td>
-                <nightingale-track
-                    ref={featuresContainer}
-                    id="region"
-                    min-width={minWidth}
-                    height="25"
-                    length={sequenceLength} 
-                    display-start="1"
-                    display-end={sequenceLength} 
-                    highlight-color={highlightColor}
-                    highlight-event="onmouseover"
-                    margin-left="40"
-                ></nightingale-track>
-                </td>
-            </tr>
-        )}
-            {hasSiteData && (
-            <tr>
-                <td>Site</td>
-                <td>
-                <nightingale-track
-                    id="site"
-                    min-width={minWidth}
-                    height="25"
-                    length={sequenceLength} 
-                    display-start="1"
-                    display-end={sequenceLength} 
-                    highlight-color={highlightColor}
-                    highlight-event="onmouseover"
-                    margin-left="40"
-                ></nightingale-track>
-                </td>
-            </tr>
-        )}
-            {hasChainData && (
-            <tr>
-                <td>Chain</td>
-                <td>
-                <nightingale-track
-                    id="chain"
-                    layout="non-overlapping"
-                    min-width={minWidth}
-                    height="25"
-                    length={sequenceLength} 
-                    display-start="1"
-                    display-end={sequenceLength} 
-                    highlight-color={highlightColor}
-                    highlight-event="onmouseover"
-                    margin-left="40"
-                ></nightingale-track>
-                </td>
-            </tr>
-        )}
-            {hasBindingData && (
-            <tr>
-                <td>Binding site</td>
-                <td>
-                <nightingale-track
-                    id="binding"
-                    min-width={minWidth}
-                    height="25"
-                    length={sequenceLength} 
-                    display-start="1"
-                    display-end={sequenceLength} 
-                    highlight-color={highlightColor}
-                    highlight-event="onmouseover"
-                    margin-left="40"
-                ></nightingale-track>
-                </td>
-            </tr>
+                        <nightingale-msa
+                            ref={multipleExperimentsContainer}
+                            id="msa"
+                            height="80"
+                            width={minWidth}
+                            label-width="40"
+                            highlight-color={highlightColor}
+                            margin-left="0"
+                            color-scheme="hydro" /*hydro mae*/
+                            color-range="#ffe6f7:-2,#FF6699:2"
+                        ></nightingale-msa>
+                        </td>
+                    </tr>
+                    {hasDomainData && (
+                    <tr>
+                    <td>Domain</td>
+                    <td>
+                    <nightingale-track
+                        ref={featuresContainer}
+                        id="domain"
+                        min-width={minWidth}
+                        height="25"
+                        length={sequenceLength} 
+                        display-start="1"
+                        display-end={sequenceLength} 
+                        margin-left="40"
+                        highlight-color={highlightColor}
+                        highlight-event="onmouseover"
+                    ></nightingale-track>
+                    </td>
+                </tr>
             )}
-            {hasDisulfidData && (
-            <tr>
-                <td>Disulfide bond</td>
-                <td>
-                <nightingale-track
-                    id="disulfide-bond"
-                    layout="non-overlapping"
-                    min-width={minWidth}
-                    height="25"
-                    length={sequenceLength} 
-                    display-start="1"
-                    display-end={sequenceLength} 
-                    highlight-color={highlightColor}
-                    highlight-event="onmouseover"
-                    margin-left="40"
-                ></nightingale-track>
-                </td>
-            </tr>
+                {hasRegionData && (
+                <tr>
+                    <td>Region</td>
+                    <td>
+                    <nightingale-track
+                        ref={featuresContainer}
+                        id="region"
+                        min-width={minWidth}
+                        height="25"
+                        length={sequenceLength} 
+                        display-start="1"
+                        display-end={sequenceLength} 
+                        highlight-color={highlightColor}
+                        highlight-event="onmouseover"
+                        margin-left="40"
+                    ></nightingale-track>
+                    </td>
+                </tr>
             )}
-            {hasBetaStrandData && (
-            <tr>
-                <td>Beta strand</td>
-                <td>
-                <nightingale-track
-                    id="beta-strand"
-                    min-width={minWidth}
-                    height="25"
-                    length={sequenceLength} 
-                    display-start="1"
-                    display-end={sequenceLength} 
-                    highlight-color={highlightColor}
-                    highlight-event="onmouseover"
-                    margin-left="40"
-                ></nightingale-track>
-                </td>
-            </tr>
+                {hasSiteData && (
+                <tr>
+                    <td>Site</td>
+                    <td>
+                    <nightingale-track
+                        id="site"
+                        min-width={minWidth}
+                        height="25"
+                        length={sequenceLength} 
+                        display-start="1"
+                        display-end={sequenceLength} 
+                        highlight-color={highlightColor}
+                        highlight-event="onmouseover"
+                        margin-left="40"
+                    ></nightingale-track>
+                    </td>
+                </tr>
             )}
-            </tbody>
-      </table>
-     </nightingale-manager>   
+                {hasChainData && (
+                <tr>
+                    <td>Chain</td>
+                    <td>
+                    <nightingale-track
+                        id="chain"
+                        layout="non-overlapping"
+                        min-width={minWidth}
+                        height="25"
+                        length={sequenceLength} 
+                        display-start="1"
+                        display-end={sequenceLength} 
+                        highlight-color={highlightColor}
+                        highlight-event="onmouseover"
+                        margin-left="40"
+                    ></nightingale-track>
+                    </td>
+                </tr>
+            )}
+                {hasBindingData && (
+                <tr>
+                    <td>Binding site</td>
+                    <td>
+                    <nightingale-track
+                        id="binding"
+                        min-width={minWidth}
+                        height="25"
+                        length={sequenceLength} 
+                        display-start="1"
+                        display-end={sequenceLength} 
+                        highlight-color={highlightColor}
+                        highlight-event="onmouseover"
+                        margin-left="40"
+                    ></nightingale-track>
+                    </td>
+                </tr>
+                )}
+                {hasDisulfidData && (
+                <tr>
+                    <td>Disulfide bond</td>
+                    <td>
+                    <nightingale-track
+                        id="disulfide-bond"
+                        layout="non-overlapping"
+                        min-width={minWidth}
+                        height="25"
+                        length={sequenceLength} 
+                        display-start="1"
+                        display-end={sequenceLength} 
+                        highlight-color={highlightColor}
+                        highlight-event="onmouseover"
+                        margin-left="40"
+                    ></nightingale-track>
+                    </td>
+                </tr>
+                )}
+                {hasBetaStrandData && (
+                <tr>
+                    <td>Beta strand</td>
+                    <td>
+                    <nightingale-track
+                        id="beta-strand"
+                        min-width={minWidth}
+                        height="25"
+                        length={sequenceLength} 
+                        display-start="1"
+                        display-end={sequenceLength} 
+                        highlight-color={highlightColor}
+                        highlight-event="onmouseover"
+                        margin-left="40"
+                    ></nightingale-track>
+                    </td>
+                </tr>
+                )}
+                </tbody>
+            </table>
+        </nightingale-manager>  
+    </div> 
     )
 };
 

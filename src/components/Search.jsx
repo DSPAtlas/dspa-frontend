@@ -1,65 +1,23 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import config from '../config.json';
 import Select from 'react-select';
-
-
-function ProteinSearchResult({searchResults}) {
-  
-  const navigate = useNavigate();
-
-  const handleLinkClick = (event, taxonomyID, proteinName) => {
-    event.preventDefault();
-    navigate(`/visualize/${taxonomyID}/${encodeURIComponent(proteinName)}`);
-  };
-
-  return (
-    <div>
-    <div className="results-search-container">
-        {searchResults && searchResults.table && searchResults.table.length > 0 ? (
-            <table>
-                <thead>
-                    <tr>
-                        <th>Protein Name</th>
-                        <th>Taxonomy</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {searchResults.table.map((entry, index) => (
-                        <tr key={index}>
-                            <td>
-                                <button onClick={(e) => handleLinkClick(e, entry.taxonomyID, entry.proteinName)}>
-                                    {entry.proteinName}
-                                </button>
-                            </td>
-                            <td>{entry.taxonomyName}</td>
-                            <td>{entry.proteinDescription}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        ) : (
-            <p>No search results to display.</p>
-        )}
-      </div>
-    </div>
-  )
-};
-
-
+import ProteinSearchResults from './ProteinSearchResults.jsx';
 
 
 const ProteinSearch = () => {
+  const location = useLocation();
   const [selectedOrganism, setSelectedOrganism] = useState('559292'); 
   const [experimentID, setExperimentID] = useState('LIP000001'); 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(location.state?.searchTerm || '');
   const [error, setError] = useState('');
   const [taxonomy, setTaxonomy] = useState([]);
   const [treatment, setTreatment] = useState([]);
   const [enzyme, setEnzyme] = useState([]);
-  const [searchResults, setSearchResults] = useState(null);
+  const { searchResults: initialSearchResults } = location.state || {};
+  const [searchResults, setSearchResults] = useState(initialSearchResults || null);
   const navigate = useNavigate();
+ 
 
   const handleOrganismChange = (event) => {
     setSelectedOrganism(event.target.value);
@@ -85,6 +43,35 @@ const ProteinSearch = () => {
     setEnzyme(selectedOptions);
   };
 
+  useEffect(() => {
+    if (location.state?.searchTerm) {
+      performSearch(location.state.searchTerm);
+    }
+  }, [location.state?.searchTerm]);
+
+  const performSearch = async (searchTerm) => {
+    try {
+      const queryParams = `searchTerm=${encodeURIComponent(searchTerm)}`;
+      const url = `${config.apiEndpoint}search?${queryParams}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      if (data.success) {
+        setSearchResults(data.results);
+      } else {
+        throw new Error(data.message || 'Failed to fetch data');
+      }
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  useEffect(() => {
+    if (initialSearchResults) {
+      setSearchResults(initialSearchResults);
+    }
+  }, [initialSearchResults]);
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -96,7 +83,7 @@ const ProteinSearch = () => {
       
       if (data.success) {
         setSearchResults(data);
-        navigate(`/search?searchTerm=${encodeURIComponent(searchTerm)}`);
+        //navigate(`/search?searchTerm=${encodeURIComponent(searchTerm)}`);
       } else {
         throw new Error(data.message || 'Failed to fetch data');
       }
@@ -138,8 +125,10 @@ const ProteinSearch = () => {
           </div>
           <button type="submit" className="search-button">Search</button>
         </form>
-        {error && <p>Error: {error}</p>}
-        {searchResults && <ProteinSearchResult searchResults={searchResults} />}
+          {error && <p>Error: {error}</p>}
+        </div>
+        <div className="results-search-container">
+        {searchResults && <ProteinSearchResults searchResults={searchResults} />}
       </div>
       <div className="search-experiment-form-container">
         <form className="search-form" onSubmit={handleSubmitExperiment}>
