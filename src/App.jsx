@@ -4,6 +4,7 @@ import Home from './components/Home';
 import ProteinSearch from './components/Search';
 import ProteinVisualization from './components/Result';
 import ExperimentInfo from './components/Experiments';
+import Experiments from './components/experiments2';
 import About from './components/About';
 import Contact from './components/Contact';
 
@@ -28,7 +29,7 @@ const App = () => {
           <div className="navigation-right navigation-hide-small">
             <a href="/" className="navigation-bar-item navigation-button">HOME</a>
             <a href="/search" className="navigation-bar-item navigation-button"> SEARCH</a>
-            <a href="/experiment" className="navigation-bar-item navigation-button"> EXPERIMENT</a>
+            <a href="/experiments" className="navigation-bar-item navigation-button"> EXPERIMENT</a>
             <a href="/about" className="navigation-bar-item navigation-button"> ABOUT</a>
             <a href="/contact" className="navigation-bar-item navigation-button"> CONTACT</a>
           </div>
@@ -42,6 +43,7 @@ const App = () => {
       <Route path="/contact" element={<Contact />} />
       <Route path="/visualize/:taxonomyID/:proteinName" element={<ProteinVisualization />} />
       <Route path="/experiment/:experimentID" element={<ExperimentInfo />} />
+      <Route path="/experiments" element={<Experiments />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   </div>
