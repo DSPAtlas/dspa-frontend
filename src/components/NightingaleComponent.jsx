@@ -10,8 +10,6 @@ import "@nightingale-elements/nightingale-sequence-heatmap";
 
 
 const NightingaleComponent = ({proteinData, pdbIds}) => {
-    console.log(pdbIds);
-    console.log("pdb");
     const [selectedPdbId, setSelectedPdbId] = useState(pdbIds[0]?.id ||'');
 
     const seqContainer = useRef(null);
@@ -59,16 +57,14 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
     useEffect(() => {
         customElements.whenDefined("nightingale-msa").then(() => {
             if (multipleExperimentsContainer.current && checkDimensions(multipleExperimentsContainer.current)) {
-                multipleExperimentsContainer.current.data = [
-                {name: "1",sequence: proteinData.barcodeSequence, },
-                {name: "LIP2",sequence: proteinData.barcodeSequence, },
-                {name: "LIP3",sequence: proteinData.barcodeSequence, },
-                {name: "LIP4",sequence: proteinData.barcodeSequence, },
-                {name: "LIP5",sequence: proteinData.barcodeSequence, },
-                {name: "6",sequence: proteinData.barcodeSequence, },
-                ];
+                const data = Object.keys(proteinData.barcodeSequence).map((key, index) => ({
+                    name: key,
+                    sequence: proteinData.barcodeSequence[key]
+                }));
+    
+                multipleExperimentsContainer.current.data = data;
             }
-        });   
+        });
     }, [proteinData.barcodeSequence]);
 
     useEffect(() => {
@@ -106,17 +102,25 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
     useEffect(() => {
         customElements.whenDefined("nightingale-sequence-heatmap").then(() => {
             if (scoreBarcodeContainer.current && checkDimensions(scoreBarcodeContainer.current)) {
-                const dataHeatmap = proteinData.differentialAbundanceData.map(entry => ({
-                    xValue: entry.index,
-                    score: entry.score === null ? 0 : entry.score,
-                    aminoacid: entry.aminoacid,
-                    detected: entry.detected,
-                    yValue: "Median LiPs"
-                }));
+                
+                const dataHeatmap = Object.entries(proteinData.differentialAbundanceData).flatMap(([key, values]) =>
+                    values.map(value => ({
+                        yValue: key,
+                        xValue: value.index,
+                        score: value.score === null ? 0 : value.score
+                    }))
+                );
 
+                // Extract all xValues
+                const xValues = dataHeatmap.map(item => item.xValue);
 
-                const xDomain = Array.from({ length: dataHeatmap.length }, (_, index) => index);
-                const yDomain = ["Median LiPs"];
+                // Find the smallest and largest xValue
+                const smallestXValue = Math.min(...xValues);
+                const largestXValue = Math.max(...xValues);
+
+                // Generate an array from the smallest to the largest xValue
+                const xDomain = Array.from({ length: largestXValue - smallestXValue + 1 }, (_, i) => i + smallestXValue);
+                const yDomain = Object.keys(proteinData.differentialAbundanceData);
 
                 const heatmapElement = document.getElementById("id-for-nightingale-sequence-heatmap");
                 if (heatmapElement && heatmapElement.setHeatmapData) {
@@ -135,8 +139,6 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
     const hasDisulfidData = proteinData.featuresData.features.some(({ type }) => type === "DISULFID");
     const hasBetaStrandData = proteinData.featuresData.features.some(({ type }) => type === "STRAND");
 
-
-   
     return( 
         <div>
             <div className="table-container">
@@ -223,35 +225,18 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
                         id="id-for-nightingale-sequence-heatmap"
                         heatmap-id="seq-heatmap"
                         width={minWidth}
-                        height="40"
+                        height="80"
                         display-start="1"
                         margin-left="40"
                         display-end={sequenceLength} 
                         highlight-event="onmouseover"
                         highlight-color={highlightColor}
+                        color-range="#ffe6f7:-2,#FF6699:2"
                         ></nightingale-sequence-heatmap>
                     </td>
                 </tr> 
                 <tr>
-                    <td>Barcode - Structural Changes</td>
-                    <td>
-                        <nightingale-colored-sequence
-                            ref={residuelevelContainer}
-                            sequence={proteinData.barcodeSequence}
-                            width={minWidth}
-                            height="40"
-                            length={sequenceLength} 
-                            display-start="1"
-                            display-end={sequenceLength} 
-                            scale="I:-2,D:0,S:2"
-                            highlight-color={highlightColor}
-                            margin-left="40"
-                            color-range="#ffe6f7:-2,#FF6699:2"
-                        ></nightingale-colored-sequence>
-                    </td>
-                </tr>
-                <tr>
-                <td>Compare Multiple LiP Experiments</td>
+                <td>Barcodes S/D/I</td>
                 <td>
                         <nightingale-msa
                             ref={multipleExperimentsContainer}
@@ -262,6 +247,7 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
                             highlight-color={highlightColor}
                             margin-left="0"
                             color-scheme="hydro" /*hydro mae*/
+                            scale="I:-2,D:0,S:2"
                             color-range="#ffe6f7:-2,#FF6699:2"
                         ></nightingale-msa>
                         </td>
