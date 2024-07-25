@@ -19,6 +19,8 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
     const scoreBarcodeContainer = useRef(null);
     const sequenceLength = proteinData.proteinSequence.length;
 
+    const [isHeatmapReady, setHeatmapReady] = useState(false);
+
     const proteinName = proteinData.proteinName;
 
     const margincolorFeatures = "#FF6699";
@@ -63,6 +65,7 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
                 }));
     
                 multipleExperimentsContainer.current.data = data;
+
             }
         });
     }, [proteinData.barcodeSequence]);
@@ -102,12 +105,15 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
     useEffect(() => {
         customElements.whenDefined("nightingale-sequence-heatmap").then(() => {
             if (scoreBarcodeContainer.current && checkDimensions(scoreBarcodeContainer.current)) {
+
+                const treatment = "";
                 
                 const dataHeatmap = Object.entries(proteinData.differentialAbundanceData).flatMap(([key, values]) =>
                     values.map(value => ({
                         yValue: key,
                         xValue: value.index,
-                        score: value.score === null ? 0 : value.score
+                        score: value.score === null ? 0 : value.score,
+                        treatment: treatment
                     }))
                 );
 
@@ -125,10 +131,25 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
                 const heatmapElement = document.getElementById("id-for-nightingale-sequence-heatmap");
                 if (heatmapElement && heatmapElement.setHeatmapData) {
                     heatmapElement.setHeatmapData(xDomain, yDomain, dataHeatmap);
+                    setHeatmapReady(true);
                 }
             }
         });
     }, [proteinData.differentialAbundanceData]);
+
+    if (isHeatmapReady) {
+        // It's now safe to access heatmapInstance
+        const heatmapElement = document.getElementById("id-for-nightingale-sequence-heatmap");
+        heatmapElement.heatmapInstance.setTooltip((d, x, y, xIndex, yIndex) => {
+            let returnHTML = `
+              <b>Experiment</b> <br />
+        
+              LiPExperimentID: <b>${d.yValue}</b><br />
+              Treatment: <b>${d.treatment}</b><br />
+              score: <b>${d.score}</b>`;
+            return returnHTML;
+          });
+    }
 
     // Check if there is Beta strand data
     const hasDomainData = proteinData.featuresData.features.some(({ type }) => type === "DOMAIN");
@@ -385,6 +406,7 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
                 </tbody>
             </table>
         </nightingale-manager>  
+
     </div> 
     )
 };

@@ -49,18 +49,18 @@ const Experiments = () => {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Submission Timestamp</th>
             <th>Taxonomy ID</th>
             <th>Treatment</th>
+            <th>Submission Timestamp</th>
           </tr>
         </thead>
         <tbody>
           {experiments.map(experiment => (
             <tr key={experiment.lipexperiment_id} onClick={() => handleRowClick(experiment)}>
               <td>{experiment.lipexperiment_id}</td>
-              <td>{experiment.submission_timestamp}</td>
               <td>{experiment.taxonomy_id}</td>
               <td>{experiment.treatment || 'N/A'}</td>
+              <td>{experiment.submission_timestamp}</td>
             </tr>
           ))}
         </tbody>
