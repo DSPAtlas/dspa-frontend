@@ -3,8 +3,8 @@ import { BrowserRouter as  Router, Route, Routes } from 'react-router-dom';
 import Home from './components/Home';
 import ProteinSearch from './components/Search';
 import ProteinVisualization from './components/Result';
-import ExperimentInfo from './components/Experiments';
-import Experiments from './components/experiments2';
+import ExperimentInfo from './components/ExperimentInfo';
+import ExperimentsOverview from './components/ExperimentsOverview';
 import About from './components/About';
 import Contact from './components/Contact';
 
@@ -43,7 +43,7 @@ const App = () => {
       <Route path="/contact" element={<Contact />} />
       <Route path="/visualize/:taxonomyID/:proteinName" element={<ProteinVisualization />} />
       <Route path="/experiment/:experimentID" element={<ExperimentInfo />} />
-      <Route path="/experiments" element={<Experiments />} />
+      <Route path="/experiments" element={<ExperimentsOverview />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   </div>

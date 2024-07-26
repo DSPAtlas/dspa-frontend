@@ -138,17 +138,17 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
     }, [proteinData.differentialAbundanceData]);
 
     if (isHeatmapReady) {
-        // It's now safe to access heatmapInstance
         const heatmapElement = document.getElementById("id-for-nightingale-sequence-heatmap");
         heatmapElement.heatmapInstance.setTooltip((d, x, y, xIndex, yIndex) => {
             let returnHTML = `
-              <b>Experiment</b> <br />
-        
-              LiPExperimentID: <b>${d.yValue}</b><br />
-              Treatment: <b>${d.treatment}</b><br />
-              score: <b>${d.score}</b>`;
+                <div class="tooltip-container">
+                    <strong>Experiment</strong> <br />
+                    Experiment: <a href="/path/to/experiment/${d.experimentId}" target="_blank" class="tooltip-link"><strong>${d.yValue}</strong></a><br />
+                    Treatment: <strong class="tooltip-highlight">${d.treatment}</strong><br />
+                    Score: <strong>${d.score}</strong>
+                </div>`;
             return returnHTML;
-          });
+        });
     }
 
     // Check if there is Beta strand data

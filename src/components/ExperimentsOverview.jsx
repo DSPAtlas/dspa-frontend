@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import config from '../config.json';
+import { useNavigate } from 'react-router-dom';
 
-const Experiments = () => {
+const ExperimentOverview = () => {
   const [experiments, setExperiments] = useState([]);
   const [selectedExperiment, setSelectedExperiment] = useState(null);
   const [experimentInfo, setExperimentInfo] = useState(null);
-  const [goEnrichment, setGoEnrichment] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch all experiments on component mount
     fetch(`${config.apiEndpoint}experiments`)
       .then(response => response.json())
       .then(data => {
@@ -21,25 +21,9 @@ const Experiments = () => {
       .catch(error => console.error('Error fetching experiments:', error));
   }, []);
 
-  const fetchExperimentInfo = (experimentId) => {
-    // Fetch the selected experiment info
-    fetch(`${config.apiEndpoint}experiment/${experimentId}`)
-      .then(response => response.json())
-      .then(data => {
-        setExperimentInfo(data);
-        // Assume goEnrichment is a part of the fetched experiment data
-        if (data.goEnrichment) {
-          setGoEnrichment(data.goEnrichment);
-        } else {
-          setGoEnrichment([]);
-        }
-      })
-      .catch(error => console.error('Error fetching experiment info:', error));
-  };
 
   const handleRowClick = (experiment) => {
-    setSelectedExperiment(experiment);
-    fetchExperimentInfo(experiment.lipexperiment_id);
+    navigate(`/experiment/${experiment.lipexperiment_id}`);
   };
 
   return (
@@ -64,27 +48,9 @@ const Experiments = () => {
             </tr>
           ))}
         </tbody>
-      </table>
-      {experimentInfo && (
-        <div>
-          <h2>Experiment Info</h2>
-          <p><strong>ID:</strong> {experimentInfo.id}</p>
-          <p><strong>Name:</strong> {experimentInfo.name}</p>
-          <p><strong>Description:</strong> {experimentInfo.description}</p>
-          <h3>GO Enrichment</h3>
-          {goEnrichment.length > 0 ? (
-            <ul>
-              {goEnrichment.map((enrichment, index) => (
-                <li key={index}>{enrichment}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>No GO Enrichment data available.</p>
-          )}
-        </div>
-      )}
+        </table>
     </div>
   );
 };
 
-export default Experiments;
+export default ExperimentOverview;

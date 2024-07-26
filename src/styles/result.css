@@ -125,3 +125,19 @@ table, tr, th {
     margin-bottom: 15px; /* Spacing before the next section */
 
 }
+
+.tooltip-container {
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 8px;
+    color: #333;
+}
+
+.tooltip-link {
+    color: #0077cc;
+    text-decoration: none;
+}
+
+.tooltip-highlight {
+    color: #555;
+}
