@@ -1,0 +1,40 @@
+.experiment-overview-container {
+    padding: 20px;
+  }
+  
+  .filters-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .filter-select {
+    width: 200px;
+    margin-top: 10px;
+  }
+  
+  .experiment-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .experiment-table th,
+  .experiment-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    vertical-align: top; /* Ensures the filter aligns well with the header text */
+  }
+  
+  .experiment-table th {
+    background-color: #f2f2f2;
+  }
+  
+  .experiment-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .experiment-table tr {
+    cursor: pointer;
+  }
+  
