@@ -11,7 +11,6 @@ const ExperimentInfo = () => {
     const [namespace, setNamespace] = useState('BP'); 
     const [error, setError] = useState('');
 
-
     const fetchExperimentData = useCallback(async () => {
         const url = `${config.apiEndpoint}experiment?experimentID=${experimentID}`;
         try {
@@ -29,16 +28,26 @@ const ExperimentInfo = () => {
         }finally {
             setLoading(false);
         } 
-
       }, [experimentID]);
 
     useEffect(() => {
         fetchExperimentData();
     }, [fetchExperimentData]);
 
-    
-    
-    
+    useEffect(() => {
+        if (experimentData && experimentData.goEnrichment) {
+            const chartElement = document.getElementById("chart");
+            if (chartElement) {
+                GOEnrichmentVisualization({ 
+                    goEnrichmentData: experimentData.goEnrichment, 
+                    namespace: namespace 
+                });
+            } else {
+                console.error("Chart element not properly loaded or has zero dimensions");
+            }
+        }
+    }, [experimentData, namespace]);
+
     const handleNamespaceChange = (event) => {
         setNamespace(event.target.value);
     };
@@ -50,58 +59,34 @@ const ExperimentInfo = () => {
                     <p>Loading...</p>
                 ) : error ? (
                     <p>Error: {error}</p>
-                ) : experimentData ? (
-                    <div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Experiment ID</th>
-                                    <th>Submission</th>
-                                    <th>ProteomeXchange ID</th>
-                                    <th>Peptide Atlas ID</th>
-                                    <th>Taxonomy ID</th>
-                                    <th>Preprocessed</th>
-                                    <th>Treatment</th>
-                                    <th>Instrument</th>
-                                    <th>Digestion Enzyme</th>
-                                    <th>Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {/* Render a single row with data from experimentData */}
-                                <tr>
-                                    <td>{experimentData.experimentID}</td>
-                                    <td>{experimentData.submission || 'N/A'}</td>
-                                    <td>{experimentData.proteomexchangeID || 'N/A'}</td>
-                                    <td>{experimentData.peptideatlasID || 'N/A'}</td>
-                                    <td>{experimentData.taxonomyID || 'N/A'}</td>
-                                    <td>{experimentData.preprocessed || 'N/A'}</td>
-                                    <td>{experimentData.treatment || 'N/A'}</td>
-                                    <td>{experimentData.instrument || 'N/A'}</td>
-                                    <td>{experimentData.enzyme || 'N/A'}</td>
-                                    <td>{experimentData.description || 'N/A'}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        {experimentData.goEnrichment && experimentData.goEnrichment.length > 0 && (
-                            <div className="results-experiment-search-container">
-                                <div id="chart"></div>
-                                <div className="namespace-dropdown">
-                                    <select value={namespace} onChange={handleNamespaceChange}>
-                                        <option value="BP">Biological Process</option>
-                                        <option value="MF">Molecular Function</option>
-                                        <option value="CC">Cellular Component</option>
-                                    </select>
-                                </div>
-                            </div>
-                        )}
-                    </div>
                 ) : (
-                    <p>No data available.</p> // This will display if experimentData is null
+                    experimentData &&
+                    experimentData.experimentID && (
+                        <div>
+                            <span className="result-header">LiP Experiment ID {experimentData.experimentID}</span><br />
+                            <span className="result-text">Submission: {experimentData.submission || 'N/A'}</span><br />
+                            <span className="result-text">Description: {experimentData.description || 'N/A'}</span><br />
+                        </div>
+                    )
+                )}
+                <div className="results-experiment-search-container">
+                    <div id="chart"></div>
+                </div>
+                {experimentData && experimentData.goEnrichment && experimentData.goEnrichment.length > 0 && (
+                    <div className="results-experiment-search-container">
+                        <div className="namespace-dropdown">
+                            <select value={namespace} onChange={handleNamespaceChange}>
+                                <option value="BP">Biological Process</option>
+                                <option value="MF">Molecular Function</option>
+                                <option value="CC">Cellular Component</option>
+                            </select>
+                        </div>
+                    </div>
                 )}
             </div>
         </div>
     );
 };
+
 
 export default ExperimentInfo;
