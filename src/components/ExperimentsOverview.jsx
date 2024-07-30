@@ -7,14 +7,10 @@ import { useNavigate } from 'react-router-dom';
 const ExperimentOverview = () => {
   const [experiments, setExperiments] = useState([]);
   const [filteredExperiments, setFilteredExperiments] = useState([]);
-  const [filterOptions, setFilterOptions] = useState([]);
-  const [selectedFilters, setSelectedFilters] = useState([]);
   const [treatmentOptions, setTreatmentOptions] = useState([]);
   const [taxonomyOptions, setTaxonomyOptions] = useState([]);
   const [selectedTreatments, setSelectedTreatments] = useState([]);
   const [selectedTaxonomies, setSelectedTaxonomies] = useState([]);
-  const [selectedExperiment, setSelectedExperiment] = useState(null);
-  const [experimentInfo, setExperimentInfo] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,7 +21,6 @@ const ExperimentOverview = () => {
           setExperiments(data.experiments);
           setFilteredExperiments(data.experiments);
 
-          // Extract unique treatment options for the filter dropdown
           const uniqueTreatments = [...new Set(data.experiments.map(exp => exp.treatment).filter(treatment => treatment))];
           const uniqueTaxonomies = [...new Set(data.experiments.map(exp => exp.taxonomy_id).filter(taxonomy => taxonomy))];
           

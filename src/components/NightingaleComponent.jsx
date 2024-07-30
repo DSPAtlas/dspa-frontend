@@ -143,7 +143,7 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
             let returnHTML = `
                 <div class="tooltip-container">
                     <strong>Experiment</strong> <br />
-                    Experiment: <a href="/path/to/experiment/${d.experimentId}" target="_blank" class="tooltip-link"><strong>${d.yValue}</strong></a><br />
+                    Experiment: <a href="/experiment/${d.yValue}" target="_blank" class="tooltip-link"><strong>${d.yValue}</strong></a><br />
                     Treatment: <strong class="tooltip-highlight">${d.treatment}</strong><br />
                     Score: <strong>${d.score}</strong>
                 </div>`;
