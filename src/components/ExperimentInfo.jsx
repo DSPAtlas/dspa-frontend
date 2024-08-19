@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import config from '../config.json';
 import { GOEnrichmentVisualization } from '../visualization/goterm.js';
-import Select from 'react-select'; 
 
 const ExperimentInfo = () => {
     const { experimentID } = useParams(); 

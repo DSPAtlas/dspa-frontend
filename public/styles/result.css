@@ -126,34 +126,18 @@ table, tr, th {
 
 }
 
-
-.table-container {
-    max-width: 1250px; /* Set the maximum width for the table container */
-    overflow-x: auto; /* Enable horizontal scrolling */
-    margin: 0 auto; /* Center the table container */
-    max-height: 120px; /* Set the maximum height for the table container to show around 4 rows */
-    overflow-y: auto; /* Enable vertical scrolling */
+.tooltip-container {
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 8px;
+    color: #333;
 }
 
-.table-container table {
-    width: 100%; /* Make the table take up the full width of the container */
-    border-collapse: collapse; /* Ensure table borders collapse */
+.tooltip-link {
+    color: #0077cc;
+    text-decoration: none;
 }
 
-.table-container th, .table-container td {
-    padding: 8px; /* Add padding to table cells */
-    text-align: center;/* Left-align text in table cells */
-    border: 1px solid #ddd; /* Add a border to table cells */
-}
-
-.table-container th {
-    background-color: #f2f2f2; /* Set a background color for table headers */
-}
-
-.table-container tr:nth-child(even) {
-    background-color: #f9f9f9; /* Add a background color for even rows */
-}
-
-.table-container tr:hover {
-    background-color: #f1f1f1; /* Add a hover effect for table rows */
+.tooltip-highlight {
+    color: #555;
 }

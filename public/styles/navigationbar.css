@@ -1,11 +1,11 @@
 .navigation-bar {
   overflow: hidden;
   width: 100%;
-  background-color: #f1f1f1; /* Light grey background */
-  color: #333; /* Dark text for contrast */
+  background-color: #d5cdba; /* Light grey background */
+  color: #0A2F59; /* Dark text for contrast */
 }
 
-.navigation-white,.navigation-hover-white:hover{color:#000!important;background-color:#fff!important}
+.navigation-white,.navigation-hover-white:hover{color:#0A2F59!important;background-color:#fff!important}
 
 .navbar-top,.w3-bottom{
   position:fixed;
@@ -35,8 +35,8 @@
 .navigation-right{float:right!important}
 /* Hover effect for the items */
 .navigation-bar .navigation-bar-item:hover {
-  background-color: #ddd; /* Lighter grey for hover background */
-  color: #000; /* Black text on hover */
+  background-color: #d5cdba; /* Light grey background */
+  color: #0A2F59; /* Dark text for contrast */
 }
 
 .navigation-bar-item{

@@ -5,9 +5,9 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
   line-height: 1.8;
 }
 
-.dspa-background-grey {
-  background-color: grey;
-  height: 50vh;
+.dspa-background-beige {
+  background-color: #d3cab8;
+  height: 70vh;
   width: 100%;
 }
 

@@ -94,7 +94,7 @@
     padding: 15px 20px; /* Increased padding for a larger button */
     font-size: 18px; /* Larger font size for better readability */
     background-color: white;
-    color: black;
+    color: #102e54;
     border: 2px solid #ccc; /* Consistent with input field */
     border-radius: 4px; /* Rounded corners */
     cursor: pointer;
@@ -104,7 +104,7 @@
 
 /* Hover and focus states for the button */
 .search-button:hover, .search-button:focus {
-    background-color: grey; /* Darker background on hover/focus */
+    background-color: #d5cdba; /* Darker background on hover/focus */
 }
 
 
@@ -122,7 +122,7 @@
 .select-arrow::after {
     content: "▼"; /* Unicode character for down arrow */
     font-size: 18px; /* Larger font size for the arrow */
-    color: #999; /* Grey color for the arrow */
+    color: #b99f9d; /* Grey color for the arrow */
 }
 .select-dropdown {
     display: block;
@@ -130,9 +130,9 @@
     padding: 15px 20px; /* Adjust padding as needed for aesthetics */
     font-size: 20px; /* Increased font size for better visibility */
     line-height: 2; /* Adjust line height to fit the larger text properly */
-    color: #444; /* Dark grey text color for better readability */
-    background-color: #ffffff; /* White background to keep things clean and simple */
-    border: 2px solid #ccc; /* Subtle border to define the dropdown boundaries */
+    color: #444; 
+    background-color: #ffffff; 
+    border: 2px solid #b99f9d; /* Subtle border to define the dropdown boundaries */
     border-radius: 4px; /* Rounded corners for a modern look */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
     -webkit-appearance: none; /* Removes default styling in WebKit browsers */

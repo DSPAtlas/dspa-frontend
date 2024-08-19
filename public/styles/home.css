@@ -1,10 +1,40 @@
+.home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+  }
+  
+.logo-container {
+    margin-top: 20px;
+  }
+  
+.logo {
+    width: 400px;
+    height: auto;
+    align-items: center;
+  }
+
+.dspa-publications {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 50px;
+    width: 100%; /* Optional: Adjust width if needed */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for better visual separation */
+    text-align: center;
+  }
+  
+
 .dspa-display-left{
     position:absolute;
     padding:48px;
     top:50%;left:0%;
     transform:translate(0%,-50%);-ms-transform:translate(-0%,-50%)}
 
-.dspa-text-white,.dspa-hover-text-white:hover{color:#fff!important}
+.dspa-text-blue,.dspa-hover-text-blue:hover{color:#0A2F59!important}
 
 .dspa-xlarge{
     font-size:24px!important
@@ -38,3 +68,40 @@
 .landing-container {
     line-height: 1.8;
 }
+
+.dspa-padding {
+    padding: 20px;
+  }
+  
+.dspa-background-beige {
+    background-color: #d3cab8; 
+    border-radius: 5px;
+    margin-top: 20px;
+  }
+
+.dspa-link {
+    color: #0073e6;
+    text-decoration: none;
+  }
+  
+  .dspa-link:hover {
+    text-decoration: underline;
+  }
+
+  h1 {
+    color:#0A2F59;
+  }
+  
+  h2 {
+    margin-top: 20px;
+    color: #0A2F59;
+  }
+  h3 {
+    margin-top: 20px;
+    color: #0A2F59;
+  }
+  
+  p {
+    color: #ccc;
+  }
+
