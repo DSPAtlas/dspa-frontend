@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import config from '../config.json';
 import { useParams, useNavigate } from 'react-router-dom'; 
 import NightingaleComponent from './NightingaleComponent';
+import { SumLipScoreVisualization } from '../visualization/sumlipscore';
 
 async function getPdbIds(uniprotAccession) {
     const url = `https://rest.uniprot.org/uniprotkb/${uniprotAccession}.json`;
@@ -36,9 +37,44 @@ async function getPdbIds(uniprotAccession) {
 }
 
 
+function sumScores(differentialAbundanceData) {
+    const result = {};
+
+    for (const experiment in differentialAbundanceData) {
+        let sum = 0;
+        
+        for (const key in differentialAbundanceData[experiment]) {
+            const data = differentialAbundanceData[experiment][key];
+            
+            if (data.score !== null) {
+                sum += data.score;
+            }
+        }
+        
+        result[experiment] = sum;
+    }
+
+    return result;
+}
+
+
 function ProteinVisualizationComponents({ proteinData, pdbIds, loading, error }) {
     const taxonomy = "Saccharomyces cerevisiae S288C";
     const proteinfunction = proteinData.proteinDescription;
+    const scoresSum = sumScores(proteinData.differentialAbundanceData);
+
+    useEffect(() => {
+        if (scoresSum) {
+            const chartElement = document.getElementById("sumlipscorebarplot");
+            if (chartElement) {
+                SumLipScoreVisualization({ 
+                    data: scoresSum
+                });
+            } else {
+                console.error("Chart element not properly loaded or has zero dimensions");
+            }
+        }
+    }, [scoresSum]);
     
     return (
         <div className="nightingale-component-container">
@@ -51,7 +87,10 @@ function ProteinVisualizationComponents({ proteinData, pdbIds, loading, error })
                         <span className="result-text">Function: {proteinfunction || 'N/A'}</span><br />
                         <NightingaleComponent proteinData={proteinData} pdbIds={pdbIds} />
                         <span className="protein-header"> </span><br />
-                        <h2>Functional LiP Results</h2>
+                        <h2>Sum LiP Score</h2>
+                        <div className="results-experiment-search-container">
+                            <div id="sumlipscorebarplot"></div>
+                        </div>
                     </div>
                 )
             )}
@@ -69,7 +108,6 @@ const ProteinVisualization = () => {
     const [selectedTaxonomy, setSelectedTaxonomy] = useState('559292'); 
     
     const [loading, setLoading] = useState(false);
-    const [searchResults, setSearchResults] = useState(null);
     const [error, setError] = useState('');
     const navigate = useNavigate();
     
@@ -87,6 +125,7 @@ const ProteinVisualization = () => {
             }
             const data = await response.json(); 
             setProteinData(data.proteinData);
+            console.log("proteindata", data.proteinData);
 
             const pdbIds = await getPdbIds(proteinName);
             setPdbIds(pdbIds);

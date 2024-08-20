@@ -22,8 +22,8 @@
     padding: 20px;
     border-radius: 5px;
     margin-top: 50px;
-    width: 100%; /* Optional: Adjust width if needed */
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for better visual separation */
+    width: 100%; 
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); 
     text-align: center;
   }
   

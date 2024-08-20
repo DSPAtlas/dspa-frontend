@@ -35,7 +35,8 @@ export function GOEnrichmentVisualization({ goEnrichmentData, namespace }) {
         // Scale for x-axis
     const x = d3.scaleLinear()
         .domain([0, d3.max(filteredData, d => -Math.log10(d.p_fdr_bh))])
-        .range([0, width]);
+        .range([0, width])
+        
 
     // Scale for y-axis
     const y = d3.scaleBand()
@@ -45,7 +46,8 @@ export function GOEnrichmentVisualization({ goEnrichmentData, namespace }) {
 
     // Color scale
     const color = d3.scaleSequential(d3.interpolateViridis)
-        .domain([d3.max(filteredData, d => -Math.log10(d.p_fdr_bh)), 0]);
+        .domain([d3.max(filteredData, d => -Math.log10(d.p_fdr_bh)), 0])
+        .range(["#FEB562","#FF4169"]);
 
     // Add x-axis
     svg.append("g")
