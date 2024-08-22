@@ -17,7 +17,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.24.0",
     "react-scripts": "^5.0.1",
-    "react-select": "^5.8.0"
+    "react-select": "^5.8.0",
+    "@dspa-nightingale/nightingale-structure": "github:DSPAtlas/dspa-nightingale-bundle"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -26,6 +27,18 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 2020,
+      "sourceType": "module"
+    },
+    "env": {
+      "browser": true,
+      "node": true,
+      "es2020": true
+    },
+    "globals": {
+      "globalThis": "readonly"
+    },
     "extends": [
       "react-app",
       "react-app/jest"
@@ -42,5 +55,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@tsconfig/react-native": "^3.0.5",
+    "@types/jest": "^29.5.12",
+    "@types/react": "^18.3.4",
+    "@types/react-test-renderer": "^18.3.0",
+    "eslint-config-react-app": "^7.0.1"
   }
 }

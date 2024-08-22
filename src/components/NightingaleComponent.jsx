@@ -4,9 +4,10 @@ import "@nightingale-elements/nightingale-navigation";
 import "@nightingale-elements/nightingale-manager";
 import "@nightingale-elements/nightingale-colored-sequence";
 import "@nightingale-elements/nightingale-track";
-import "@nightingale-elements/nightingale-structure";
+import "@dspa-nightingale/nightingale-structure/nightingale-structure";
 import "@nightingale-elements/nightingale-msa";
 import "@nightingale-elements/nightingale-sequence-heatmap";
+
 
 
 const NightingaleComponent = ({proteinData, pdbIds}) => {
