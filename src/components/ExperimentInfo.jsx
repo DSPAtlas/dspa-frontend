@@ -3,12 +3,19 @@ import { useParams } from 'react-router-dom';
 import config from '../config.json';
 import { GOEnrichmentVisualization } from '../visualization/goterm.js';
 
+const getTop20Proteins = (proteinScores) => {
+    const sortedData = proteinScores.sort((a, b) => b.cumulativeScore - a.cumulativeScore);
+    return sortedData.slice(0, 20);
+};
+
+
 const ExperimentInfo = () => {
     const { experimentID } = useParams(); 
     const [loading, setLoading] = useState(false);
     const [experimentData, setExperimentData] = useState([]);
     const [namespace, setNamespace] = useState('BP'); 
     const [error, setError] = useState('');
+    const [topProteins, setTopProteins] = useState([]);
 
     const fetchExperimentData = useCallback(async () => {
         const url = `${config.apiEndpoint}experiment?experimentID=${experimentID}`;
@@ -19,7 +26,7 @@ const ExperimentInfo = () => {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
           const data = await response.json();
-          console.log(data);
+          console.log(data.experimentData.differentialAbundanceData);
           setExperimentData(data.experimentData);
         } catch (error) {
           console.error("Error fetching data: ", error);
@@ -28,10 +35,18 @@ const ExperimentInfo = () => {
             setLoading(false);
         } 
       }, [experimentID]);
+    
 
     useEffect(() => {
         fetchExperimentData();
     }, [fetchExperimentData]);
+
+    useEffect(() => {
+        if (experimentData && experimentData.proteinScores) {
+            const top20 = getTop20Proteins(experimentData.proteinScores);
+            setTopProteins(top20);
+        }
+    }, [experimentData]);
 
     useEffect(() => {
         if (experimentData && experimentData.goEnrichment) {
@@ -82,7 +97,31 @@ const ExperimentInfo = () => {
                         </div>
                     </div>
                 )}
+                <div>
+                <span className="result-text">Top 20 Proteins by Cumulative LiP Score</span><br />
+                <div className="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Protein Accession</th>
+                            <th>Cumulative LiP Score</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {topProteins.map((protein, index) => (
+                            <tr key={index}>
+                                <td>{protein.pg_protein_accessions}</td>
+                                <td>{protein.cumulativeScore.toFixed(2)}</td>
+                                <td>{protein.protein_description || 'N/A'}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                </div>
             </div>
+            </div>
+            
         </div>
     );
 };
