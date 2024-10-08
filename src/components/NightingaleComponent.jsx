@@ -4,7 +4,9 @@ import "@nightingale-elements/nightingale-navigation";
 import "@nightingale-elements/nightingale-manager";
 import "@nightingale-elements/nightingale-colored-sequence";
 import "@nightingale-elements/nightingale-track";
+
 import "@dspa-nightingale/nightingale-structure/nightingale-structure";
+
 import "@nightingale-elements/nightingale-msa";
 import "@nightingale-elements/nightingale-sequence-heatmap";
 
@@ -45,6 +47,7 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
         customElements.whenDefined("nightingale-sequence").then(() => {
             if (seqContainer.current && checkDimensions(seqContainer.current)) {
                 seqContainer.current.data = proteinData.proteinSequence;
+                console.log("proteinsequence", seqContainer.current.data);
             }
         });
     }, [proteinData.proteinSequence]);
@@ -53,6 +56,7 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
         customElements.whenDefined("nightingale-colored-sequence").then(() => {
             if (residuelevelContainer.current && checkDimensions(residuelevelContainer.current)) {
                 residuelevelContainer.current.data = proteinData.barcodeSequence;
+                console.log("barcodeequence", seqContainer.current.data);
             }
         });
     }, [proteinData.barcodeSequence]);
@@ -152,6 +156,10 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
         });
     }
 
+    const lipScoreArray = [100, 100, 100, 100, 100, 100, 100, 100];
+    const lipScoreString = JSON.stringify(lipScoreArray);
+
+
     // Check if there is Beta strand data
     const hasDomainData = proteinData.featuresData.features.some(({ type }) => type === "DOMAIN");
     const hasRegionData = proteinData.featuresData.features.some(({ type }) => type === "REGION");
@@ -200,6 +208,7 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
                     structure-id={selectedPdbId}
                     margin-color="transparent"
                     background-color="white"
+                    lipscore-array={lipScoreString}
                     highlight-color={margincolorFeatures}
                     style={{ height: '500px', width: '1250px' }}
                 ></nightingale-structure>

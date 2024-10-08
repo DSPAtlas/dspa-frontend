@@ -5,6 +5,7 @@ import ProteinSearch from './components/Search';
 import ProteinVisualization from './components/Result';
 import ExperimentInfo from './components/ExperimentInfo';
 import ExperimentsOverview from './components/ExperimentsOverview';
+import DoseResponse from './components/DoseResponse';
 import About from './components/About';
 import Contact from './components/Contact';
 
@@ -16,6 +17,7 @@ import "./styles/result.css"
 import "./styles/search.css"
 import "./styles/experiments.css"
 import "./styles/graphs.css"
+
 
 const NotFound = () => <div>Page not found.</div>;
 
@@ -44,6 +46,7 @@ const App = () => {
       <Route path="/visualize/:taxonomyID/:proteinName" element={<ProteinVisualization />} />
       <Route path="/experiment/:experimentID" element={<ExperimentInfo />} />
       <Route path="/experiments" element={<ExperimentsOverview />} />
+      <Route path="/doseresponse" element={<DoseResponse />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   </div>
