@@ -47,7 +47,6 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
         customElements.whenDefined("nightingale-sequence").then(() => {
             if (seqContainer.current && checkDimensions(seqContainer.current)) {
                 seqContainer.current.data = proteinData.proteinSequence;
-                console.log("proteinsequence", seqContainer.current.data);
             }
         });
     }, [proteinData.proteinSequence]);
@@ -156,7 +155,7 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
         });
     }
 
-    const lipScoreArray = [100, 100, 100, 100, 100, 100, 100, 100];
+    const lipScoreArray = [-1, -1];
     const lipScoreString = JSON.stringify(lipScoreArray);
 
 
