@@ -73,16 +73,6 @@ const ProteinSearch = () => {
       <div className="search-form-container">
         <form className="search-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Organism</label>
-            <select 
-              className="select-dropdown" 
-              value={selectedOrganism} 
-              onChange={handleOrganismChange}
-            >
-              <option value="10090">Mus musculus</option>
-              <option value="559292">Saccharomyces cerevisiae S288C</option>
-              <option value="9606">Homo Sapiens</option>
-            </select>
           </div>
           <div className="form-group">
             <label className="form-label">Protein Name</label>
