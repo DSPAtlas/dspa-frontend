@@ -12,7 +12,6 @@ const DoseResponse = () => {
     const [groupData, setGroupData] = useState(null);
     const [error, setError] = useState('');
 
-    // State to manage each structure's lipScoreString
     const [structures, setStructures] = useState([
         { id: 1, lipScoreString: "[-1, -1]", isVisible: false },
         { id: 2, lipScoreString: "[100, 100,100, 100, 100, 100, 100, 100, 100, -1]", isVisible: false },

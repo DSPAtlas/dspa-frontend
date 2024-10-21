@@ -8,7 +8,7 @@ import ExperimentsOverview from './components/ExperimentsOverview';
 import DoseResponse from './components/DoseResponse';
 import About from './components/About';
 import Contact from './components/Contact';
-
+import Treatment from './components/Treatment';
 
 import "./styles/main.css"
 import "./styles/navigationbar.css"
@@ -47,6 +47,7 @@ const App = () => {
       <Route path="/experiment/:experimentID" element={<ExperimentInfo />} />
       <Route path="/experiments" element={<ExperimentsOverview />} />
       <Route path="/doseresponse" element={<DoseResponse />} />
+      <Route path="/treatment" element={<Treatment />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   </div>

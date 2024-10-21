@@ -26,7 +26,6 @@ const ExperimentInfo = () => {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
           const data = await response.json();
-          console.log(data.experimentData.differentialAbundanceData);
           setExperimentData(data.experimentData);
         } catch (error) {
           console.error("Error fetching data: ", error);
