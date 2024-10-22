@@ -1,0 +1,135 @@
+.container {
+    display: flex;
+    flex-direction: column; /* This can remain if other elements need to stack vertically */
+    padding-top: 60px;
+}
+
+.treatment-content-wrapper {
+    display: flex;
+    flex-direction: row; /* Ensure this is row to display the table and protein container next to each other */
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.treatment-container {
+    display: flex;
+    gap: 20px;
+    z-index: 10; 
+}
+
+.treatment-protein-container {
+    flex: 2;
+    max-height: 100%;
+    overflow-y: auto;
+    width: 100%;
+    display: inline-block;
+}
+
+.treatment-table-container {
+    flex: 1;
+    max-height: 100%;
+    overflow-y: auto; /* This makes the table scrollable */
+}
+
+.treatment-table-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.treatment-content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.treatment-table-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.treatment-table-container th,
+.treatment-table-container td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.treatment-protein-experiment-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 20px; 
+}
+
+.treatment-table-container {
+    flex: 1;
+    margin-right: 20px; 
+    overflow-x: auto;
+    min-width: 0;
+}
+
+.treatment-protein-container {
+    flex: 2;
+    margin-right: 5px; 
+    min-width: 0;
+    overflow: auto;
+}
+
+/* Scrollbar customization for better aesthetics */
+.treatment-table-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.treatment-table-container::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 4px;
+}
+
+.treatment-table-container::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+.treatment-protein-experiment-wrapper {
+    display: flex;
+    justify-content: space-between; 
+    gap: 20px; 
+    align-items: stretch;
+}
+
+.treatment-dropdown {
+    display: block;
+    width: 100%; /* Ensures the dropdown fills the container */
+    padding: 15px 20px; /* Adjust padding as needed for aesthetics */
+    font-size: 20px; /* Increased font size for better visibility */
+    line-height: 2; /* Adjust line height to fit the larger text properly */
+    color: #444; 
+    background-color: #ffffff; 
+    border: 2px solid #b99f9d; /* Subtle border to define the dropdown boundaries */
+    border-radius: 4px; /* Rounded corners for a modern look */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+    -webkit-appearance: none; /* Removes default styling in WebKit browsers */
+    -moz-appearance: none; /* Removes default styling in Mozilla browsers */
+    appearance: none; /* Standard way to remove default arrow */
+    cursor: pointer; /* Indicates the dropdown can be interacted with */
+}
+
+.treatment-dropdown {
+    margin-bottom: 20px; /* Adds spacing below the dropdown */
+    z-index: 1000; /* Ensure it appears above other components */
+    position: relative; 
+}
+
+select {
+    padding: 10px; /* Increase padding for better appearance */
+    font-size: 16px; /* Ensure the text is legible */
+    border: 1px solid #ccc; /* Add a border for visibility */
+    border-radius: 4px; /* Round the edges */
+    background-color: #fff; /* Ensure the background is white */
+    cursor: pointer;
+    appearance: none; /* Remove the default dropdown arrow styling */
+}
+
+select:focus {
+    outline: none; /* Remove the default blue outline */
+    border-color: #999; /* Highlight the border on focus */
+}

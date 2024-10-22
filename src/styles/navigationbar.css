@@ -3,6 +3,12 @@
   width: 100%;
   background-color: #d5cdba; /* Light grey background */
   color: #0A2F59; /* Dark text for contrast */
+  position: fixed; /* or sticky, if you want it to remain in place while scrolling */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px; /* Adjust the height of your navbar */
+  z-index: 1000; /* Ensure it's above other content */
 }
 
 .navigation-white,.navigation-hover-white:hover{color:#0A2F59!important;background-color:#fff!important}

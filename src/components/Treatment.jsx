@@ -2,19 +2,20 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import config from '../config.json';
 import { GOEnrichmentVisualization } from '../visualization/goterm.js';
+import NightingaleComponent from './NightingaleComponent';
+import { useProteinData } from '../hooks/useProteinData'; 
 
-const ExperimentTable = ({ experimentData }) => {
+const ExperimentTable = ({ experimentData, onProteinClick }) => {
     console.log("experimentData", experimentData);
 
-    if (!experimentData || typeof experimentData !== 'object') {
-        console.error("experimentData is not an object:", experimentData);
+    if (!experimentData || !Array.isArray(experimentData)) {
+        console.error("experimentData is not an array:", experimentData);
         return <div>No valid data to display</div>;  
     }
-
-    const proteinAccessions = Object.keys(experimentData);
-    
+    const proteinAccessions = experimentData.map(data => data.proteinAccession);
+  
     const experimentIDs = [...new Set(
-        proteinAccessions.flatMap(protein => Object.keys(experimentData[protein].experiments))
+        experimentData.flatMap(protein => Object.keys(protein.experiments))
     )];
 
     return (
@@ -31,18 +32,22 @@ const ExperimentTable = ({ experimentData }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {proteinAccessions.map((proteinAccession) => (
-                        <tr key={proteinAccession}>
-                            <td>{proteinAccession}</td>
+                    {experimentData.map((proteinData) => (
+                        <tr 
+                            key={proteinData.proteinAccession}
+                            onClick={() => onProteinClick(proteinData.proteinAccession)} 
+                            style={{ cursor: 'pointer' }}  
+                        >
+                            <td>{proteinData.proteinAccession}</td>
                             {experimentIDs.map(experimentID => (
                                 <td key={experimentID}>
-                                    {experimentData[proteinAccession].experiments[experimentID] !== undefined
-                                        ? experimentData[proteinAccession].experiments[experimentID]
+                                    {proteinData.experiments[experimentID] !== undefined
+                                        ? proteinData.experiments[experimentID]
                                         : 0}
                                 </td>
                             ))}
                             <td>
-                                {(experimentData[proteinAccession].averageScore || 0).toFixed(0)}
+                                {(proteinData.averageScore || 0).toFixed(0)}
                             </td>
                         </tr>
                     ))}
@@ -51,7 +56,6 @@ const ExperimentTable = ({ experimentData }) => {
         </div>
     );
 };
-
 
 
 const Treatment = () => {
@@ -63,7 +67,9 @@ const Treatment = () => {
     const [namespace, setNamespace] = useState('BP'); 
     const [error, setError] = useState('');
     const [selectedTreatment, setSelectedTreatment] = useState(treatmentOptions[0]); 
+    const [displayedProtein, setDisplayedProtein] = useState("");
 
+    const { loading: proteinLoading, error: proteinError, proteinData: displayedProteinData, pdbIds, fetchProteinData } = useProteinData();
 
     const fetchTreatmentData = useCallback(async () => {
         const url = `${config.apiEndpoint}treatment/treatment?treatment=${selectedTreatment}`;
@@ -74,6 +80,7 @@ const Treatment = () => {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
           const data = await response.json();
+          console.log("treatmentdata", data);
           setTreatmentData(data.treatmentData);
         } catch (error) {
           console.error("Error fetching data: ", error);
@@ -86,6 +93,18 @@ const Treatment = () => {
     useEffect(() => {
         fetchTreatmentData();
     }, [fetchTreatmentData]);
+
+    useEffect(() => {
+        if (treatmentData && treatmentData.proteinScoresTable && treatmentData.proteinScoresTable.length > 0) {
+            setDisplayedProtein(treatmentData.proteinScoresTable[0].proteinAccession);
+        }
+    }, [treatmentData]);
+
+    useEffect(() => {
+        if (displayedProtein) {
+            fetchProteinData(displayedProtein);
+        }
+    }, [displayedProtein, fetchProteinData]);
 
     useEffect(() => {
         if (treatmentData && treatmentData.goEnrichmentList && chartRef.current) {
@@ -117,12 +136,15 @@ const Treatment = () => {
 
     const handleTreatmentChange = (event) => {
         setSelectedTreatment(event.target.value); 
+    };
+
+    const handleProteinClick = (proteinAccession) => {
+        setDisplayedProtein(proteinAccession);
+    };
 
     return (
             <div>
-                <div className="result-container">
-                     {/* Treatment Selection Dropdown */}
-                     <div className="treatment-dropdown">
+                    <div className="treatment-dropdown">
                         <label htmlFor="treatmentSelect">Select Treatment: </label>
                         <select 
                             id="treatmentSelect" 
@@ -136,23 +158,43 @@ const Treatment = () => {
                             ))}
                         </select>
                     </div>
-                    {loading ? (
-                        <p>Loading...</p>
-                    ) : error ? (
-                        <p>Error: {error}</p>
+                    {loading ? (  <p>Loading...</p>) : error ? (<p>Error: {error}</p>
                     ) : (
                         treatmentData &&
                         treatmentData.treatment && (
                             <div>
-                                <span className="result-header">Treatment {treatmentData.treatment}</span><br />
+                                <span className="treatment-header">Treatment {treatmentData.treatment}</span><br />
                             </div>
                         )
                     )}
-                    <div className="results-experiment-search-container">
+                      <div className="treatment-container">
+                      
+                      <div className="treatment-protein-experiment-wrapper">
+                      <div className="treatment-table-container">
+                            {treatmentData && treatmentData.proteinScoresTable && (
+                                <ExperimentTable 
+                                    experimentData={treatmentData.proteinScoresTable} 
+                                    onProteinClick={handleProteinClick} 
+                                />
+                            )}
+                        </div>
+
+                     
+                        <div className="treatment-protein-container">
+                            {displayedProteinData && pdbIds && (
+                                <NightingaleComponent
+                                    proteinData={displayedProteinData} 
+                                    pdbIds={pdbIds}
+                                />
+                            )}
+                        </div>
+  
+                    </div>
+                    <div className="treatment-goenrichment-container">
                         <div ref={chartRef} id="chart" style={{ width: '900px', height: '600px' }}></div>
                     </div>
                     {treatmentData && treatmentData.goEnrichmentList && treatmentData.goEnrichmentList.length > 0 && (
-                        <div className="results-experiment-search-container">
+                        <div className="treatment-goenrichment-container">
                             <div className="namespace-dropdown">
                                 <select value={namespace} onChange={handleNamespaceChange}>
                                     <option value="BP">Biological Process</option>
@@ -163,19 +205,10 @@ const Treatment = () => {
                         </div>
                     )}
                     <div>
-                    <span className="result-text">Cumulative LiP Score</span><br />
-                    <div className="table-container">
-                            {treatmentData && treatmentData.proteinScoresTable && (
-                                <ExperimentTable 
-                                    experimentData={treatmentData.proteinScoresTable} 
-                                />
-                            )}
-                        </div>
                 </div>
-                </div>
-                
-            </div>
+             </div>
+        </div>
         );
     };
-}
+
 export default Treatment;

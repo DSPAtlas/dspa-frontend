@@ -1,7 +1,7 @@
 /* Styles for the overall layout container */
 .container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
    /* height: 40px; /* Full viewport height */
     padding-top: 10px;
 }

@@ -170,8 +170,15 @@ const NightingaleComponent = ({proteinData, pdbIds}) => {
 
     return( 
         <div>
-            <div className="table-container">
-                <table>
+            <div>
+                <table className="pdb-selection-container"
+                 style={{
+                    width: '100%', // Make the table as wide as the nightingale-manager
+                    height: '60px', // Fix the height to 30px
+                    overflowY: 'scroll', // Add scroll for vertical scrolling
+                    overflowX: 'hidden', // Disable horizontal scrolling
+                    display: 'block', // Ensure scroll works on the tbody
+                  }}>
                     <thead>
                         <tr>
                             <th>ID</th>

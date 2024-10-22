@@ -162,7 +162,6 @@ const ProteinVisualization = () => {
         }
     };
 
-
     return (
         <>
         <div className="search-form-container">
@@ -189,6 +188,5 @@ const ProteinVisualization = () => {
         </>
     );
 };
-
 
 export default ProteinVisualization;

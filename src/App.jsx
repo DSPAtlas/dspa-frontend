@@ -17,7 +17,7 @@ import "./styles/result.css"
 import "./styles/search.css"
 import "./styles/experiments.css"
 import "./styles/graphs.css"
-
+import "./styles/treatment.css"
 
 const NotFound = () => <div>Page not found.</div>;
 
