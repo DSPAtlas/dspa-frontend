@@ -1,3 +1,9 @@
+body, html {
+  height: 100%;
+  margin: 10px;
+  padding: 10px;
+}
+
 .navigation-bar {
   overflow: hidden;
   width: 100%;
@@ -71,3 +77,10 @@
       float: none; /* Stack items vertically on smaller screens */
   }
 }
+
+#nightingale-manager-container {
+  margin-top: 60px; /* Push it down by the height of the navigation bar */
+  height: calc(100vh - 60px); /* Remaining height below the navigation bar */
+  overflow: auto; /* Allow scrolling if the content is taller than the available height */
+}
+

@@ -1,12 +1,12 @@
 .container {
     display: flex;
-    flex-direction: column; /* This can remain if other elements need to stack vertically */
+    flex-direction: column; 
     padding-top: 60px;
 }
 
 .treatment-content-wrapper {
     display: flex;
-    flex-direction: row; /* Ensure this is row to display the table and protein container next to each other */
+    flex-direction: row; 
     justify-content: space-between;
     align-items: flex-start;
 }
@@ -19,7 +19,9 @@
 
 .treatment-protein-container {
     flex: 2;
+    margin-top: 60px;
     max-height: 100%;
+    height: calc(100vh - 60px);
     overflow-y: auto;
     width: 100%;
     display: inline-block;
@@ -27,8 +29,10 @@
 
 .treatment-table-container {
     flex: 1;
+    margin-top: 60px;
     max-height: 100%;
-    overflow-y: auto; /* This makes the table scrollable */
+    height: calc(100vh - 60px);
+    overflow-y: auto; 
 }
 
 .treatment-table-container table {
@@ -63,14 +67,15 @@
 
 .treatment-table-container {
     flex: 1;
-    margin-right: 20px; 
+    margin-right: 10px; 
+    margin-left: 10px; 
     overflow-x: auto;
     min-width: 0;
 }
 
 .treatment-protein-container {
     flex: 2;
-    margin-right: 5px; 
+    margin-right: 0px; 
     min-width: 0;
     overflow: auto;
 }
@@ -98,13 +103,13 @@
 
 .treatment-dropdown {
     display: block;
-    width: 100%; /* Ensures the dropdown fills the container */
-    padding: 15px 20px; /* Adjust padding as needed for aesthetics */
-    font-size: 20px; /* Increased font size for better visibility */
-    line-height: 2; /* Adjust line height to fit the larger text properly */
+    width: 100%; 
+    padding: 15px 20px; 
+    font-size: 20px;
+    line-height: 2; 
     color: #444; 
     background-color: #ffffff; 
-    border: 2px solid #b99f9d; /* Subtle border to define the dropdown boundaries */
+    border: 2px solid #b99f9d; 
     border-radius: 4px; /* Rounded corners for a modern look */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
     -webkit-appearance: none; /* Removes default styling in WebKit browsers */
@@ -115,7 +120,8 @@
 
 .treatment-dropdown {
     margin-bottom: 20px; /* Adds spacing below the dropdown */
-    z-index: 1000; /* Ensure it appears above other components */
+    margin-top: 60px;
+    /* Ensure it appears above other components z-index: 1000;*/
     position: relative; 
 }
 

@@ -55,9 +55,8 @@ export const useProteinData = () => {
             }
             const data = await response.json(); 
             setProteinData(data.proteinData);
-            console.log("proteindata", data.proteinData);
 
-            const pdbIds = await getPdbIds(proteinName);  // Assuming getPdbIds is imported from utils
+            const pdbIds = await getPdbIds(proteinName);  
             setPdbIds(pdbIds);
         } catch (error) {
             console.error("Error fetching data: ", error);
