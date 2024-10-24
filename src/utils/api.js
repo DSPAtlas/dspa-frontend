@@ -41,7 +41,7 @@ export const useProteinData = () => {
       setError('');
       const taxonomyID = 9606;  // Hardcoded for now, you can parameterize this if needed
 
-      const queryParams = `taxonomyID=${encodeURIComponent(taxonomyID)}&proteinName=${encodeURIComponent(proteinName)}`;
+      const queryParams = `proteinName=${encodeURIComponent(proteinName)}`;
       const url = `${config.apiEndpoint}proteins?${queryParams}`;
 
       try {

@@ -4,10 +4,10 @@ import config from '../config.json';
 import { GOEnrichmentVisualization } from '../visualization/goterm.js';
 import NightingaleComponent from './NightingaleComponent';
 import { useProteinData } from '../hooks/useProteinData'; 
+import "@nightingale-elements/nightingale-sequence";
 
 const ExperimentTable = ({ experimentData, onProteinClick, onExperimentClick, displayedProtein }) => {
-    console.log("experimentData", experimentData);
-
+   
     if (!experimentData || !Array.isArray(experimentData)) {
         console.error("experimentData is not an array:", experimentData);
         return <div>No valid data to display</div>;  
@@ -17,6 +17,7 @@ const ExperimentTable = ({ experimentData, onProteinClick, onExperimentClick, di
     const experimentIDs = [...new Set(
         experimentData.flatMap(protein => Object.keys(protein.experiments))
     )];
+
 
     return (
         <div>
@@ -88,12 +89,12 @@ const Treatment = () => {
         const url = `${config.apiEndpoint}treatment/treatment?treatment=${selectedTreatment}`;
         try {
           const response = await fetch(url);
-          console.log('Response:', response);
+    
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
+          
           const data = await response.json();
-          console.log("treatmentdata", data);
           setTreatmentData(data.treatmentData);
         } catch (error) {
           console.error("Error fetching data: ", error);
@@ -124,6 +125,7 @@ const Treatment = () => {
             setSelectedPdbId(pdbIds[0].id);
         }
     }, [pdbIds]);
+
 
     useEffect(() => {
         if (treatmentData && treatmentData.goEnrichmentList && chartRef.current) {
@@ -166,7 +168,7 @@ const Treatment = () => {
         setDisplayedProtein(proteinAccession); // Update the displayed protein
         setSelectedExperiment(experimentID); // Set the selected experiment when an experiment column is clicked
     };
-
+        
     return (
             <div>
                     <div className="treatment-dropdown">
@@ -220,13 +222,14 @@ const Treatment = () => {
                             )}
                         </div>
                     </div>
-
-                    <div className="treatment-goenrichment-container">
-                        <div ref={chartRef} id="chart" style={{ width: '900px', height: '600px' }}></div>
                     </div>
 
+                    <div className="treatment-goenrichment-container">
+                    <h2>Gene Ontology Enrichment Analysis</h2>
+                    <div ref={chartRef} id="chart" style={{ width: '900px', height: '600px' }}></div>
+
                     {treatmentData && treatmentData.goEnrichmentList && treatmentData.goEnrichmentList.length > 0 && (
-                        <div className="treatment-goenrichment-container">
+                        <div>
                             <div className="namespace-dropdown">
                                 <select value={namespace} onChange={handleNamespaceChange}>
                                     <option value="BP">Biological Process</option>
@@ -234,13 +237,11 @@ const Treatment = () => {
                                     <option value="CC">Cellular Component</option>
                                 </select>
                             </div>
-                        </div>
+                            </div>
                     )}
-                    <div>
-                </div>
-             </div>
         </div>
-        );
-    };
+    </div>
+);
+};
 
 export default Treatment;

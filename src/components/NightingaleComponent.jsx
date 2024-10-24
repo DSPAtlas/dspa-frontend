@@ -13,7 +13,8 @@ import "@nightingale-elements/nightingale-sequence-heatmap";
 
 
 const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPdbId, selectedExperiment}) => {
-    console.log(proteinData);
+    console.log("proteindata",proteinData);
+    console.log("proteindata sequence",proteinData.featuresData.sequence);
     // Initialize selectedExperiment as an empty string by default
     const structureRefs = useRef(proteinData.experimentIDsList.map(() => React.createRef()));
 
@@ -124,13 +125,12 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
         });
     }, [structures, proteinName, selectedPdbId]);
 
-    useEffect(() => {
-        customElements.whenDefined("nightingale-sequence").then(() => {
-            if (seqContainer.current && checkDimensions(seqContainer.current)) {
-                seqContainer.current.data = proteinData.proteinSequence;
-            }
-        });
-    }, [proteinData.proteinSequence]);
+    useEffect(()=> {
+        if(seqContainer && customElements.whenDefined("nightingale-sequence")) {
+          seqContainer.current.data = proteinData.featuresData.sequence;
+        }
+      }, [proteinData.featuresData.sequence]);
+
 
     useEffect(() => {
         customElements.whenDefined("nightingale-colored-sequence").then(() => {
@@ -157,13 +157,20 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
     useEffect(() => {
         customElements.whenDefined("nightingale-track").then(() => {
             if (featuresContainer.current && proteinData.featuresData.features && checkDimensions(featuresContainer.current)) {
-                const features = proteinData.featuresData.features.map((ft) => ({
-                    ...ft,
-                    start: parseInt(ft.start || ft.begin, 10),  // Ensure 'start' is numeric
-                    end: parseInt(ft.end || ft.stop, 10),  // Ensure 'end' is numeric
-                }));
+                // const mappedFeatures = proteinData.featuresData.features.map((feature) => {
+                //     return {
+                //         ...feature,
+                //         start: parseInt(feature.begin, 10),  // Convert 'begin' to an integer
+                //         end: parseInt(feature.end, 10),      // Convert 'end' to an integer
+                //     };
+                // });
     
-                console.log("Mapped Features: ", features);  // Log the mapped features to check
+                // console.log("Mapped Features: ", mappedFeatures);  // Log the mapped features to check
+                //const mappedFeatures = featuresData.features;
+                const mappedFeatures = proteinData.featuresData.features.map((ft) => ({
+                    ...ft,
+                    start: ft.start || ft.begin,
+                  }));
     
                 const domain = document.querySelector("#domain");
                 const region = document.querySelector("#region");
@@ -174,43 +181,43 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                 const betaStrand = document.querySelector("#beta-strand");
     
                 if (domain) {
-                    const domainData = features.filter(({ type }) => type.toUpperCase() === "DOMAIN");
+                    const domainData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "DOMAIN");
                     console.log("Domain Data: ", domainData);
                     domain.data = domainData;
                 }
     
                 if (region) {
-                    const regionData = features.filter(({ type }) => type.toUpperCase() === "REGION");
+                    const regionData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "REGION");
                     console.log("Region Data: ", regionData);
                     region.data = regionData;
                 }
     
                 if (site) {
-                    const siteData = features.filter(({ type }) => type.toUpperCase() === "SITE");
+                    const siteData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "SITE");
                     console.log("Site Data: ", siteData);
                     site.data = siteData;
                 }
     
                 if (binding) {
-                    const bindingData = features.filter(({ type }) => type.toUpperCase() === "BINDING");
+                    const bindingData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "BINDING");
                     console.log("Binding Data: ", bindingData);
                     binding.data = bindingData;
                 }
     
                 if (chain) {
-                    const chainData = features.filter(({ type }) => type.toUpperCase() === "CHAIN");
+                    const chainData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "CHAIN");
                     console.log("Chain Data: ", chainData);
                     chain.data = chainData;
                 }
     
                 if (disulfide) {
-                    const disulfideData = features.filter(({ type }) => type.toUpperCase() === "DISULFID");
+                    const disulfideData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "DISULFID");
                     console.log("Disulfide Data: ", disulfideData);
                     disulfide.data = disulfideData;
                 }
     
                 if (betaStrand) {
-                    const betaStrandData = features.filter(({ type }) => type.toUpperCase() === "STRAND");
+                    const betaStrandData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "STRAND");
                     console.log("Beta Strand Data: ", betaStrandData);
                     betaStrand.data = betaStrandData;
                 }
@@ -278,13 +285,17 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
     const hasDisulfidData = proteinData.featuresData.features.some(({ type }) => type === "DISULFID");
     const hasBetaStrandData = proteinData.featuresData.features.some(({ type }) => type === "STRAND");
 
+    customElements.whenDefined("nightingale-sequence").then(() => {
+        const seq = document.querySelector("#my-nightingale-sequence-id");
+        seq.data = "SEQUENCESEQUENCESEQUENCESEQUENCE";
+      })
+
     return( 
         <div>
             <p>{selectedExperiment}</p>
             <p>{proteinData?.proteinDescription}</p>
             <div id="nightingale-manager-container">
             <nightingale-manager> 
-
                 {/* conditonally render buttons only if the experiment is not provided  */}
                 {!selectedExperiment &&(
                 <div className="experiment-buttons">
@@ -340,20 +351,21 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                 </td>
                 </tr>
                 <tr>
-                <td></td>
+                <td>Sequence</td>
                 <td>
                     <nightingale-sequence
                         ref={seqContainer}
+                        sequence={proteinData.featuresData.sequence}
                         min-width={minWidth}
                         height="40"
                         width={minWidth}
                         length={sequenceLength} 
                         display-start="1"
                         display-end={sequenceLength} 
-                        margin-color="white"
                         highlight-event="onmouseover"
                         highlight-color={highlightColor}
                         margin-left="40"
+                        margin-color="aliceblue"
                     ></nightingale-sequence>
                 </td>
                 </tr> 
@@ -407,6 +419,8 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                         margin-left="40"
                         highlight-color={highlightColor}
                         highlight-event="onmouseover"
+                        label="labeltest"
+                        show-label
                     ></nightingale-track>
                     </td>
                 </tr>

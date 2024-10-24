@@ -115,7 +115,7 @@ const ProteinVisualization = () => {
         setLoading(true);
         setError('');
         
-        const queryParams = `taxonomyID=${encodeURIComponent(taxonomyID)}&proteinName=${encodeURIComponent(proteinName)}`;
+        const queryParams = `proteinName=${encodeURIComponent(proteinName)}`;
         const url = `${config.apiEndpoint}proteins?${queryParams}`;
 
         try {

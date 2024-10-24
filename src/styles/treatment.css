@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column; 
     padding-top: 60px;
+    width: 100%;
 }
 
 .treatment-content-wrapper {
@@ -15,6 +16,7 @@
     display: flex;
     gap: 20px;
     z-index: 10; 
+    width: 100%;
 }
 
 .treatment-protein-container {
@@ -32,18 +34,8 @@
     margin-top: 60px;
     max-height: 100%;
     height: calc(100vh - 60px);
-    overflow-y: auto; 
-}
-
-.treatment-table-container table {
     width: 100%;
-    border-collapse: collapse;
-}
-
-.treatment-content-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    overflow-y: auto; 
 }
 
 .treatment-table-container table {
@@ -63,6 +55,7 @@
     justify-content: space-between;
     align-items: stretch;
     gap: 20px; 
+    width: 100%;
 }
 
 .treatment-table-container {
@@ -138,4 +131,13 @@ select {
 select:focus {
     outline: none; /* Remove the default blue outline */
     border-color: #999; /* Highlight the border on focus */
+}
+
+.treatment-goenrichment-container {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.namespace-dropdown {
+    margin-top: 10px;
 }

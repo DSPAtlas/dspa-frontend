@@ -8,34 +8,34 @@
 /* Styles for the search container */
 .results-search-container {
     display: flex;
-    justify-content: space-between; 
+    justify-content: space-between;
     padding: 20px;
     margin-top: 60px;
-    background-color: #f8f8f8; /* Light grey background for the search area */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+    background-color: #f8f8f8;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
 /* Search form styling */
-.results-search-container form { /* Distribute space between form items */
+.results-search-container form {
     display: flex;
-    justify-content: space-between; 
-    align-items: center; /* Center items vertically */
-    width: 100%; /* Full width of its container */
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Full width of the container */
 }
 
 .results-search-container select,
 .results-search-container input,
 .results-search-container button {
-    flex: 1; /* Each form item will take equal space */
-    margin: 0 10px; /* Margin for spacing between form items */
-    padding: 10px; /* Padding for better touch area */
+    flex: 1; /* Equal spacing for form items */
+    margin: 0 10px;
+    padding: 10px;
 }
 
 /* Results container styling */
-.result-container {/* Takes up all remaining space */
-    overflow-y: auto; /* Allows scrolling for overflow content */
+.result-container {
+    overflow-y: auto; /* Scrollable overflow content */
     padding: 2px;
-    background-color: #ffffff; /* White background for results */
+    background-color: #ffffff;
     -webkit-font-smoothing: auto;
     -moz-font-smoothing: auto;
     -moz-osx-font-smoothing: grayscale;
@@ -54,19 +54,22 @@ h1, h2, h3, p {
 
 td {
     padding: 5px;
-    background-color: "rgb(159, 226,191)";
+    background-color: white;
     font: 1em "Raleway";
     white-space: nowrap;
-  }
-  tr:nth-child(-n + 3) > td {
-    background-color: transparent;
-  }
-
-.nightingale-component-container {
-    width: 100%; /* Adjust this as needed */
-    max-width: 1200px; /* Example max-width that you might find suitable */
-    margin: auto; /* This centers the container if the page width is greater than max-width */
 }
+
+tr:nth-child(-n + 3) > td {
+    background-color: transparent;
+}
+
+/* Nightingale component container */
+.nightingale-component-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+}
+
 .nightingale-component {
     margin: 0;
     padding: 0;
@@ -79,52 +82,57 @@ table, tr, th {
 }
 
 .nightingale-row {
-    align-items: center; /* Adjust vertical alignment */
-    justify-content: space-between; /* Adjust horizontal spacing */
+    align-items: center;
+    justify-content: space-between;
 }
 
 .nightingale-item {
-    flex: none; /* Avoids flex items from stretching */
-    margin: 5px; /* Provides a small gap between items */
+    height: auto;
+    margin: 5px;
 }
 
-.domain-row, .site-row, .chain-row {
-    height: 5px; /* Set a fixed height for uniformity */
+.domain-row,
+.site-row,
+.chain-row {
+    height: 5px;
 }
 
+/* Grid layout for Nightingale components */
 .nightingale-grid {
     display: grid;
-    grid-template-rows: repeat(auto-fill, minmax(20px, auto)); /* Creates rows that adapt based on content */
-    grid-gap: 5px; /* Controls the gap between grid items */
+    grid-template-rows: repeat(auto-fill, minmax(20px, auto));
+    grid-gap: 5px;
 }
 
+/* Flex layout adjustments */
 .nightingale-flex {
-    /*display: flex;*/
-    /*flex-direction: column;*/
-    align-items: stretch; /* Ensures that items stretch to fill the horizontal space */
-    gap: 5px; /* Minimal gap between items for a compact layout */
+    align-items: stretch; /* Ensure horizontal stretch */
+    gap: 5px; /* Small gap between items */
 }
 
-.nightingale-manager{
+/* Nightingale manager */
+.nightingale-manager {
     display: flex;
 }
 
-.protein-header{
-    color: #333; /* Dark grey for contrast */
-    font-size: 24px; /* Larger font size for emphasis */
-    font-weight: bold; /* Bold font for importance */
-    margin-bottom: 10px; /* Space below the header */
+/* Protein header styling */
+.protein-header {
+    color: #333;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
     margin-top: 50px;
 }
 
-.result-text{
-    display: block; /* Ensures it appears on a new line */
-    color: #666; /* Slightly lighter grey for regular information */
-    font-size: 18px; /* Readable text size */
-    margin-bottom: 15px; /* Spacing before the next section */
-
+/* Result text styling */
+.result-text {
+    display: block;
+    color: #666;
+    font-size: 18px;
+    margin-bottom: 15px;
 }
 
+/* Tooltip container styling */
 .tooltip-container {
     background-color: #f4f4f4;
     padding: 10px;
@@ -132,11 +140,33 @@ table, tr, th {
     color: #333;
 }
 
+/* Tooltip link styling */
 .tooltip-link {
     color: #0077cc;
     text-decoration: none;
 }
 
+.tooltip-link:hover {
+    text-decoration: underline;
+}
+
 .tooltip-highlight {
     color: #555;
+}
+
+nightingale-sequence, 
+nightingale-track, 
+nightingale-manager {
+  box-sizing: content-box;
+  margin: initial;
+  padding: initial;
+}
+
+
+/* Nightingale manager container */
+#nightingale-manager-container {
+    z-index: 1001;
+    margin-top: 60px; /* Adjusted for navigation bar */
+    height: calc(100vh - 60px); /* Full height minus navigation bar */
+    overflow: auto; /* Scrollable if content exceeds height */
 }

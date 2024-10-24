@@ -24,6 +24,44 @@ const NotFound = () => <div>Page not found.</div>;
 const App = () => {
   return (
     <div>
+  <header className="app-header">
+    <div className="navbar-top">
+      <div className="navigation-bar navigation-white navigation-card">
+        <a href="/" className="navigation-bar-item navigation-button navigation-wide">Dynamic Structural Proteome Atlas</a>
+        <div className="navigation-right navigation-hide-small">
+          <a href="/" className="navigation-bar-item navigation-button">HOME</a>
+          <a href="/search" className="navigation-bar-item navigation-button"> SEARCH</a>
+          <a href="/experiments" className="navigation-bar-item navigation-button"> EXPERIMENT</a>
+          <a href="/about" className="navigation-bar-item navigation-button"> ABOUT</a>
+          <a href="/contact" className="navigation-bar-item navigation-button"> CONTACT</a>
+        </div>
+      </div>  
+    </div>    
+  </header>
+  <Routes>
+    <Route path="/" element={<Home />} />
+    <Route path="/search" element={<ProteinSearch />} />
+    <Route path="/about" element={<About />} />
+    <Route path="/contact" element={<Contact />} />
+    <Route path="/visualize/:taxonomyID/:proteinName" element={<ProteinVisualization />} />
+    <Route path="/experiment/:experimentID" element={<ExperimentInfo />} />
+    <Route path="/experiments" element={<ExperimentsOverview />} />
+    <Route path="/doseresponse" element={<DoseResponse />} />
+    <Route path="/treatment" element={<Treatment />} />
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+</div>
+  );
+};
+
+export default App;
+
+
+{/* 
+  
+  const App = () => {
+  return (
+    <div>
     <header className="app-header">
       <div className="navbar-top">
         <div className="navigation-bar navigation-white navigation-card">
@@ -39,16 +77,7 @@ const App = () => {
       </div>    
     </header>
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/search" element={<ProteinSearch />} />
       <Route path="/about" element={<About />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route path="/visualize/:taxonomyID/:proteinName" element={<ProteinVisualization />} />
-      <Route path="/experiment/:experimentID" element={<ExperimentInfo />} />
-      <Route path="/experiments" element={<ExperimentsOverview />} />
-      <Route path="/doseresponse" element={<DoseResponse />} />
-      <Route path="/treatment" element={<Treatment />} />
-      <Route path="*" element={<NotFound />} />
     </Routes>
   </div>
   );
@@ -56,4 +85,34 @@ const App = () => {
 
 export default App;
 
-
+  
+  return (
+  <div>
+  <header className="app-header">
+    <div className="navbar-top">
+      <div className="navigation-bar navigation-white navigation-card">
+        <a href="/" className="navigation-bar-item navigation-button navigation-wide">Dynamic Structural Proteome Atlas</a>
+        <div className="navigation-right navigation-hide-small">
+          <a href="/" className="navigation-bar-item navigation-button">HOME</a>
+          <a href="/search" className="navigation-bar-item navigation-button"> SEARCH</a>
+          <a href="/experiments" className="navigation-bar-item navigation-button"> EXPERIMENT</a>
+          <a href="/about" className="navigation-bar-item navigation-button"> ABOUT</a>
+          <a href="/contact" className="navigation-bar-item navigation-button"> CONTACT</a>
+        </div>
+      </div>  
+    </div>    
+  </header>
+  <Routes>
+    <Route path="/" element={<Home />} />
+    <Route path="/search" element={<ProteinSearch />} />
+    <Route path="/about" element={<About />} />
+    <Route path="/contact" element={<Contact />} />
+    <Route path="/visualize/:taxonomyID/:proteinName" element={<ProteinVisualization />} />
+    <Route path="/experiment/:experimentID" element={<ExperimentInfo />} />
+    <Route path="/experiments" element={<ExperimentsOverview />} />
+    <Route path="/doseresponse" element={<DoseResponse />} />
+    <Route path="/treatment" element={<Treatment />} />
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+</div>
+);*/}

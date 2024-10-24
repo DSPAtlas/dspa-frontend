@@ -43,9 +43,8 @@ export const useProteinData = () => {
     const fetchProteinData = useCallback(async (proteinName) => {
         setLoading(true);
         setError('');
-        const taxonomyID = 559292;  // Hardcoded for now, you can parameterize this if needed
 
-        const queryParams = `taxonomyID=${encodeURIComponent(taxonomyID)}&proteinName=${encodeURIComponent(proteinName)}`;
+        const queryParams = `proteinName=${encodeURIComponent(proteinName)}`;
         const url = `${config.apiEndpoint}proteins?${queryParams}`;
 
         try {
