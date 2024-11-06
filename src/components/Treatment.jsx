@@ -217,6 +217,7 @@ const Treatment = () => {
                                     proteinData={displayedProteinData} 
                                     pdbIds={pdbIds}
                                     selectedPdbId={selectedPdbId}
+                                    setSelectedPdbId={setSelectedPdbId} 
                                     selectedExperiment={selectedExperiment}
                                 />
                             )}

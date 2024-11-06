@@ -9,6 +9,7 @@ import DoseResponse from './components/DoseResponse';
 import About from './components/About';
 import Contact from './components/Contact';
 import Treatment from './components/Treatment';
+import Pathway from './components/Pathway';
 
 import "./styles/main.css"
 import "./styles/navigationbar.css"
@@ -48,6 +49,7 @@ const App = () => {
     <Route path="/experiments" element={<ExperimentsOverview />} />
     <Route path="/doseresponse" element={<DoseResponse />} />
     <Route path="/treatment" element={<Treatment />} />
+    <Route path="/pathway" element={<Pathway />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 </div>

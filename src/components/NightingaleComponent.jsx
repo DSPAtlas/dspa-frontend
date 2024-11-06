@@ -20,11 +20,11 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
 
     const [structures, setStructures] = useState(proteinData.experimentIDsList.map((_, index) => {
         const sequenceLength = proteinData.proteinSequence.length;
-        const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1)); // Default to -1
+        const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1)); 
 
         return {
             id: index + 1,
-            lipScoreString: defaultLipScoreString,  // Default to -1 array
+            lipScoreString: defaultLipScoreString,  
             isVisible: index === 0
         };
     }));
@@ -131,7 +131,6 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
         }
       }, [proteinData.featuresData.sequence]);
 
-
     useEffect(() => {
         customElements.whenDefined("nightingale-colored-sequence").then(() => {
             if (residuelevelContainer.current && checkDimensions(residuelevelContainer.current)) {
@@ -147,9 +146,7 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                     name: key,
                     sequence: proteinData.barcodeSequence[key]
                 }));
-    
                 multipleExperimentsContainer.current.data = data;
-
             }
         });
     }, [proteinData.barcodeSequence]);
@@ -157,21 +154,61 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
     useEffect(() => {
         customElements.whenDefined("nightingale-track").then(() => {
             if (featuresContainer.current && proteinData.featuresData.features && checkDimensions(featuresContainer.current)) {
-                // const mappedFeatures = proteinData.featuresData.features.map((feature) => {
-                //     return {
-                //         ...feature,
-                //         start: parseInt(feature.begin, 10),  // Convert 'begin' to an integer
-                //         end: parseInt(feature.end, 10),      // Convert 'end' to an integer
-                //     };
-                // });
-    
-                // console.log("Mapped Features: ", mappedFeatures);  // Log the mapped features to check
-                //const mappedFeatures = featuresData.features;
+                const tooltip = document.getElementById("tooltip");
+                if (!tooltip) {
+                    console.error("Tooltip element not found!");
+                    return;
+                }
+        
                 const mappedFeatures = proteinData.featuresData.features.map((ft) => ({
                     ...ft,
                     start: ft.start || ft.begin,
-                  }));
-    
+                    tooltipContent: ft.description || "No description available",
+                }));
+
+                const updateTooltip = (content, x, y) => {
+                    tooltip.innerHTML = content;
+                    tooltip.style.top = `${y - 5}px`;
+                    tooltip.style.left = `${x}px`;
+                    tooltip.style.visibility = "visible";
+                };
+        
+                const hideTooltip = () => {
+                    tooltip.style.visibility = "hidden";
+                };
+
+                const trackIds = [
+                    { id: "domain", type: "DOMAIN" },
+                    { id: "region", type: "REGION" },
+                    { id: "site", type: "SITE" },
+                    { id: "binding", type: "BINDING" },
+                    { id: "chain", type: "CHAIN" },
+                    { id: "disulfide-bond", type: "DISULFID" },
+                    { id: "beta-strand", type: "STRAND" }
+                ];
+        
+                trackIds.forEach(({ id, type }) => {
+                        const trackElement = document.querySelector(`#${id}`);
+                        const trackFeatures = mappedFeatures.filter(({ type: featureType }) => featureType === type);
+        
+                        trackElement.data = trackFeatures;
+        
+                        trackElement.addEventListener("mousemove", (event) => {
+                            // Calculate approximate position
+                            const trackLength = trackElement.getAttribute("length");
+                            const relativeX = event.offsetX / trackElement.clientWidth;
+                            const position = Math.floor(relativeX * trackLength);
+        
+                            // Find the closest feature to this position
+                            const feature = trackFeatures.find(f => f.start <= position && f.end >= position);
+                            if (feature) {
+                                updateTooltip(feature.tooltipContent, event.pageX, event.pageY);
+                            }
+                        });
+        
+                        trackElement.addEventListener("mouseleave", hideTooltip);
+                    });
+                
                 const domain = document.querySelector("#domain");
                 const region = document.querySelector("#region");
                 const site = document.querySelector("#site");
@@ -223,15 +260,13 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                 }
             }
         });
-    }, [proteinData.featuresData]);
-    
+    }, [proteinData.featuresData]);    
 
     useEffect(() => {
         customElements.whenDefined("nightingale-sequence-heatmap").then(() => {
             if (scoreBarcodeContainer.current && checkDimensions(scoreBarcodeContainer.current)) {
 
                 const treatment = "";
-                
                 const dataHeatmap = Object.entries(proteinData.differentialAbundanceData).flatMap(([key, values]) =>
                     values.map(value => ({
                         yValue: key,
@@ -275,7 +310,6 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
     const lipScoreArray = [-1, -1];
     const lipScoreString = JSON.stringify(lipScoreArray);
 
-
     // Check if there is Beta strand data
     const hasDomainData = proteinData.featuresData.features.some(({ type }) => type === "DOMAIN");
     const hasRegionData = proteinData.featuresData.features.some(({ type }) => type === "REGION");
@@ -285,37 +319,64 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
     const hasDisulfidData = proteinData.featuresData.features.some(({ type }) => type === "DISULFID");
     const hasBetaStrandData = proteinData.featuresData.features.some(({ type }) => type === "STRAND");
 
-    customElements.whenDefined("nightingale-sequence").then(() => {
-        const seq = document.querySelector("#my-nightingale-sequence-id");
-        seq.data = "SEQUENCESEQUENCESEQUENCESEQUENCE";
-      })
+    const legendData = [
+        { color: '#ff7d45', label: '0 - 2' },
+        { color: '#db13', label: '2 - 4' },
+        { color: '#65cbf3', label: '4 - 7' },
+        { color: '#0053d6', label: '> 7' },
+        { color: 'default', label: 'Default (null)' }
+    ];
 
     return( 
         <div>
             <p>{selectedExperiment}</p>
             <p>{proteinData?.proteinDescription}</p>
+            {/* Other components */}
+            
             <div id="nightingale-manager-container">
-            <nightingale-manager> 
-                {/* conditonally render buttons only if the experiment is not provided  */}
-                {!selectedExperiment &&(
-                <div className="experiment-buttons">
-                        {proteinData.experimentIDsList.map((experimentID, index) => (
-                            <button
-                                key={experimentID}
-                                onClick={() => handleExperimentClick(experimentID, index)}
-                                style={{
-                                    backgroundColor: structures[index].isVisible ? '#ccc' : '#fff',
-                                    cursor: 'pointer',
-                                    margin: '5px',
-                                    padding: '10px'
-                                }}
-                            >
-                                {`Experiment ${experimentID}`}
-                            </button>
-                        ))}
+            <p>LiP Scores Legend</p>
+            <div style={{ display: 'flex', marginBottom: '20px' }}>
+                {legendData.map((item, index) => (
+                    <div key={index} style={{ display: 'flex', alignItems: 'center', marginRight: '15px' }}>
+                        <div
+                            style={{
+                                width: '20px',
+                                height: '20px',
+                                backgroundColor: item.color === 'default' ? 'transparent' : item.color,
+                                border: item.color === 'default' ? '1px solid #000' : 'none',
+                                marginRight: '5px'
+                            }}
+                        ></div>
+                        <span>{item.label}</span>
                     </div>
-                )}
-
+                ))}
+            </div>
+                {/* conditonally render buttons only if the experiment is not provided  */}
+                <p>Apply LiP Scores for Experiment on Structure</p>
+          
+               <div className="experiment-buttons">
+               {proteinData.experimentIDsList.map((experimentID, index) => (
+                   <button
+                       key={experimentID}
+                       onClick={() => {
+                           handleExperimentClick(experimentID, index);
+                       }}
+                       style={{
+                           backgroundColor: selectedExperiment === experimentID ? '#ccc' : '#fff', // Grey background if selected
+                           color: selectedExperiment === experimentID ? '#000' : '#333', // Dark text for visibility
+                           cursor: 'pointer',
+                           margin: '5px',
+                           padding: '10px',
+                           border: selectedExperiment === experimentID ? '1px solid #333' : '1px solid #ccc'
+                       }}
+                   >
+                       {`Experiment ${experimentID}`}
+                   </button>
+               ))}
+           </div>
+                
+                <nightingale-manager> 
+                <div id="tooltip" class="tooltip"></div>
                {/* Nightingale Structure */}
                {structures.map((structure, idx) =>
                         structure.isVisible ? (
@@ -425,6 +486,24 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                     </td>
                 </tr>
             )}
+            {hasBindingData && (
+                <tr>
+                    <td>Binding site</td>
+                    <td>
+                    <nightingale-track
+                        id="binding"
+                        min-width={minWidth}
+                        height="25"
+                        length={sequenceLength} 
+                        display-start="1"
+                        display-end={sequenceLength} 
+                        highlight-color={highlightColor}
+                        highlight-event="onmouseover"
+                        margin-left="40"
+                    ></nightingale-track>
+                    </td>
+                </tr>
+                )}
                 {hasRegionData && (
                 <tr>
                     <td>Region</td>
@@ -481,24 +560,6 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                     </td>
                 </tr>
             )}
-                {hasBindingData && (
-                <tr>
-                    <td>Binding site</td>
-                    <td>
-                    <nightingale-track
-                        id="binding"
-                        min-width={minWidth}
-                        height="25"
-                        length={sequenceLength} 
-                        display-start="1"
-                        display-end={sequenceLength} 
-                        highlight-color={highlightColor}
-                        highlight-event="onmouseover"
-                        margin-left="40"
-                    ></nightingale-track>
-                    </td>
-                </tr>
-                )}
                 {hasDisulfidData && (
                 <tr>
                     <td>Disulfide bond</td>
@@ -541,14 +602,7 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
         </nightingale-manager>  
         </div>
         <div>
-                <table className="pdb-selection-container"
-                 style={{
-                    width: '100%', // Make the table as wide as the nightingale-manager
-                    height: '60px', // Fix the height to 30px
-                    overflowY: 'scroll', // Add scroll for vertical scrolling
-                    overflowX: 'hidden', // Disable horizontal scrolling
-                    display: 'block', // Ensure scroll works on the tbody
-                  }}>
+                <table className="pdb-selection-container">
                     <thead>
                         <tr>
                             <th>ID</th>

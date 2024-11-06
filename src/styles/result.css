@@ -101,13 +101,13 @@ table, tr, th {
 .nightingale-grid {
     display: grid;
     grid-template-rows: repeat(auto-fill, minmax(20px, auto));
-    grid-gap: 5px;
+    grid-gap: 2px;
 }
 
 /* Flex layout adjustments */
 .nightingale-flex {
     align-items: stretch; /* Ensure horizontal stretch */
-    gap: 5px; /* Small gap between items */
+    gap: 2px; /* Small gap between items */
 }
 
 /* Nightingale manager */
@@ -162,6 +162,12 @@ nightingale-manager {
   padding: initial;
 }
 
+.flex-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* Set the width to full available space */
+}
+
 
 /* Nightingale manager container */
 #nightingale-manager-container {
@@ -169,4 +175,37 @@ nightingale-manager {
     margin-top: 60px; /* Adjusted for navigation bar */
     height: calc(100vh - 60px); /* Full height minus navigation bar */
     overflow: auto; /* Scrollable if content exceeds height */
+}
+
+.pdb-selection-container {
+    width: 100%; /* Make table fill the width */
+    table-layout: fixed; /* Distribute columns evenly */
+    border-collapse: collapse;
+}
+
+.pdb-selection-container thead {
+    background-color: #f9f9f9; /* Optional styling for header */
+    position: sticky; /* Keeps the header fixed */
+    top: 0;
+    z-index: 1;
+}
+
+.pdb-selection-container tbody {
+    display: block;
+    max-height: 200px; /* Adjust as needed */
+    overflow-y: auto;
+    width: 100%;
+}
+
+.pdb-selection-container tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed; /* Consistent column sizing */
+}
+
+.pdb-selection-container th, .pdb-selection-container td {
+    padding: 8px; /* Adjust padding as needed */
+    text-align: left;
+    border: 1px solid #ddd; /* Optional border */
+    white-space: nowrap; /* Prevents text wrapping */
 }
