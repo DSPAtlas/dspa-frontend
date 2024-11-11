@@ -88,26 +88,26 @@ table, tr, th {
 
 .nightingale-item {
     height: auto;
-    margin: 5px;
+    margin: 2px;
 }
 
 .domain-row,
 .site-row,
 .chain-row {
-    height: 5px;
+    height: 2px;
 }
 
 /* Grid layout for Nightingale components */
 .nightingale-grid {
     display: grid;
     grid-template-rows: repeat(auto-fill, minmax(20px, auto));
-    grid-gap: 2px;
+    grid-gap: 1px;
 }
 
 /* Flex layout adjustments */
 .nightingale-flex {
     align-items: stretch; /* Ensure horizontal stretch */
-    gap: 2px; /* Small gap between items */
+    gap: 1px; /* Small gap between items */
 }
 
 /* Nightingale manager */
@@ -172,8 +172,8 @@ nightingale-manager {
 /* Nightingale manager container */
 #nightingale-manager-container {
     z-index: 1001;
-    margin-top: 60px; /* Adjusted for navigation bar */
-    height: calc(100vh - 60px); /* Full height minus navigation bar */
+    margin-top: 10px; /* Adjusted for navigation bar */
+    height: calc(80vh - 60px); /* Full height minus navigation bar */
     overflow: auto; /* Scrollable if content exceeds height */
 }
 
