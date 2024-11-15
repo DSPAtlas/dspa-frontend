@@ -29,6 +29,27 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
         };
     }));
 
+    const nightingaleTdStyle = {
+        padding: "8px",
+        backgroundColor: "#f9f9f9",
+        borderBottom: "1px solid #ddd",
+        height: "20px",
+    };
+    const nightingaleTdStyle2 = {
+        padding: "8px",
+        backgroundColor: "#f9f9f9",
+        borderBottom: "1px solid #ddd",
+        height: "40px",
+    };
+
+    const nightingaleTdStyleTrack = {
+        padding: "0",
+        margin: "0",
+        backgroundColor: "#f9f9f9",
+        borderBottom: "1px solid #ddd",
+        height: "30px",
+    };
+
     const seqContainer = useRef(null);
     const residuelevelContainer = useRef(null);
     const featuresContainer = useRef(null);
@@ -75,7 +96,7 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                         ? { ...structure, lipScoreString, isVisible: true }
                         : { ...structure, isVisible: false }
                 )
-            );
+            )
         } else {
             console.error(`No data found for experiment ID: ${experimentID}`);
         }
@@ -163,12 +184,18 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                 const mappedFeatures = proteinData.featuresData.features.map((ft) => ({
                     ...ft,
                     start: ft.start || ft.begin,
-                    tooltipContent: ft.description || "No description available",
+                    tooltipContent: ft.type === "BINDING" && !ft.description ? 
+                    `Ligand: ${ft.ligand?.name || "No ligand information"}` : 
+                    (ft.description || "No description available"),
                 }));
 
                 const updateTooltip = (content, x, y) => {
-                    tooltip.innerHTML = content;
-                    tooltip.style.top = `${y - 5}px`;
+                    tooltip.innerHTML = `
+                        <div class="simple-tooltip">
+                            ${content}
+                        </div>
+                    `;
+                    tooltip.style.top = `${y}px`;
                     tooltip.style.left = `${x}px`;
                     tooltip.style.visibility = "visible";
                 };
@@ -186,28 +213,52 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                     { id: "disulfide-bond", type: "DISULFID" },
                     { id: "beta-strand", type: "STRAND" }
                 ];
-        
-                trackIds.forEach(({ id, type }) => {
-                        const trackElement = document.querySelector(`#${id}`);
+
+                trackIds.forEach(({ id, type, label }) => {
+                    const trackElement = document.querySelector(`#${id}`);
+                    if (trackElement) {
                         const trackFeatures = mappedFeatures.filter(({ type: featureType }) => featureType === type);
-        
+                        
                         trackElement.data = trackFeatures;
-        
+
                         trackElement.addEventListener("mousemove", (event) => {
-                            // Calculate approximate position
-                            const trackLength = trackElement.getAttribute("length");
-                            const relativeX = event.offsetX / trackElement.clientWidth;
-                            const position = Math.floor(relativeX * trackLength);
+                                        // Calculate approximate position
+                                        const trackLength = trackElement.getAttribute("length");
+                                        const relativeX = event.offsetX / trackElement.clientWidth;
+                                        const position = Math.floor(relativeX * trackLength);
+                    
+                                        // Find the closest feature to this position
+                                        const feature = trackFeatures.find(f => f.start <= position && f.end >= position);
+                                        if (feature) {
+                                            updateTooltip(feature.tooltipContent, event.pageX, event.pageY);
+                                        }
+                                    });
+                        trackElement.setAttribute('show-label', '');  // Enable labels
+                        trackElement.setAttribute('label', label);    // Set the label text
+                    }
+                });
         
-                            // Find the closest feature to this position
-                            const feature = trackFeatures.find(f => f.start <= position && f.end >= position);
-                            if (feature) {
-                                updateTooltip(feature.tooltipContent, event.pageX, event.pageY);
-                            }
-                        });
+                // trackIds.forEach(({ id, type }) => {
+                //         const trackElement = document.querySelector(`#${id}`);
+                //         const trackFeatures = mappedFeatures.filter(({ type: featureType }) => featureType === type);
         
-                        trackElement.addEventListener("mouseleave", hideTooltip);
-                    });
+                //         trackElement.data = trackFeatures;
+        
+                //         trackElement.addEventListener("mousemove", (event) => {
+                //             // Calculate approximate position
+                //             const trackLength = trackElement.getAttribute("length");
+                //             const relativeX = event.offsetX / trackElement.clientWidth;
+                //             const position = Math.floor(relativeX * trackLength);
+        
+                //             // Find the closest feature to this position
+                //             const feature = trackFeatures.find(f => f.start <= position && f.end >= position);
+                //             if (feature) {
+                //                 updateTooltip(feature.tooltipContent, event.pageX, event.pageY);
+                //             }
+                //         });
+        
+                //         trackElement.addEventListener("mouseleave", hideTooltip);
+                //     });
                 
                 const domain = document.querySelector("#domain");
                 const region = document.querySelector("#region");
@@ -300,8 +351,8 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                 <div class="tooltip-container">
                     <strong>Experiment</strong> <br />
                     Experiment: <a href="/experiment/${d.yValue}" target="_blank" class="tooltip-link"><strong>${d.yValue}</strong></a><br />
-                    Treatment: <strong class="tooltip-highlight">${d.treatment}</strong><br />
-                    Score: <strong>${d.score}</strong>
+                    Treatment: <strong class="tooltip-highlight">Osmotic Stress</strong><br />
+                    LiP Score: <strong>${d.score.toFixed(2)}</strong>
                 </div>`;
             return returnHTML;
         });
@@ -378,7 +429,7 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
 
                     <div style={{ display: 'flex' }}>
                         {/* Left Column: Nightingale Structure */}
-                        <div style={{ flex: '1', paddingRight: '20px' }}>
+                        <div style={{ flex: '2', paddingRight: '20px' }}>
                             {structures.map((structure, idx) =>
                                 structure.isVisible ? (
                                     <nightingale-structure
@@ -389,47 +440,47 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                                         margin-color="transparent"
                                         background-color="white"
                                         lipscore-array={structure.lipScoreString}
-                                        highlight-color="red"
-                                        style={{ height: '1000px', width: '100%' }}
+                                        highlight-color="#FFEB3B66"
+                                        style={{ height: '1250px', width: '100%' }}
                                     ></nightingale-structure>
                                 ) : null
                             )}
                         </div>
 
                         {/* Right Column: Other Nightingale Elements */}
-                        <div style={{ flex: '1' }}>
+                        <div style={{ flex: '3' }}>
                             <table>
                                 <tbody>
-                                    <tr>
-                                        <td></td>
-                                        <td>
+                                    <tr  className="navigation-row">
+                                    <td  className="text-column"></td>
+                                        <td >
                                             <nightingale-navigation
                                                 id="navigation"
                                                 min-width={minWidth}
-                                                height="30"
+                                                height="20"
                                                 length={sequenceLength}
                                                 display-start="1"
                                                 display-end={sequenceLength}
                                                 margin-color="white"
                                                 margin-left="50"
-                                                highlight-color={highlightColor}
+                                                highlight-color="#FFEB3B66"
                                             ></nightingale-navigation>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td>Sequence</td>
+                                    <tr  className="sequence-row">
+                                        <td  className="text-column"> Sequence</td> 
                                         <td>
                                             <nightingale-sequence
                                                 ref={seqContainer}
                                                 sequence={proteinData.featuresData.sequence}
                                                 min-width={minWidth}
-                                                height="30"
+                                                height="20"
                                                 width={minWidth}
                                                 length={sequenceLength}
                                                 display-start="1"
                                                 display-end={sequenceLength}
                                                 highlight-event="onmouseover"
-                                                highlight-color={highlightColor}
+                                                highlight-color="#FFEB3B66"
                                                 margin-left="40"
                                                 margin-color="aliceblue"
                                             ></nightingale-sequence>
@@ -437,94 +488,58 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                                     </tr>
                                     {/* Additional Track Elements */}
                                     {hasDomainData && (
-                                        <tr>
-                                            <td>Domain</td>
-                                            <td>
+                                        <tr className="track-row">
+                                         <td  className="text-column">Domain</td>
+                                        <td >
                                                 <nightingale-track
                                                     ref={featuresContainer}
                                                     id="domain"
                                                     min-width={minWidth}
-                                                    height="25"
+                                                    height="20"
                                                     length={sequenceLength}
                                                     display-start="1"
                                                     display-end={sequenceLength}
                                                     margin-left="40"
-                                                    highlight-color={highlightColor}
+                                                    highlight-color="#FFEB3B66"
                                                     highlight-event="onmouseover"
-                                                    label="labeltest"
-                                                    show-label
                                                 ></nightingale-track>
                                             </td>
                                         </tr>
                                     )}
                                     {hasBindingData && (
-                                    <tr>
-                                        <td>Binding site</td>
-                                        <td>
+                                  <tr className="track-row">
+                                         <td  className="text-column">Binding site
+                                        </td>
+                                        <td >
                                         <nightingale-track
                                             id="binding"
                                             min-width={minWidth}
-                                            height="25"
+                                            height="20"
                                             length={sequenceLength} 
                                             display-start="1"
                                             display-end={sequenceLength} 
-                                            highlight-color={highlightColor}
+                                            highlight-color="#FFEB3B66"
                                             highlight-event="onmouseover"
                                             margin-left="40"
                                         ></nightingale-track>
                                         </td>
                                     </tr>
                                     )}
-                                                    {hasRegionData && (
-                                <tr>
-                                    <td>Region</td>
-                                    <td>
-                                    <nightingale-track
-                                        ref={featuresContainer}
-                                        id="region"
-                                        min-width={minWidth}
-                                        height="25"
-                                        length={sequenceLength} 
-                                        display-start="1"
-                                        display-end={sequenceLength} 
-                                        highlight-color={highlightColor}
-                                        highlight-event="onmouseover"
-                                        margin-left="40"
-                                    ></nightingale-track>
-                                    </td>
-                                </tr>
-                            )}
-                                {hasSiteData && (
-                                <tr>
-                                    <td>Site</td>
-                                    <td>
-                                    <nightingale-track
-                                        id="site"
-                                        min-width={minWidth}
-                                        height="25"
-                                        length={sequenceLength} 
-                                        display-start="1"
-                                        display-end={sequenceLength} 
-                                        highlight-color={highlightColor}
-                                        highlight-event="onmouseover"
-                                        margin-left="40"
-                                    ></nightingale-track>
-                                    </td>
-                                </tr>
-                            )}
+                               
+                              
                              {hasChainData && (
-                            <tr>
-                                <td>Chain</td>
-                                <td>
+                           <tr className="track-row">
+                                <td  className="text-column">Chain </td>
+                                <td style={nightingaleTdStyleTrack}> 
                                 <nightingale-track
                                     id="chain"
                                     layout="non-overlapping"
                                     min-width={minWidth}
-                                    height="25"
+                                    height="20"
                                     length={sequenceLength} 
                                     display-start="1"
                                     display-end={sequenceLength} 
-                                    highlight-color={highlightColor}
+                                    highlight-color="#FFEB3B66"
                                     highlight-event="onmouseover"
                                     margin-left="40"
                                 ></nightingale-track>
@@ -532,18 +547,18 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                             </tr>
                         )}
                             {hasDisulfidData && (
-                            <tr>
-                                <td>Disulfide bond</td>
-                                <td>
+                            <tr className="track-row">
+                                 <td  className="text-column">Disulfide bond</td>
+                                <td style={nightingaleTdStyleTrack}>
                                 <nightingale-track
                                     id="disulfide-bond"
                                     layout="non-overlapping"
                                     min-width={minWidth}
-                                    height="25"
+                                    height="20"
                                     length={sequenceLength} 
                                     display-start="1"
                                     display-end={sequenceLength} 
-                                    highlight-color={highlightColor}
+                                    highlight-color="#FFEB3B66"
                                     highlight-event="onmouseover"
                                     margin-left="40"
                                 ></nightingale-track>
@@ -551,25 +566,67 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                             </tr>
                             )}
                             {hasBetaStrandData && (
-                            <tr>
-                                <td>Beta strand</td>
-                                <td>
+                            <tr className="track-row">
+                                <td  className="text-column">Beta strand</td>
+                                <td style={nightingaleTdStyleTrack}>
                                 <nightingale-track
                                     id="beta-strand"
                                     min-width={minWidth}
-                                    height="25"
+                                    height="20"
                                     length={sequenceLength} 
                                     display-start="1"
                                     display-end={sequenceLength} 
-                                    highlight-color={highlightColor}
+                                    highlight-color="#FFEB3B66"
                                     highlight-event="onmouseover"
                                     margin-left="40"
                                 ></nightingale-track>
                                 </td>
                             </tr>
                             )}
+                              {hasSiteData && (
+                               <tr className="track-row">
+                                    <td  className="text-column">Site</td>
+                                    <td >
+                                    <nightingale-track
+                                        id="site"
+                                        min-width={minWidth}
+                                        height="20"
+                                        length={sequenceLength} 
+                                        display-start="1"
+                                        display-end={sequenceLength} 
+                                        highlight-color="#FFEB3B66"
+                                        highlight-event="onmouseover"
+                                        margin-left="40"
+                                    ></nightingale-track>
+                                    </td>
+                                </tr>
+                            )}
+                             {hasRegionData && (
+                              <tr className="track-row">
+                                     <td  className="text-column">Region </td>
+                                    <td>
+                                    <nightingale-track
+                                        ref={featuresContainer}
+                                        id="region"
+                                        min-width={minWidth}
+                                        height="20"
+                                        length={sequenceLength} 
+                                        display-start="1"
+                                        display-end={sequenceLength} 
+                                        highlight-color="#FFEB3B66"
+                                        highlight-event="onmouseover"
+                                        margin-left="40"
+                                    ></nightingale-track>
+                                    </td>
+                                </tr>
+                            )}
+                             <tr className="track-row">
+                                <td  className="text-column"></td>
+                                <td style={nightingaleTdStyleTrack}>
+                                </td>
+                            </tr>
                                  {/* Continue with other track elements */}
-                                    <tr>
+                                     <tr>
                                         <td>Score-Barcode</td>
                                         <td>
                                             <nightingale-sequence-heatmap
@@ -587,7 +644,7 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                                             ></nightingale-sequence-heatmap>
                                         </td>
                                     </tr>
-                                    <tr>
+                                   {/*   <tr>
                                         <td>Barcodes S/D/I</td>
                                         <td>
                                             <nightingale-msa
@@ -603,7 +660,7 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                                                 color-range="#ffe6f7:-2,#FF6699:2"
                                             ></nightingale-msa>
                                         </td>
-                                    </tr>
+                                    </tr> */}
                                 </tbody>
                             </table>
                         </div>

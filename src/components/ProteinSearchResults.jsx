@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom';
 const ProteinSearchResults = ({searchResults}) => {
     const navigate = useNavigate();
   
-    const handleLinkClick = (event, taxonomyID, proteinName) => {
+    const handleLinkClick = (event, proteinName) => {
       event.preventDefault();
-      navigate(`/visualize/${taxonomyID}/${encodeURIComponent(proteinName)}`);
+      navigate(`/visualize/${encodeURIComponent(proteinName)}`);
     };
   
     return (
@@ -26,7 +26,7 @@ const ProteinSearchResults = ({searchResults}) => {
                 {searchResults.table.map((entry, index) => (
                   <tr key={index}>
                     <td>
-                      <button onClick={(e) => handleLinkClick(e, entry.taxonomyID, entry.proteinName)}>
+                      <button onClick={(e) => handleLinkClick(e, entry.proteinName)}>
                         {entry.proteinName}
                       </button>
                     </td>

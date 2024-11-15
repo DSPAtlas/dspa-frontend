@@ -50,7 +50,6 @@ function sumScores(differentialAbundanceData) {
                 sum += data.score;
             }
         }
-        
         result[experiment] = sum;
     }
 
@@ -59,9 +58,17 @@ function sumScores(differentialAbundanceData) {
 
 
 function ProteinVisualizationComponents({ proteinData, pdbIds, loading, error }) {
-    const taxonomy = "Saccharomyces cerevisiae S288C";
     const proteinfunction = proteinData.proteinDescription;
     const scoresSum = sumScores(proteinData.differentialAbundanceData);
+    const [selectedPdbId, setSelectedPdbId] = useState("");
+    const [selectedExperiment, setSelectedExperiment] = useState("");
+
+
+    useEffect(() => {
+        if (pdbIds && pdbIds.length > 0) {
+            setSelectedPdbId(pdbIds[0].id);
+        }
+    }, [pdbIds]);
 
     useEffect(() => {
         if (scoresSum) {
@@ -77,15 +84,20 @@ function ProteinVisualizationComponents({ proteinData, pdbIds, loading, error })
     }, [scoresSum]);
     
     return (
-        <div className="nightingale-component-container">
+        <div>
             {loading ? <p>Loading...</p> : error ? <p>Error: {error}</p> : (
                 proteinData && proteinData.proteinName && (
                     <div>
                     <span className="protein-header"> </span><br />
                         <span className="protein-header">UniProt ID {proteinData.proteinName} </span><br />
-                        <span className="result-text">Taxonomy: {taxonomy || 'N/A'}</span><br />
+                        <span className="result-text">Taxonomy: {'N/A'}</span><br />
                         <span className="result-text">Function: {proteinfunction || 'N/A'}</span><br />
-                        <NightingaleComponent proteinData={proteinData} pdbIds={pdbIds} />
+                        <NightingaleComponent 
+                             proteinData={proteinData} 
+                             pdbIds={pdbIds}
+                             selectedPdbId={selectedPdbId}
+                             setSelectedPdbId={setSelectedPdbId} 
+                             selectedExperiment={selectedExperiment}/>
                         <span className="protein-header"> </span><br />
                         <h2>Sum LiP Score</h2>
                         <div className="results-experiment-search-container">
@@ -100,12 +112,11 @@ function ProteinVisualizationComponents({ proteinData, pdbIds, loading, error })
 
 
 const ProteinVisualization = () => {
-    const { taxonomyID, proteinName } = useParams(); 
+    const { proteinName } = useParams(); 
     
     const [proteinData, setProteinData] = useState({});
     const [pdbIds, setPdbIds] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedTaxonomy, setSelectedTaxonomy] = useState('559292'); 
     
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -138,15 +149,11 @@ const ProteinVisualization = () => {
         } finally {
             setLoading(false);
         } 
-    },  [taxonomyID, proteinName]);
+    },  [proteinName]);
 
     useEffect(() => {
         fetchProteinData();
     }, [fetchProteinData]);
-  
-    const handleTaxonomyChange = (event) => {
-        setSelectedTaxonomy(event.target.value);
-    };
 
     const handleSearchTermChange = (event) => {
         setSearchTerm(event.target.value);
@@ -166,11 +173,6 @@ const ProteinVisualization = () => {
         <>
         <div className="search-form-container">
             <form onSubmit={handleSubmit}>
-                <select name="taxonomyID" value={taxonomyID} onChange={handleTaxonomyChange}>
-                    <option value="10090">Mus musculus</option>
-                    <option value="559292">Saccharomyces cerevisiae S288C</option>
-                    <option value="9606">Homo Sapiens</option>
-                </select>
                 <input
                     type="text"
                     name="proteinName"

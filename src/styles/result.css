@@ -54,14 +54,103 @@ h1, h2, h3, p {
 
 td {
     padding: 5px;
-    background-color: white;
+  }
+  td:first-child {
+    background-color: transparent;
     font: 1em "Raleway";
+    white-space: nowrap;
+    height: 20px;
+  }
+  td:nth-child(2) {
+    background-color: transparent;
+  }
+  tr:nth-child(-n + 3) > td {
+    background-color: transparent;
+  }
+
+.nightingale-grid {
+    grid-gap: 0;
+}
+
+.nightingale-flex {
+    gap: 0; /* Remove flex gaps */
+}
+
+tr {
+    line-height: 1; /* Reduce line height */
+    height: auto;
+}
+
+
+#nightingale-manager-container {
+    z-index: 1001;
+    margin-top: 2px; /* Adjusted for navigation bar */
+    height: calc(65vh - 60px); /* Full height minus navigation bar */
+    padding:5px;
+    margin-right: 10px;
+}
+
+#nightingale-manager-container table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+#nightingale-manager-container td,
+#nightingale-manager-container th {
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+#nightingale-manager-container td.text-column {
+    width: 80px;
+    white-space: nowrap; /* Prevents wrapping and keeps the column as narrow as the text */
+    padding: 8px;
+    text-align: center; /* Aligns text to the left, optional */
+}
+
+
+/* Set table layout and alignment */
+#nightingale-manager-container table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+#nightingale-manager-container td,
+#nightingale-manager-container th {
+    padding: 0;
+    text-align: left;
+    border: 1px solid #ddd;
+    vertical-align: middle;
+}
+
+/* Adjust height specifically for the navigation and sequence rows */
+#nightingale-manager-container .navigation-row td {
+    height: 80px; /* Set higher height for navigation */
     white-space: nowrap;
 }
 
-tr:nth-child(-n + 3) > td {
-    background-color: transparent;
+#nightingale-manager-container .sequence-row td {
+    height: 60px; /* Set higher height for sequence */
 }
+
+/* Default height for other rows */
+#nightingale-manager-container .track-row td {
+    height: 30px;
+}
+
+/* Consistent styling for nightingale components */
+nightingale-track,
+nightingale-sequence,
+nightingale-navigation {
+    width: 100%;
+    height: 100%; /* Fill row height */
+    margin: 0;
+    padding: 0;
+}
+
 
 /* Nightingale component container */
 .nightingale-component-container {
@@ -70,25 +159,50 @@ tr:nth-child(-n + 3) > td {
     margin: auto;
 }
 
-.nightingale-component {
+
+nightingale-track {
+    display: block;
+    margin: 0; /* Remove any margin */
+    padding: 2px; /* Remove any padding */
+    height: 20px; /* Adjust height as necessary */
+}
+
+nightingale-sequence {
+    display: block;
+    margin: 0; /* Remove any margin */
+    padding: 2px; /* Remove any padding */
+    height: 40px; /* Adjust height as necessary */
+}
+
+nightingale-sequence-heatmap {
+    display: block;
+    margin: 0; /* Remove any margin */
+    padding: 2px; /* Remove any padding */
+    height: 60px; /* Adjust height as necessary */
+}
+
+nightingale-msa {
+    display: block;
+    margin: 0; /* Remove any margin */
+    padding: 2px; /* Remove any padding */
+    height: 60px; /* Adjust height as necessary */
+}
+
+
+
+table {
+    border-collapse: collapse; /* Ensures cells have no border spacing */
     margin: 0;
     padding: 0;
+    width: 100%;
 }
 
-table, tr, th {
-    border-collapse: collapse;
-    padding: 0;
+td {
+    padding: 0; /* Remove padding within cells */
     margin: 0;
-}
-
-.nightingale-row {
-    align-items: center;
-    justify-content: space-between;
-}
-
-.nightingale-item {
-    height: auto;
-    margin: 2px;
+    height: 20px;
+    vertical-align: middle; /* Align contents to middle */
+    white-space: nowrap; /* Prevent text from wrapping */
 }
 
 .domain-row,
@@ -98,22 +212,6 @@ table, tr, th {
 }
 
 /* Grid layout for Nightingale components */
-.nightingale-grid {
-    display: grid;
-    grid-template-rows: repeat(auto-fill, minmax(20px, auto));
-    grid-gap: 1px;
-}
-
-/* Flex layout adjustments */
-.nightingale-flex {
-    align-items: stretch; /* Ensure horizontal stretch */
-    gap: 1px; /* Small gap between items */
-}
-
-/* Nightingale manager */
-.nightingale-manager {
-    display: flex;
-}
 
 /* Protein header styling */
 .protein-header {
@@ -138,6 +236,22 @@ table, tr, th {
     padding: 10px;
     border-radius: 8px;
     color: #333;
+    font-family: "Raleway", sans-serif;
+    font-size: 14px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for consistency */
+}
+
+.simple-tooltip {
+    background-color: white;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 8px;
+    color: #333;
+    font-family: "Raleway", sans-serif;
+    font-size: 18px;
+    text-align: left;
+   /*  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);*/
+    white-space: nowrap; /* Prevents line breaks */
 }
 
 /* Tooltip link styling */
@@ -150,18 +264,6 @@ table, tr, th {
     text-decoration: underline;
 }
 
-.tooltip-highlight {
-    color: #555;
-}
-
-nightingale-sequence, 
-nightingale-track, 
-nightingale-manager {
-  box-sizing: content-box;
-  margin: initial;
-  padding: initial;
-}
-
 .flex-wrapper {
     display: flex;
     flex-direction: column;
@@ -170,12 +272,7 @@ nightingale-manager {
 
 
 /* Nightingale manager container */
-#nightingale-manager-container {
-    z-index: 1001;
-    margin-top: 10px; /* Adjusted for navigation bar */
-    height: calc(80vh - 60px); /* Full height minus navigation bar */
-    overflow: auto; /* Scrollable if content exceeds height */
-}
+
 
 .pdb-selection-container {
     width: 100%; /* Make table fill the width */

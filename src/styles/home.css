@@ -101,3 +101,52 @@
     color: #ccc;
   }
 
+
+  .three-boxes-container {
+    display: flex;
+    justify-content: space-around;
+    gap: 40px; /* Adds space between each box */
+    margin-top: 60px;
+  }
+  
+  .box {
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center; /* Centers text inside each box */
+    width: 30%;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers elements vertically within each box */
+  }
+  
+  .box label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center; /* Centers label text */
+  }
+  
+  .box button,
+  .box select,
+  .box input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%; /* Ensures the input fills the box width */
+    margin-top: 10px;
+    text-align: center; /* Centers button text */
+  }
+  
+  .box button {
+    background-color: #0A2F59;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  .box button:hover {
+    background-color: #0073e6;
+  }
+  

@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import config from '../config.json';
 import ProteinSearchResults from './ProteinSearchResults.jsx';
 
 
 const ProteinSearch = () => {
   const location = useLocation();
-  const [selectedOrganism, setSelectedOrganism] = useState('559292'); 
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState(location.state?.searchTerm || '');
   const [error, setError] = useState('');
   const { searchResults: initialSearchResults } = location.state || {};
   const [searchResults, setSearchResults] = useState(initialSearchResults || null);
-
-  const handleOrganismChange = (event) => {
-    setSelectedOrganism(event.target.value);
-  };
 
   const handleProteinNameChange = (event) => {
     setSearchTerm(event.target.value);
@@ -34,7 +30,12 @@ const ProteinSearch = () => {
       const data = await response.json();
       
       if (data.success) {
-        setSearchResults(data.results);
+        if (data.table.length === 1) {
+          const result = data.table[0];
+          navigate(`/visualize/${result.proteinName}`);
+        } else {
+          setSearchResults(data);
+        }
       } else {
         throw new Error(data.message || 'Failed to fetch data');
       }
@@ -51,21 +52,7 @@ const ProteinSearch = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    try {
-      const queryParams = `searchTerm=${encodeURIComponent(searchTerm)}`;
-      const url = `${config.apiEndpoint}search?${queryParams}`;
-      const response = await fetch(url);
-      const data = await response.json();
-      
-      if (data.success) {
-        setSearchResults(data);
-  
-      } else {
-        throw new Error(data.message || 'Failed to fetch data');
-      }
-    } catch (err) {
-      setError(err.message);
-    }
+    performSearch(searchTerm);
   };
 
   return (

@@ -21,8 +21,8 @@
 
 .treatment-protein-container {
     margin-top: 60px;
-    max-height: 80%;
-    height: calc(100vh - 60px);
+    max-height: 85%;
+    height: calc(65vh - 60px);
     overflow-y: auto;
     width: 100%;
     display: inline-block;
@@ -31,8 +31,8 @@
 .treatment-table-container {
     flex: 1;
     margin-top: 60px;
-    max-height: 80%;
-    height: calc(100vh - 60px);
+    max-height: 85%;
+    height: calc(65vh - 60px);
     width: 100%;
     overflow-y: auto; 
 }
@@ -140,3 +140,4 @@ select:focus {
 .namespace-dropdown {
     margin-top: 10px;
 }
+
