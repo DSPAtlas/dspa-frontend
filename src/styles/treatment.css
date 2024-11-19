@@ -5,6 +5,13 @@
     width: 100%;
 }
 
+.treatment-row {
+    margin: 20px 10px; /* Adds 20px top and bottom, 10px left and right */
+    padding: 10px; /* Optional: Adds padding inside the row */
+    box-sizing: border-box; /* Ensures padding and borders are included in size calculations */
+}
+
+
 .treatment-content-wrapper {
     display: flex;
     flex-direction: row; 
@@ -40,6 +47,7 @@
 .treatment-table-container table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: auto;
 }
 
 .treatment-table-container th,
@@ -47,34 +55,50 @@
     padding: 10px;
     text-align: center;
     border: 1px solid #ddd;
+    word-wrap: break-word;
 }
 
 .treatment-protein-experiment-wrapper {
     display: flex;
     justify-content: space-between;
-    align-items: stretch;
+    align-items: flex-start;
     gap: 20px; 
     width: 100%;
 }
 
 .treatment-table-container {
+    display: flex; /* Use Flexbox for alignment within containers */
+    flex-direction: column; /* Align content vertically */
     flex: 1;
+    overflow-y: auto;
+    overflow-x: auto;
     margin-right: 10px; 
     margin-left: 10px; 
-    overflow-x: auto;
-    min-width: 0;
+    max-height: calc(100vh - 120px); /* Adjust the maximum height dynamically based on viewport */
+    width: 100%; /* Ensure it takes the full available width */
+    box-sizing: border-box; 
 }
 
 .treatment-protein-container {
+    display: flex; /* Use Flexbox for alignment within containers */
+    flex-direction: column; /* Align content vertically */
     flex: 6;
-    margin-right: 0px; 
-    min-width: 0;
+    margin: 0;
     overflow: auto;
+    width: 100%;
+    height: 100%;
+}
+
+.treatment-table-container h2, .treatment-protein-container h2 {
+    margin: 0; /* Removes any default margin that might cause misalignment */
+    padding: 0; /* Ensures no extra padding disrupts alignment */
+    height: auto; /* Ensures the height adapts dynamically */
 }
 
 /* Scrollbar customization for better aesthetics */
 .treatment-table-container::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
 }
 
 .treatment-table-container::-webkit-scrollbar-thumb {
@@ -91,6 +115,7 @@
     justify-content: space-between; 
     gap: 20px; 
     align-items: stretch;
+    flex-grow: 1;
 }
 
 .treatment-dropdown {
@@ -133,11 +158,28 @@ select:focus {
 }
 
 .treatment-goenrichment-container {
+    display: flex;
+    flex-direction: column; /* Stack header and chart vertically */
+    width: 100%; /* Full width */
+}
+
+.treatment-goenrichment-container {
     margin-top: 20px;
     width: 100%;
+    flex-direction: column;
+    display: flex;
 }
 
 .namespace-dropdown {
     margin-top: 10px;
+}
+
+
+.goenrichment-chart-wrapper {
+    display: flex; /* Enable Flexbox for centering */
+    justify-content: center; /* Horizontally center the chart */
+    align-items: center; /* Vertically center the chart */
+    width: 100%; /* Full width of the container */
+    height: auto; /* Dynamically adjust height */
 }
 

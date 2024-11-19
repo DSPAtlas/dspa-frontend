@@ -12,13 +12,15 @@ import "@nightingale-elements/nightingale-sequence-heatmap";
 
 
 
-const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPdbId, selectedExperiment}) => {
-    console.log("proteindata",proteinData);
-    console.log("proteindata sequence",proteinData.featuresData.sequence);
-    // Initialize selectedExperiment as an empty string by default
-    const structureRefs = useRef(proteinData.experimentIDsList.map(() => React.createRef()));
+const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPdbId, selectedExperiment, showHeatmap = true}) => {
+   
+    const experimentIDsList = proteinData.experimentIDsList.length > 0
+        ? proteinData.experimentIDsList
+        : proteinData.lipscoreList.map(entry => entry.experimentID);
 
-    const [structures, setStructures] = useState(proteinData.experimentIDsList.map((_, index) => {
+    const structureRefs = useRef(experimentIDsList.map(() => React.createRef()));
+
+    const [structures, setStructures] = useState(experimentIDsList.map((_, index) => {
         const sequenceLength = proteinData.proteinSequence.length;
         const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1)); 
 
@@ -405,7 +407,7 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
 
                 {/* Button for Experiments */}
                 <div className="experiment-buttons">
-                    {proteinData.experimentIDsList.map((experimentID, index) => (
+                    {experimentIDsList.map((experimentID, index) => (
                         <button
                             key={experimentID}
                             onClick={() => handleExperimentClick(experimentID, index)}
@@ -626,6 +628,7 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                                 </td>
                             </tr>
                                  {/* Continue with other track elements */}
+                                 {showHeatmap && ( // Conditional rendering of heatmap
                                      <tr>
                                         <td>Score-Barcode</td>
                                         <td>
@@ -644,6 +647,7 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                                             ></nightingale-sequence-heatmap>
                                         </td>
                                     </tr>
+                                    )}
                                    {/*   <tr>
                                         <td>Barcodes S/D/I</td>
                                         <td>

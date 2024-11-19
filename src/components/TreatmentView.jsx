@@ -49,7 +49,7 @@ const ExperimentTable = ({ experimentData, onProteinClick, onExperimentClick, di
                             <td onClick={() => onProteinClick(proteinData.proteinAccession)}>
                                 {proteinData.proteinAccession}
                             </td>
-                            {experimentIDs.map(experimentID => (
+                            {/* {experimentIDs.map(experimentID => (
                                 <td 
                                     key={experimentID}
                                     onClick={() => onExperimentClick(proteinData.proteinAccession, experimentID)}
@@ -59,7 +59,7 @@ const ExperimentTable = ({ experimentData, onProteinClick, onExperimentClick, di
                                         ? Math.round(proteinData.experiments[experimentID]) 
                                         : 0}
                                 </td>
-                            ))}
+                            ))} */}
                             <td style={{ ...experimentTableStyles, cursor: "pointer" }}>{Math.round(proteinData.averageScore || 0)}</td>
                         </tr>
                     ))}
@@ -94,30 +94,30 @@ const Treatment = () => {
 
     const fetchTreatmentData = useCallback(async () => {
         setLoading(true);
-        const url = "${config.apiEndpoint}treatment/treatment?treatment=${selectedTreatment}";
+        const url = `${config.apiEndpoint}treatment/treatment?treatment=${selectedTreatment}`;
         try {
-          const response = await fetch(url);
+            const response = await fetch(url);
     
-          if (!response.ok) {
-            throw new Error("HTTP error! Status: ${response.status}");
-          }
-          
-          const data = await response.json();
-          setTreatmentData(data.treatmentData);
-
-          const extractedLipIDs = data.treatmentData.goEnrichmentList
-            .flatMap(entry => entry.data.map(item => item.experimentID)) 
-            .filter((id, index, self) => id && self.indexOf(id) === index); 
-
-          setLipIDs(extractedLipIDs);
-
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            setTreatmentData(data.treatmentData);
+    
+            const extractedLipIDs = data.treatmentData.goEnrichmentList
+                .flatMap(entry => entry.data.map(item => item.experimentID))
+                .filter((id, index, self) => id && self.indexOf(id) === index);
+    
+            setLipIDs(extractedLipIDs);
         } catch (error) {
-          console.error("Error fetching data: ", error);
-          setError("Failed to load experiment data: ${error}");
-        }finally {
+            console.error("Error fetching data: ", error);
+            setError(`Failed to load experiment data: ${error.message}`);
+        } finally {
             setLoading(false);
-        } 
-      }, [selectedTreatment]);
+        }
+    }, [selectedTreatment]);
+    
     
     useEffect(() => {
         fetchTreatmentData();
@@ -226,8 +226,10 @@ const Treatment = () => {
     
             {/* First Row: Gene Ontology Enrichment Analysis */}
             <div className="treatment-row">
-                <div className="treatment-goenrichment-container">
+            <div className="treatment-header">
                     <h2>Gene Ontology Enrichment Analysis</h2>
+                </div>
+                <div className="goenrichment-chart-wrapper">
                     <div ref={chartRef} className="goenrichment-chart-container"></div>
                     {treatmentData?.goEnrichmentList && (
                         <GOEnrichmentVisualization 
@@ -265,6 +267,7 @@ const Treatment = () => {
                                 selectedPdbId={selectedPdbId}
                                 setSelectedPdbId={setSelectedPdbId} 
                                 selectedExperiment={selectedExperiment}
+                                showHeatmap={false}
                             />
                         )}
                     </div>
