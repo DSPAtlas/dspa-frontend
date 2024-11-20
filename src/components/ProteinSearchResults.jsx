@@ -11,8 +11,7 @@ const ProteinSearchResults = ({searchResults}) => {
     };
   
     return (
-      <div>
-        <div className="results-search-container">
+      <div className="results-search-container">
           {searchResults && searchResults.table && searchResults.table.length > 0 ? (
             <table>
               <thead>
@@ -26,7 +25,9 @@ const ProteinSearchResults = ({searchResults}) => {
                 {searchResults.table.map((entry, index) => (
                   <tr key={index}>
                     <td>
-                      <button onClick={(e) => handleLinkClick(e, entry.proteinName)}>
+                      <button 
+                      className="protein-name-button"
+                      onClick={(e) => handleLinkClick(e, entry.proteinName)}>
                         {entry.proteinName}
                       </button>
                     </td>
@@ -40,7 +41,7 @@ const ProteinSearchResults = ({searchResults}) => {
             <p>No search results to display.</p>
           )}
         </div>
-      </div>
+     
     );
   };
   

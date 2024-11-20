@@ -12,11 +12,21 @@ import "@nightingale-elements/nightingale-sequence-heatmap";
 
 
 
-const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPdbId, selectedExperiment, showHeatmap = true}) => {
+const NightingaleComponent = ({
+    proteinData, 
+    pdbIds, 
+    selectedPdbId, 
+    setSelectedPdbId, 
+    selectedExperiment, 
+    showHeatmap = true,
+    passedExperimentIDs
+}) => {
    
-    const experimentIDsList = proteinData.experimentIDsList.length > 0
-        ? proteinData.experimentIDsList
-        : proteinData.lipscoreList.map(entry => entry.experimentID);
+    const experimentIDsList = passedExperimentIDs?.length > 0 
+        ? passedExperimentIDs 
+        : proteinData.experimentIDsList.length > 0
+            ? proteinData.experimentIDsList
+            : proteinData.lipscoreList.map(entry => entry.experimentID);
 
     const structureRefs = useRef(experimentIDsList.map(() => React.createRef()));
 
@@ -30,19 +40,6 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
             isVisible: index === 0
         };
     }));
-
-    const nightingaleTdStyle = {
-        padding: "8px",
-        backgroundColor: "#f9f9f9",
-        borderBottom: "1px solid #ddd",
-        height: "20px",
-    };
-    const nightingaleTdStyle2 = {
-        padding: "8px",
-        backgroundColor: "#f9f9f9",
-        borderBottom: "1px solid #ddd",
-        height: "40px",
-    };
 
     const nightingaleTdStyleTrack = {
         padding: "0",
@@ -411,14 +408,6 @@ const NightingaleComponent = ({proteinData, pdbIds, selectedPdbId, setSelectedPd
                         <button
                             key={experimentID}
                             onClick={() => handleExperimentClick(experimentID, index)}
-                            style={{
-                                backgroundColor: selectedExperiment === experimentID ? '#ccc' : '#fff',
-                                color: selectedExperiment === experimentID ? '#000' : '#333',
-                                cursor: 'pointer',
-                                margin: '5px',
-                                padding: '10px',
-                                border: selectedExperiment === experimentID ? '1px solid #333' : '1px solid #ccc'
-                            }}
                         >
                             {`Experiment ${experimentID}`}
                         </button>

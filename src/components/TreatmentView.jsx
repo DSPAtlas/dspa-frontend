@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import config from '../config.json';
 import { GOEnrichmentVisualization } from '../visualization/goterm.js';
@@ -15,15 +15,11 @@ const experimentTableStyles = {
 };
 
 
-const ExperimentTable = ({ experimentData, onProteinClick, onExperimentClick, displayedProtein }) => {
+const ExperimentTable = ({ experimentData, onProteinClick, displayedProtein }) => {
     if (!experimentData || !Array.isArray(experimentData)) {
         console.error("experimentData is not an array:", experimentData);
         return <div>No valid data to display</div>;  
     }
-
-    const experimentIDs = [...new Set(
-        experimentData.flatMap(protein => Object.keys(protein.experiments))
-    )];
 
     return (
         <div>
@@ -31,10 +27,7 @@ const ExperimentTable = ({ experimentData, onProteinClick, onExperimentClick, di
                 <thead>
                     <tr>
                         <th style={experimentTableStyles}>Protein Accession</th>
-                        {experimentIDs.map(experimentID => (
-                            <th key={experimentID} style={experimentTableStyles}>{experimentID}</th>
-                        ))}
-                        <th>Average Score</th>
+                        <th style={experimentTableStyles}>Average Score</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,18 +42,9 @@ const ExperimentTable = ({ experimentData, onProteinClick, onExperimentClick, di
                             <td onClick={() => onProteinClick(proteinData.proteinAccession)}>
                                 {proteinData.proteinAccession}
                             </td>
-                            {/* {experimentIDs.map(experimentID => (
-                                <td 
-                                    key={experimentID}
-                                    onClick={() => onExperimentClick(proteinData.proteinAccession, experimentID)}
-                                    style={{ cursor: 'pointer' }}
-                                >
-                                    {proteinData.experiments[experimentID] !== undefined
-                                        ? Math.round(proteinData.experiments[experimentID]) 
-                                        : 0}
-                                </td>
-                            ))} */}
-                            <td style={{ ...experimentTableStyles, cursor: "pointer" }}>{Math.round(proteinData.averageScore || 0)}</td>
+                            <td style={{ ...experimentTableStyles }}>
+                                {Math.round(proteinData.averageScore || 0)}
+                            </td>
                         </tr>
                     ))}
                 </tbody>
@@ -167,6 +151,17 @@ const Treatment = () => {
         }
     }, [displayedProteinData, lipIDs]);
 
+    const extractedExperimentIDs = useMemo(() => {
+        if (!filteredExperimentData || filteredExperimentData.length === 0) return [];
+        return [
+            ...new Set(
+                filteredExperimentData.flatMap((proteinData) =>
+                    proteinData.experiments ? Object.keys(proteinData.experiments) : []
+                )
+            ),
+        ];
+    }, [filteredExperimentData]);
+
     const handleGoTermClick = (goName, studyItems) => {
         setSelectedGoTerm(goName);
         if (treatmentData && treatmentData.proteinScoresTable) {
@@ -224,64 +219,60 @@ const Treatment = () => {
                 )
             )}
     
-            {/* First Row: Gene Ontology Enrichment Analysis */}
-            <div className="treatment-row">
-            <div className="treatment-header">
-                    <h2>Gene Ontology Enrichment Analysis</h2>
+            <div className="treatment-section-wrapper">
+            {/* Gene Ontology Chart Section */}
+            <div className="treatment-section goenrichment-chart-wrapper">
+                <h2>Gene Ontology Enrichment Analysis</h2>
+                <div ref={chartRef} className="goenrichment-chart-content"></div>
+                {treatmentData?.goEnrichmentList && (
+                    <GOEnrichmentVisualization
+                        goEnrichmentData={treatmentData.goEnrichmentList}
+                        onGoTermClick={handleGoTermClick}
+                        chartRef={chartRef}
+                        selectedGoTerm={selectedGoTerm}
+                    />
+                )}
+            </div>
+
+            {/* Protein Experiment Section */}
+            <div className="treatment-section treatment-protein-experiment-wrapper">
+                <div className="treatment-table-container">
+                    <h2>LiP Scores among Experiments</h2>
+                    <ExperimentTable
+                        experimentData={filteredExperimentData}
+                        onProteinClick={handleProteinClick}
+                        displayedProtein={displayedProtein}
+                    />
                 </div>
-                <div className="goenrichment-chart-wrapper">
-                    <div ref={chartRef} className="goenrichment-chart-container"></div>
-                    {treatmentData?.goEnrichmentList && (
-                        <GOEnrichmentVisualization 
-                            goEnrichmentData={treatmentData.goEnrichmentList} 
-                            onGoTermClick={handleGoTermClick} 
-                            chartRef={chartRef} 
-                            selectedGoTerm={selectedGoTerm}
+                <div className="treatment-protein-container">
+                    <h2>{displayedProtein}</h2>
+                    {filteredProteinData && pdbIds && (
+                        <NightingaleComponent
+                            proteinData={filteredProteinData}
+                            pdbIds={pdbIds}
+                            selectedPdbId={selectedPdbId}
+                            setSelectedPdbId={setSelectedPdbId}
+                            selectedExperiment={selectedExperiment}
+                            showHeatmap={false}
                         />
                     )}
                 </div>
             </div>
-    
-            {/* Second Row: LiP Scores among Experiments */}
-            <div className="treatment-row">
-            <h2>GO Term: {selectedGoTerm}</h2>
-                <div className="treatment-protein-experiment-wrapper">
-                    <div className="treatment-table-container">
-                        <h2>LiP Scores among Experiments</h2><br />
-                        {treatmentData?.proteinScoresTable && (
-                            <ExperimentTable 
-                                experimentData={filteredExperimentData} 
-                                onProteinClick={handleProteinClick} 
-                                onExperimentClick={handleExperimentClick} 
-                                displayedProtein={displayedProtein}
-                            />
-                        )}
-                    </div>
-    
-                    <div className="treatment-protein-container">
-                        <h2>{displayedProtein}</h2><br />
-                        {filteredProteinData && pdbIds && ( 
-                            <NightingaleComponent
-                                proteinData={filteredProteinData} 
-                                pdbIds={pdbIds}
-                                selectedPdbId={selectedPdbId}
-                                setSelectedPdbId={setSelectedPdbId} 
-                                selectedExperiment={selectedExperiment}
-                                showHeatmap={false}
-                            />
-                        )}
-                    </div>
-                </div>
 
-             {/* Third Row */}
-             <div className="treatment-row">
-                <div className="treatment-container">
-                    <h2>Experiments</h2>
+            {/* Experiment List Section */}
+            <div className="treatment-section treatment-experiment-container">
+                <h2>Experiments</h2>
+                <div className="experiment-boxes">
+                    {extractedExperimentIDs.map((experimentID, index) => (
+                        <div key={index} className="experiment-box">
+                            <h2>{experimentID}</h2>
+                            <p>Placeholder text for experiment {experimentID}.</p>
+                        </div>
+                    ))}
                 </div>
             </div>
-
-            
-            </div>
+        </div>
+  
         </div>
     );
 };

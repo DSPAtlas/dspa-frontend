@@ -1,142 +1,140 @@
-/* Container styling to center the form */
-
-.search-form-container, .search-experiment-form-container {
-    margin-top: 50px;
+/* General container styling for consistency */
+.search-section {
     display: flex;
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
-    flex-direction: row; 
-    margin: 0 auto; /* Center the containers */
-    padding: 10px 0; /* Minimal padding */
-    width: 100%; /* Ensure full width */
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-.search-form-container {
-    margin-top: 50px; /* Adjust this value to add space at the top */
+/* Search container styled similar to previous containers */
+.search-container {
+    width: 100%; /* Full width */
+    max-width: 1250px; /* Limit max width for better readability */
+    padding: 20px;
+    border: 1px solid #ddd; /* Consistent border */
+    border-radius: 5px; /* Rounded corners */
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    box-sizing: border-box; /* Include padding in width calculations */
+    text-align: center; /* Center content inside */
 }
 
-.search-form {
+/* Heading for the search container */
+.search-container h2 {
+    font-family: 'Raleway', sans-serif;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Wrapper for the search form */
+.search-form-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Adjust this gap to control spacing between elements */
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
 }
 
-.form-group {
-    margin: 0; /* Remove default margin */
-}
-
-.select-dropdown {
-    width: 100%;
-}
-
-.search-button {
-    margin-top: 10px; /* Ensure there's a small space above the button */
-}
-
-.results-search-container {
-    margin: 10px 0; /* Adjust this margin to control spacing between the results and forms */
-}
-.search-form-container {
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    
-}
-.search-experiment-form-container {
-    display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    flex-direction: row; 
-}
-
-.form-group {
-    margin: 0 10px; /* Add some margin between the dropdowns */
-}
-
-.search-form {
-    display: flex; /* Use flexbox to align form elements */
-    flex-direction: column; /* Stack elements vertically */
-    align-items: center; /* Align elements vertically */
-    padding: 20px; /* Increased padding */
-    width: auto; /* Adjust width based on content */
-    font-size: 1.2rem; /* Increased font size for better readability */
-    color: #373D41;
-    flex-direction: row; 
-    background-color: #FFF;
-    background-clip: padding-box;
-    border: 1px solid #C5C5C7;
-    border-radius: 6px;
-    box-shadow: none;
-    margin: 20px; /* Added margin for spacing around the form */
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-/* Styling for the input field and dropdown */
-.search-input, .select-dropdown {
-    flex-grow: 1; /* Allows the inputs to fill the form */
-    padding: 15px 20px; /* Increased padding for larger touch area */
-    font-size: 20px; /* Larger font size for better readability */
-    border: 2px solid #ccc; /* Light grey border */
-    border-radius: 4px; /* Rounded corners */
+/* Styling for the input field */
+.search-input {
     width: 100%; /* Full width */
-    margin: 10px 0; /* Added margin for spacing between form elements */
+    padding: 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
     transition: border-color 0.3s ease-in-out;
 }
 
-/* Hover and focus states for the input field and dropdown */
-.search-input:hover, .search-input:focus,
-.select-dropdown:hover, .select-dropdown:focus {
-    border-color: #888; /* Darker grey on hover/focus */
-}
-
-/* Styling for the submit button */
+/* Styling for the button */
 .search-button {
-    padding: 15px 20px; /* Increased padding for a larger button */
-    font-size: 18px; /* Larger font size for better readability */
-    background-color: white;
-    color: #102e54;
-    border: 2px solid #ccc; /* Consistent with input field */
-    border-radius: 4px; /* Rounded corners */
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #0A2F59;
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease-in-out;
-    margin-top: 10px; /* Added space above the button */
 }
 
-/* Hover and focus states for the button */
-.search-button:hover, .search-button:focus {
-    background-color: #d5cdba; /* Darker background on hover/focus */
+/* Button hover effect */
+.search-button:hover {
+    background-color: #0056b3;
 }
 
-
-
-/* CSS for custom dropdown arrow */
-.select-dropdown + .select-arrow {
-    position: relative;
-    float: right;
-    margin-right: 10px;
-    margin-top: -40px; /* Adjusted to better position the custom arrow */
-    pointer-events: none; /* Prevents arrow from being clickable */
+.results-search-container {
+    display: flex; /* Enable flexbox */
+    flex-direction: column; /* Stack content vertically */
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    width: 100%; /* Full width */
+    padding: 20px; /* Add some padding around the container */
+    box-sizing: border-box; /* Include padding in width/height calculations */
 }
 
-/* Custom arrow using Unicode */
-.select-arrow::after {
-    content: "▼"; /* Unicode character for down arrow */
-    font-size: 18px; /* Larger font size for the arrow */
-    color: #b99f9d; /* Grey color for the arrow */
-}
-.select-dropdown {
-    display: block;
-    width: 100%; /* Ensures the dropdown fills the container */
-    padding: 15px 20px; /* Adjust padding as needed for aesthetics */
-    font-size: 20px; /* Increased font size for better visibility */
-    line-height: 2; /* Adjust line height to fit the larger text properly */
-    color: #444; 
-    background-color: #ffffff; 
-    border: 2px solid #b99f9d; /* Subtle border to define the dropdown boundaries */
-    border-radius: 4px; /* Rounded corners for a modern look */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
-    -webkit-appearance: none; /* Removes default styling in WebKit browsers */
-    -moz-appearance: none; /* Removes default styling in Mozilla browsers */
-    appearance: none; /* Standard way to remove default arrow */
-    cursor: pointer; /* Indicates the dropdown can be interacted with */
-}
+/* Results container styling */
+.results-search-container table {
+    width: 100%;
+    max-width: 1200px;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+  }
+  
+
+  .results-search-container th {
+    padding: 10px;
+    text-align: center;
+    background-color: #f5f5f5;
+    border-bottom: 2px solid #ddd;
+  }
+  
+  /* Table row styling */
+  .results-search-container td {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+  }
+  
+  /* Styling for the protein name buttons */
+  .protein-name-button {
+    background: none;
+    border: none;
+    color: #0A2F59; /* Link-style color */
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 10px 20px; /* Add spacing around the button */
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Hover effect for protein name buttons */
+  .protein-name-cdbutton:hover {
+    background-color: #f0f0f0;
+    border-radius: 4px;
+  }
+  
+  /* Adjust table spacing and alignment */
+  .results-search-container tr td:first-child {
+    padding-left: 20px; /* Add more spacing to the first column */
+    vertical-align: middle;
+  }
+  
+  .results-search-container td {
+    vertical-align: middle; /* Ensure vertical alignment in all cells */
+  }
+  
+  /* Adjust the no results message */
+  .results-search-container p {
+    font-size: 16px;
+    text-align: center;
+    width: 100%;
+    margin-top: 20px;
+    color: #666;
+  }

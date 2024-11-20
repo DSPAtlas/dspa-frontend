@@ -5,10 +5,33 @@
     width: 100%;
 }
 
+.treatment-section-wrapper {
+    display: flex;
+    flex-direction: column; /* Stack containers vertically */
+    gap: 20px; /* Space between sections */
+    width: 100%; /* Full width of the parent container */
+    box-sizing: border-box; /* Include padding and border in size */
+}
+
+/* Shared styles for all sections */
+.treatment-section {
+    width: 100%; /* Full width of the container */
+    border: 1px solid #ddd; /* Add consistent border */
+    border-radius: 5px; /* Optional: Rounded corners */
+    background-color: #fff; /* Background for consistency */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    box-sizing: border-box; /* Include padding and borders in width */
+    padding: 20px; /* Internal spacing */
+}
+
+
+
 .treatment-row {
-    margin: 20px 10px; /* Adds 20px top and bottom, 10px left and right */
+    margin: 20px ; /* Adds 20px top and bottom, 10px left and right */
     padding: 10px; /* Optional: Adds padding inside the row */
     box-sizing: border-box; /* Ensures padding and borders are included in size calculations */
+    display: flex;
+    flex-wrap: wrap;
 }
 
 
@@ -26,22 +49,23 @@
     width: 100%;
 }
 
-.treatment-protein-container {
-    margin-top: 60px;
-    max-height: 85%;
-    height: calc(65vh - 60px);
-    overflow-y: auto;
-    width: 100%;
-    display: inline-block;
+.treatment-table-container {
+    flex: 0 0 20%; /* Flex-shrink: 0, Flex-grow: 0, Basis: 20% */
+    max-height: calc(100vh - 120px); /* Dynamic height based on viewport */
+    overflow-y: auto; /* Allow vertical scrolling */
+    border: 1px solid #ddd; /* Optional: Border for clarity */
+    box-sizing: border-box;
+    padding: 10px;
 }
 
-.treatment-table-container {
-    flex: 1;
-    margin-top: 60px;
-    max-height: 85%;
-    height: calc(65vh - 60px);
-    width: 100%;
-    overflow-y: auto; 
+/* Set 80% width for the protein container */
+.treatment-protein-container {
+    flex: 0 0 80%; /* Flex-shrink: 0, Flex-grow: 0, Basis: 80% */
+    max-height: calc(100vh - 120px); /* Dynamic height based on viewport */
+    overflow: hidden; /* Disable scrolling */
+    border: 1px solid #ddd; /* Optional: Border for clarity */
+    box-sizing: border-box;
+    padding: 10px;
 }
 
 .treatment-table-container table {
@@ -61,44 +85,24 @@
 .treatment-protein-experiment-wrapper {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 20px; 
-    width: 100%;
+    width: 100%; /* Full width */
+    box-sizing: border-box;
 }
 
-.treatment-table-container {
-    display: flex; /* Use Flexbox for alignment within containers */
-    flex-direction: column; /* Align content vertically */
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: auto;
-    margin-right: 10px; 
-    margin-left: 10px; 
-    max-height: calc(100vh - 120px); /* Adjust the maximum height dynamically based on viewport */
-    width: 100%; /* Ensure it takes the full available width */
-    box-sizing: border-box; 
-}
-
-.treatment-protein-container {
-    display: flex; /* Use Flexbox for alignment within containers */
-    flex-direction: column; /* Align content vertically */
-    flex: 6;
-    margin: 0;
-    overflow: auto;
-    width: 100%;
-    height: 100%;
-}
 
 .treatment-table-container h2, .treatment-protein-container h2 {
-    margin: 0; /* Removes any default margin that might cause misalignment */
-    padding: 0; /* Ensures no extra padding disrupts alignment */
-    height: auto; /* Ensures the height adapts dynamically */
+    min-height: 50px; /* Set consistent height */
+    line-height: 50px; /* Vertically center text */
+    margin: 0; /* Reset default margins */
+    text-align: center; /* Center-align headings */
 }
+
 
 /* Scrollbar customization for better aesthetics */
 .treatment-table-container::-webkit-scrollbar {
     width: 8px;
-    height: 8px;
 }
 
 .treatment-table-container::-webkit-scrollbar-thumb {
@@ -175,11 +179,90 @@ select:focus {
 }
 
 
-.goenrichment-chart-wrapper {
-    display: flex; /* Enable Flexbox for centering */
-    justify-content: center; /* Horizontally center the chart */
-    align-items: center; /* Vertically center the chart */
+.goenrichment-chart-container {
     width: 100%; /* Full width of the container */
-    height: auto; /* Dynamically adjust height */
+    max-height: calc(100vh - 120px); /* Adjust height based on viewport */
+    overflow-y: auto; /* Allow vertical scrolling if needed */
+    padding: 10px;
+    border: 1px solid #ddd; /* Optional: Border for clarity */
+    box-sizing: border-box;
+    margin: 20px 0; /* Add spacing around the container */
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
 }
 
+/* Wrapper for the chart content */
+.goenrichment-chart-wrapper {
+    flex: 1;
+    display: flex; /* Enable flexbox for alignment */
+    justify-content: center; /* Center-align chart horizontally */
+    align-items: center; /* Center-align chart vertically */
+    overflow: visible; /* Ensure no content is clipped */
+    padding: 10px;
+    position: relative;
+    width: 100%;
+}
+
+
+/* Heading for the chart section */
+.goenrichment-chart-container h2 {
+    min-height: 50px; /* Consistent height for the heading */
+    line-height: 50px; /* Vertically center the text */
+    margin: 0;
+    text-align: center; /* Center-align heading text */
+}
+
+.treatment-experiment-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 20px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    background-color: #fff;
+    box-sizing: border-box;
+}
+
+.experiment-boxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Space between boxes */
+    margin-top: 20px;
+}
+
+/* Individual experiment box */
+.experiment-box {
+    flex: 1 1 calc(20% - 20px); /* Each box takes 20% of width minus gap */
+    max-width: 20%;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+    text-align: center;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+/* Hover effect for experiment boxes */
+.experiment-box:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px); /* Slight lift effect */
+}
+
+/* Experiment box heading */
+.experiment-box h2 {
+    font-family: 'Raleway', sans-serif;
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Placeholder text */
+.experiment-box p {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}

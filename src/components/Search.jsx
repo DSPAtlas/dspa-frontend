@@ -56,28 +56,29 @@ const ProteinSearch = () => {
   };
 
   return (
-    <div>
-      <div className="search-form-container">
+    <div className="search-section">
+    <div className="search-container">
+      <h2>Search Protein</h2>
+      <div className="search-form-wrapper">
         <form className="search-form" onSubmit={handleSubmit}>
           <div className="form-group">
-          </div>
-          <div className="form-group">
-            <label className="form-label">Protein Name</label>
             <input 
               type="text" 
-              className="search-form" 
+              className="search-input" 
               value={searchTerm} 
               onChange={handleProteinNameChange} 
             />
           </div>
           <button type="submit" className="search-button">Search</button>
         </form>
-          {error && <p>Error: {error}</p>}
-        </div>
-        <div className="results-search-container">
+        {error && <p>Error: {error}</p>}
+      </div>
+      <div >
         {searchResults && <ProteinSearchResults searchResults={searchResults} />}
       </div>
     </div>
+  </div>
+  
   );
 };
 
