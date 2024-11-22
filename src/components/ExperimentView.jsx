@@ -13,7 +13,6 @@ const ExperimentInfo = () => {
     const { experimentID } = useParams(); 
     const [loading, setLoading] = useState(false);
     const [experimentData, setExperimentData] = useState([]);
-    const [namespace, setNamespace] = useState('BP'); 
     const [error, setError] = useState('');
     const [topProteins, setTopProteins] = useState([]);
 
@@ -26,6 +25,7 @@ const ExperimentInfo = () => {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
           const data = await response.json();
+          console.log("exoerumentdata", data.experimentData);
           setExperimentData(data.experimentData);
         } catch (error) {
           console.error("Error fetching data: ", error);
@@ -35,6 +35,26 @@ const ExperimentInfo = () => {
         } 
       }, [experimentID]);
     
+    
+      const handleDownloadPDF = () => {
+        if (!experimentData.metaData.qc_pdf_file) {
+            console.error('No QC PDF file available');
+            return;
+        }
+    
+        // Convert the binary data to a Blob
+        const blob = new Blob([new Uint8Array(experimentData.metaData.qc_pdf_file.data)], { type: 'application/pdf' });
+    
+        // Create a URL for the Blob and trigger the download
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Experiment_${experimentData.experimentID}_QC.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    };
 
     useEffect(() => {
         fetchExperimentData();
@@ -46,24 +66,6 @@ const ExperimentInfo = () => {
             setTopProteins(top20);
         }
     }, [experimentData]);
-
-    useEffect(() => {
-        if (experimentData && experimentData.goEnrichment) {
-            const chartElement = document.getElementById("chart");
-            if (chartElement) {
-                GOEnrichmentVisualization({ 
-                    goEnrichmentData: experimentData.goEnrichment, 
-                    namespace: namespace 
-                });
-            } else {
-                console.error("Chart element not properly loaded or has zero dimensions");
-            }
-        }
-    }, [experimentData, namespace]);
-
-    const handleNamespaceChange = (event) => {
-        setNamespace(event.target.value);
-    };
 
     return (
         <div>
@@ -77,25 +79,25 @@ const ExperimentInfo = () => {
                     experimentData.experimentID && (
                         <div>
                             <span className="result-header">LiP Experiment ID {experimentData.experimentID}</span><br />
-                            <span className="result-text">Submission: {experimentData.submission || 'N/A'}</span><br />
-                            <span className="result-text">Description: {experimentData.description || 'N/A'}</span><br />
+                            <span className="result-text">Perturbation: {experimentData.metaData.perturbation || 'N/A'}</span><br />
+                            <span className="result-text">Condition: {experimentData.metaData.condition || 'N/A'}</span><br />
+                            <span className="result-text">TaxonomyID: {experimentData.metaData.taxonomy_id || 'N/A'}</span><br />
+                            <span className="result-text">Strain: {experimentData.metaData.strain || 'N/A'}</span><br />
+                            <span className="result-text">Publication: {experimentData.metaData.publication || 'N/A'}</span><br />
+                            <h3> Methods</h3>
+                            <span className="result-text">Instrument: {experimentData.metaData.instrument || 'N/A'}</span><br />
+                            <span className="result-text">Experiment: {experimentData.metaData.experiment || 'N/A'}</span><br />
+                            <span className="result-text">Approach: {experimentData.metaData.approach || 'N/A'}</span><br />
+                            <span className="result-text">Digestion Protocol: {experimentData.metaData.digestion_protocol || 'N/A'}</span><br />
+                            <span className="result-text">Protease: {experimentData.metaData.protease || 'N/A'}</span><br />
+                            <span className="result-text">Digestion Time in Sec: {experimentData.metaData.pk_digestion_time_in_sec || 'N/A'}</span><br />
+                            <button onClick={handleDownloadPDF}>Download QC Data as PDF</button>
                         </div>
                     )
                 )}
                 <div className="results-experiment-search-container">
                     <div id="chart"></div>
                 </div>
-                {experimentData && experimentData.goEnrichment && experimentData.goEnrichment.length > 0 && (
-                    <div className="results-experiment-search-container">
-                        <div className="namespace-dropdown">
-                            <select value={namespace} onChange={handleNamespaceChange}>
-                                <option value="BP">Biological Process</option>
-                                <option value="MF">Molecular Function</option>
-                                <option value="CC">Cellular Component</option>
-                            </select>
-                        </div>
-                    </div>
-                )}
                 <div>
                 <span className="result-text">Top 20 Proteins by Cumulative LiP Score</span><br />
                 <div className="table-container">
