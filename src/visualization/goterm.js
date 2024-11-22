@@ -49,7 +49,7 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef, onGoTerm
         .padding(0.05);
 
     const y = d3.scaleLinear()
-        .domain([0, d3.max(flattenedData, d => -Math.log10(d.p_fdr_bh) || 0)])  // Ensure no NaN in y-domain
+        .domain([0, d3.max(flattenedData, d => -Math.log10(d.adj_pval) || 0)])  // Ensure no NaN in y-domain
         .nice()
         .range([height, 0]);
 
@@ -84,19 +84,19 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef, onGoTerm
         .data(d => d[1])  
         .enter().append("rect")
         .attr("x", d => x1(d.lipexperiment_id))
-        .attr("y", d => y(-Math.log10(d.p_fdr_bh)))
+        .attr("y", d => y(-Math.log10(d.adj_pval)))
         .attr("width", x1.bandwidth())
-        .attr("height", d => height - y(-Math.log10(d.p_fdr_bh)))
+        .attr("height", d => height - y(-Math.log10(d.adj_pval)))
         .attr("fill", d => {
             const baseColor = color(d.experimentID);
-            return d.goName === selectedGoTerm ? d3.color(baseColor).darker(2) : baseColor; // Darken if selected
+            return d.term === selectedGoTerm ? d3.color(baseColor).darker(2) : baseColor; // Darken if selected
         })
-        .on("click", function(event, d) {
+        //.on("click", function(event, d) {
             // Call onGoTermClick with the goName and study_items of the clicked bar
-            if (onGoTermClick) {
-                onGoTermClick(d.goName, d.study_items.split(', '));
-            }
-        })
+          //  if (onGoTermClick) {
+            //    onGoTermClick(d.term, d.study_items.split(', '));
+            //}
+       // })
         .on("mouseover", function(event, d) {
             d3.select(this).style("opacity", 0.7);
         })

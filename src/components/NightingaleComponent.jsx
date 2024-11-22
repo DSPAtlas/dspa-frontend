@@ -21,6 +21,8 @@ const NightingaleComponent = ({
     showHeatmap = true,
     passedExperimentIDs
 }) => {
+
+    console.log("proteindata", proteinData);
    
     const experimentIDsList = passedExperimentIDs?.length > 0 
         ? passedExperimentIDs 
@@ -316,14 +318,21 @@ const NightingaleComponent = ({
         customElements.whenDefined("nightingale-sequence-heatmap").then(() => {
             if (scoreBarcodeContainer.current && checkDimensions(scoreBarcodeContainer.current)) {
 
-                const treatment = "";
+                const experimentMetaDataMap = new Map();
+                proteinData.experimentMetaData.forEach((meta) => {
+                    experimentMetaDataMap.set(meta.lipexperiment_id, meta);
+                });
+
                 const dataHeatmap = Object.entries(proteinData.differentialAbundanceData).flatMap(([key, values]) =>
-                    values.map(value => ({
-                        yValue: key,
-                        xValue: value.index,
-                        score: value.score === null ? 0 : value.score,
-                        treatment: treatment
-                    }))
+                    values.map(value => {
+                        const metaData = experimentMetaDataMap.get(key); 
+                        return {
+                            yValue: key,
+                            xValue: value.index,
+                            score: value.score === null ? 0 : value.score,
+                            condition: metaData ? metaData.condition : "N/A", 
+                        };
+                    })
                 );
 
                 const xValues = dataHeatmap.map(item => item.xValue);
@@ -341,16 +350,17 @@ const NightingaleComponent = ({
                 }
             }
         });
-    }, [proteinData.differentialAbundanceData]);
+    }, [proteinData.differentialAbundanceData, proteinData.experimentMetaData]);
 
     if (isHeatmapReady) {
         const heatmapElement = document.getElementById("id-for-nightingale-sequence-heatmap");
+
         heatmapElement.heatmapInstance.setTooltip((d, x, y, xIndex, yIndex) => {
+        
             let returnHTML = `
                 <div class="tooltip-container">
-                    <strong>Experiment</strong> <br />
                     Experiment: <a href="/experiment/${d.yValue}" target="_blank" class="tooltip-link"><strong>${d.yValue}</strong></a><br />
-                    Treatment: <strong class="tooltip-highlight">Osmotic Stress</strong><br />
+                    Condition: <strong class="tooltip-highlight">${d.condition || "N/A"}</strong><br />
                     LiP Score: <strong>${d.score.toFixed(2)}</strong>
                 </div>`;
             return returnHTML;
