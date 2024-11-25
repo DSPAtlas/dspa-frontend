@@ -11,6 +11,8 @@ function Home() {
   const { searchResults: initialSearchResults } = location.state || {};
   const [searchResults, setSearchResults] = useState(initialSearchResults || null);
 
+  const [treatments, setTreatments] = useState([]);
+
   const navigate = useNavigate();
 
   const handleTreatmentChange = (event) => {
@@ -52,6 +54,27 @@ function Home() {
     performSearch(searchTerm);
   };
 
+
+  const fetchTreatments = async () => {
+        try {
+            const response = await fetch(`${config.apiEndpoint}treatment/condition`); // Call the /treatments endpoint
+            const data = await response.json();
+            console.log("treatment", data);
+
+            if (data.success && Array.isArray(data.conditions)) {
+                setTreatments(data.conditions); // Directly set treatments from API response
+            } else {
+                throw new Error(data.message || "Failed to fetch treatments");
+            }
+        } catch (error) {
+            console.error("Error fetching treatments:", error);
+            setError(error.message);
+        }
+    };
+
+  fetchTreatments()
+   
+
   // Combined useEffect to handle both class and data fetching
   useEffect(() => {
     if (location.state?.searchTerm) {
@@ -76,15 +99,14 @@ function Home() {
         <div className="three-boxes-container">
           {/* Left Box - Treatment Dropdown */}
           <div className="box">
-            <label htmlFor="treatment-select">Select Treatment</label>
+            <label htmlFor="treatment-select">Select Condition</label>
             <p className="description">Choose a treatment condition to explore its impact on protein structures.</p>
             <select id="treatment-select" onChange={handleTreatmentChange}>
-              <option value="osmotic_stress">Osmotic Stres</option>
-              <option value="heatshock">Heatshock</option>
-              <option value="dose_response">Rapamycin</option>
-              <option value="Citrulin">Citrulin</option>
-              <option value="Mal">Malat</option>
-            </select>
+              <option value="">Select a Treatment</option>
+              {treatments.map((treatment, index) => (
+                  <option key={index} value={treatment}>{treatment}</option>
+              ))}
+          </select>
           </div>
 
          {/* Middle Box - Protein Search */}

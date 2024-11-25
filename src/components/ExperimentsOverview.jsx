@@ -7,10 +7,17 @@ import { useNavigate } from 'react-router-dom';
 const ExperimentOverview = () => {
   const [experiments, setExperiments] = useState([]);
   const [filteredExperiments, setFilteredExperiments] = useState([]);
-  const [treatmentOptions, setTreatmentOptions] = useState([]);
+  
   const [taxonomyOptions, setTaxonomyOptions] = useState([]);
-  const [selectedTreatments, setSelectedTreatments] = useState([]);
+  const [perturbationOptions, setPerturbationOptions] = useState([]);
+  const [conditionOptions, setConditionOptions] = useState([]);
+  const [proteaseOptions, setProteaseOptions] = useState([]);
+  
   const [selectedTaxonomies, setSelectedTaxonomies] = useState([]);
+  const [selectedPerturbation, setSelectedPerturbation] = useState([]);
+  const [selectedCondition, setSelectedCondition] = useState([]);
+  const [selectedProtease, setSelectedProtease] = useState([]);
+ 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,11 +28,15 @@ const ExperimentOverview = () => {
           setExperiments(data.experiments);
           setFilteredExperiments(data.experiments);
 
-          const uniqueTreatments = [...new Set(data.experiments.map(exp => exp.treatment).filter(treatment => treatment))];
+          const uniquePerturbations = [...new Set(data.experiments.map(exp => exp.perturbation).filter(perturbation => perturbation))];
           const uniqueTaxonomies = [...new Set(data.experiments.map(exp => exp.taxonomy_id).filter(taxonomy => taxonomy))];
+          const uniqueCondition = [...new Set(data.experiments.map(exp => exp.condition).filter(condition => condition))];
+          const uniqueProtease= [...new Set(data.experiments.map(exp => exp.protease).filter(protease => protease))];
           
-          setTreatmentOptions(uniqueTreatments.map(treatment => ({ value: treatment, label: treatment })));
+          setPerturbationOptions(uniquePerturbations.map(perturbation => ({ value: perturbation, label: perturbation })));
           setTaxonomyOptions(uniqueTaxonomies.map(taxonomy => ({ value: taxonomy, label: taxonomy })));
+          setConditionOptions(uniqueCondition.map(condition => ({ value: condition, label: condition })));
+          setProteaseOptions(uniqueProtease.map(protease => ({ value: protease, label: protease })));
 
         } else {
           console.error('Expected an array of experiments but got:', data);
@@ -39,24 +50,41 @@ const ExperimentOverview = () => {
     navigate(`/experiment/${experiment.lipexperiment_id}`);
   };
 
-  const handleTreatmentFilterChange = (selectedOptions) => {
-    setSelectedTreatments(selectedOptions);
-    applyFilters(selectedOptions, selectedTaxonomies);
-  };
-
   const handleTaxonomyFilterChange = (selectedOptions) => {
-    setSelectedTaxonomies(selectedOptions);
-    applyFilters(selectedTreatments, selectedOptions);
+    setSelectedTaxonomies(selectedOptions || []);
+    applyFilters(selectedPerturbation, selectedCondition, selectedProtease, selectedOptions || []);
   };
-
-  const applyFilters = (selectedTreatments, selectedTaxonomies) => {
-    const selectedTreatmentValues = selectedTreatments.map(option => option.value);
-    const selectedTaxonomyValues = selectedTaxonomies.map(option => option.value);
-
-    const filtered = experiments.filter(experiment => 
-      (selectedTreatmentValues.length === 0 || selectedTreatmentValues.includes(experiment.treatment)) &&
-      (selectedTaxonomyValues.length === 0 || selectedTaxonomyValues.includes(experiment.taxonomy_id))
+  
+  const handlePerturbationFilterChange = (selectedOptions) => {
+    setSelectedPerturbation(selectedOptions || []);
+    applyFilters(selectedOptions || [], selectedCondition, selectedProtease, selectedTaxonomies);
+  };
+  
+  const handleConditionFilterChange = (selectedOptions) => {
+    setSelectedCondition(selectedOptions || []);
+    applyFilters(selectedPerturbation, selectedOptions || [], selectedProtease, selectedTaxonomies);
+  };
+  
+  const handleProteaseFilterChange = (selectedOptions) => {
+    setSelectedProtease(selectedOptions || []);
+    applyFilters(selectedPerturbation, selectedCondition, selectedOptions || [], selectedTaxonomies);
+  };
+  
+  const applyFilters = (selectedPerturbation, selectedCondition, selectedProtease, selectedTaxonomies) => {
+    // Extract selected values or default to empty array
+    const selectedPerturbationValues = (selectedPerturbation || []).map(option => option.value);
+    const selectedTaxonomyValues = (selectedTaxonomies || []).map(option => option.value);
+    const selectedConditionValues = (selectedCondition || []).map(option => option.value);
+    const selectedProteaseValues = (selectedProtease || []).map(option => option.value);
+  
+    // Filter experiments based on selected values
+    const filtered = experiments.filter(experiment =>
+      (selectedPerturbationValues.length === 0 || selectedPerturbationValues.includes(experiment.perturbation)) &&
+      (selectedTaxonomyValues.length === 0 || selectedTaxonomyValues.includes(experiment.taxonomy_id)) &&
+      (selectedConditionValues.length === 0 || selectedConditionValues.includes(experiment.condition)) &&
+      (selectedProteaseValues.length === 0 || selectedProteaseValues.includes(experiment.protease))
     );
+  
     setFilteredExperiments(filtered);
   };
 
@@ -78,17 +106,44 @@ const ExperimentOverview = () => {
               className="filter-select"
             />
           </th>
+
           <th>
-            Treatment
+            Perturbation
             <Select
               isMulti
-              options={treatmentOptions}
-              value={selectedTreatments}
-              onChange={handleTreatmentFilterChange}
-              placeholder="Filter by treatment..."
+              options={perturbationOptions}
+              value={selectedPerturbation}
+              onChange={handlePerturbationFilterChange}
+              placeholder="Filter by perturbation..."
               className="filter-select"
             />
           </th>
+
+          <th>
+            Condition
+            <Select
+              isMulti
+              options={conditionOptions}
+              value={selectedCondition}
+              onChange={handleConditionFilterChange}
+              placeholder="Filter by condition..."
+              className="filter-select"
+            />
+          </th>
+
+          <th>
+            Protease
+            <Select
+              isMulti
+              options={proteaseOptions}
+              value={selectedProtease}
+              onChange={handleProteaseFilterChange}
+              placeholder="Filter by protease..."
+              className="filter-select"
+            />
+          </th>
+
+
           <th>Submission Timestamp</th>
         </tr>
       </thead>
@@ -97,7 +152,9 @@ const ExperimentOverview = () => {
           <tr key={experiment.lipexperiment_id} onClick={() => handleRowClick(experiment)}>
             <td>{experiment.lipexperiment_id}</td>
             <td>{experiment.taxonomy_id}</td>
-            <td>{experiment.treatment || 'N/A'}</td>
+            <td>{experiment.perturbation || 'N/A'}</td>
+            <td>{experiment.condition || 'N/A'}</td>
+            <td>{experiment.protease|| 'N/A'}</td>
             <td>{experiment.submission_timestamp}</td>
           </tr>
         ))}

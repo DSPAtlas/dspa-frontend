@@ -26,3 +26,24 @@
     cursor: pointer;
   }
   
+  .experiment-header{
+    color: #102e54; /* Dark grey for contrast */
+    font-size: 24px; /* Larger font size for emphasis */
+    font-weight: bold; /* Bold font for importance */
+    margin-bottom: 10px; /* Space below the header */
+    margin-top: 100px;
+}
+
+
+/* Style for the tooltip  */
+.tooltip {
+    font-family: "Raleway", sans-serif;
+    position: absolute;
+    visibility: hidden;
+    background-color: #ccc;
+    color: #333;
+    border-radius: 4px;
+    padding: 5px;
+    font-size: 14px;
+    z-index: 10;
+}

@@ -16,10 +16,11 @@ import "./styles/navigationbar.css"
 import "./styles/home.css"
 import "./styles/result.css"
 import "./styles/search.css"
-import "./styles/experiments.css"
+import "./styles/experimentOverview.css"
 import "./styles/graphs.css"
 import "./styles/treatment.css"
 import "./styles/proteinview.css"
+import "./styles/experimentView.css"
 
 const NotFound = () => <div>Page not found.</div>;
 

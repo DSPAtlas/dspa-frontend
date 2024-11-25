@@ -35,17 +35,14 @@ const ExperimentInfo = () => {
         } 
       }, [experimentID]);
     
-    
-      const handleDownloadPDF = () => {
+    const handleDownloadPDF = () => {
         if (!experimentData.metaData.qc_pdf_file) {
             console.error('No QC PDF file available');
             return;
         }
     
-        // Convert the binary data to a Blob
         const blob = new Blob([new Uint8Array(experimentData.metaData.qc_pdf_file.data)], { type: 'application/pdf' });
     
-        // Create a URL for the Blob and trigger the download
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -69,38 +66,67 @@ const ExperimentInfo = () => {
 
     return (
         <div>
-            <div className="result-container">
-                {loading ? (
-                    <p>Loading...</p>
-                ) : error ? (
-                    <p>Error: {error}</p>
-                ) : (
-                    experimentData &&
-                    experimentData.experimentID && (
-                        <div>
-                            <span className="result-header">LiP Experiment ID {experimentData.experimentID}</span><br />
-                            <span className="result-text">Perturbation: {experimentData.metaData.perturbation || 'N/A'}</span><br />
-                            <span className="result-text">Condition: {experimentData.metaData.condition || 'N/A'}</span><br />
-                            <span className="result-text">TaxonomyID: {experimentData.metaData.taxonomy_id || 'N/A'}</span><br />
-                            <span className="result-text">Strain: {experimentData.metaData.strain || 'N/A'}</span><br />
-                            <span className="result-text">Publication: {experimentData.metaData.publication || 'N/A'}</span><br />
-                            <h3> Methods</h3>
-                            <span className="result-text">Instrument: {experimentData.metaData.instrument || 'N/A'}</span><br />
-                            <span className="result-text">Experiment: {experimentData.metaData.experiment || 'N/A'}</span><br />
-                            <span className="result-text">Approach: {experimentData.metaData.approach || 'N/A'}</span><br />
-                            <span className="result-text">Digestion Protocol: {experimentData.metaData.digestion_protocol || 'N/A'}</span><br />
-                            <span className="result-text">Protease: {experimentData.metaData.protease || 'N/A'}</span><br />
-                            <span className="result-text">Digestion Time in Sec: {experimentData.metaData.pk_digestion_time_in_sec || 'N/A'}</span><br />
-                            <button onClick={handleDownloadPDF}>Download QC Data as PDF</button>
+            {experimentData && experimentData.experimentID && (
+                    <div className="experiment-metadata-container">
+                        {/* Experiment Header */}
+                        <div className="experiment-header">
+                            <h1>LiP Experiment ID: <span>{experimentData.experimentID}</span></h1>
                         </div>
-                    )
+                
+                        {/* Metadata Sections */}
+                        <div className="metadata-section">
+                            <h2>General Information</h2>
+                            <div className="metadata-field">
+                                <strong>Perturbation:</strong> {experimentData.metaData.perturbation || 'N/A'}
+                            </div>
+                            <div className="metadata-field">
+                                <strong>Condition:</strong> {experimentData.metaData.condition || 'N/A'}
+                            </div>
+                            <div className="metadata-field">
+                                <strong>Taxonomy ID:</strong> {experimentData.metaData.taxonomy_id || 'N/A'}
+                            </div>
+                            <div className="metadata-field">
+                                <strong>Strain:</strong> {experimentData.metaData.strain || 'N/A'}
+                            </div>
+                            <div className="metadata-field">
+                                <strong>Publication:</strong> {experimentData.metaData.publication || 'N/A'}
+                            </div>
+                        </div>
+                
+                        <div className="metadata-section">
+                            <h2>Methods</h2>
+                            <div className="metadata-field">
+                                <strong>Instrument:</strong> {experimentData.metaData.instrument || 'N/A'}
+                            </div>
+                            <div className="metadata-field">
+                                <strong>Experiment:</strong> {experimentData.metaData.experiment || 'N/A'}
+                            </div>
+                            <div className="metadata-field">
+                                <strong>Approach:</strong> {experimentData.metaData.approach || 'N/A'}
+                            </div>
+                            <div className="metadata-field">
+                                <strong>Digestion Protocol:</strong> {experimentData.metaData.digestion_protocol || 'N/A'}
+                            </div>
+                            <div className="metadata-field">
+                                <strong>Protease:</strong> {experimentData.metaData.protease || 'N/A'}
+                            </div>
+                            <div className="metadata-field">
+                                <strong>Digestion Time (Sec):</strong> {experimentData.metaData.pk_digestion_time_in_sec || 'N/A'}
+                            </div>
+                        </div>
+                
+                        {/* Download Button */}
+                        <div className="download-section">
+                            <button onClick={handleDownloadPDF} className="download-button">Download QC Data as PDF</button>
+                        </div>
+                    </div>
                 )}
                 <div className="results-experiment-search-container">
                     <div id="chart"></div>
                 </div>
                 <div>
-                <span className="result-text">Top 20 Proteins by Cumulative LiP Score</span><br />
-                <div className="table-container">
+                <h1>Top 20 Proteins by Cumulative LiP Score</h1><br />
+                <div className="experiment-protein-container">
                 <table>
                     <thead>
                         <tr>
@@ -123,7 +149,7 @@ const ExperimentInfo = () => {
             </div>
             </div>
             
-        </div>
+       
     );
 };
 
