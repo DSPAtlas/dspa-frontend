@@ -16,6 +16,8 @@ const experimentTableStyles = {
 
 
 const ExperimentTable = ({ experimentData, onProteinClick, displayedProtein }) => {
+    console.log("experimenttable", experimentData);
+    
     if (!experimentData || !Array.isArray(experimentData)) {
         console.error("experimentData is not an array:", experimentData);
         return <div>No valid data to display</div>;  
@@ -94,6 +96,7 @@ const Treatment = () => {
                 .filter((id, index, self) => id && self.indexOf(id) === index);
     
             setLipIDs(extractedLipIDs);
+
         } catch (error) {
             console.error("Error fetching data: ", error);
             setError(`Failed to load experiment data: ${error.message}`);
@@ -126,18 +129,26 @@ const Treatment = () => {
     }, [pdbIds]);
 
     useEffect(() => {
-        if (treatmentData?.goEnrichmentList && treatmentData.goEnrichmentList.length > 0) {
+        if (treatmentData?.goEnrichmentList?.length > 0) {
             const firstEnrichmentEntry = treatmentData.goEnrichmentList[0];
-            const firstGoTerm = firstEnrichmentEntry.data && firstEnrichmentEntry.data[0];
-            console.log("firstgoterm", firstGoTerm);
-            console.log("goenruchment", treatmentData.goEnrichmentList);
-            
-            setSelectedGoTerm(firstGoTerm.goName);
-            const studyItems = firstGoTerm.study_items.split(', ');
-            const filteredData = treatmentData.proteinScoresTable.filter(
-                (proteinData) => studyItems.includes(proteinData.proteinAccession)
-            );
-            setFilteredExperimentData(filteredData);
+            const firstGoTerm = firstEnrichmentEntry?.data?.[0];
+    
+            if (firstGoTerm) {
+                console.log("First GO Term:", firstGoTerm);
+    
+                setSelectedGoTerm(firstGoTerm.goName);
+    
+                const accessions = firstGoTerm?.accessions?.split(';')?.map(a => a.trim()) || [];
+                console.log("Accessions:", accessions);
+                console.log("proteinscoresTable", treatmentData.proteinScoresTable);
+    
+                const filteredData = treatmentData.proteinScoresTable.filter((proteinData) =>
+                    accessions.includes(proteinData.proteinAccession.trim())
+                );
+                console.log("Filtered Experiment Data:", filteredData);
+    
+                setFilteredExperimentData(filteredData);
+            }
         }
     }, [treatmentData]);
 
@@ -162,18 +173,26 @@ const Treatment = () => {
         ];
     }, [filteredExperimentData]);
 
-    const handleGoTermClick = (goName, studyItems) => {
-        setSelectedGoTerm(goName);
-        if (treatmentData && treatmentData.proteinScoresTable) {
-            // Filter the experiment data to show only proteins in the selected GO term
-
-            const filteredData = treatmentData.proteinScoresTable.filter(
-                (proteinData) => studyItems.includes(proteinData.proteinAccession)
+    const handleGoTermClick = (term, accessions) => {
+        console.log("Selected GO Term:", term);
+        console.log("Accessions received:", accessions);
+        console.log("proteinscores table", treatmentData.proteinScoresTable);
+    
+        setSelectedGoTerm(term);
+    
+        if (accessions && accessions.length > 0 && treatmentData?.proteinScoresTable) {
+            const filteredData = treatmentData.proteinScoresTable.filter(proteinData =>
+                accessions.includes(proteinData.proteinAccession)
             );
+            console.log("Filtered Experiment Data after GO Term click:", filteredData);
             setFilteredExperimentData(filteredData);
+        } else {
+            console.warn("No accessions to filter experiment data");
+            setFilteredExperimentData([]);
         }
     };
-
+    
+    
     const handleTreatmentChange = (event) => {
         const newTreatment = event.target.value;
         setSelectedTreatment(newTreatment);
@@ -189,6 +208,9 @@ const Treatment = () => {
         setDisplayedProtein(proteinAccession); 
         setSelectedExperiment(experimentID); 
     };
+
+
+    
         
     return (
         <div>

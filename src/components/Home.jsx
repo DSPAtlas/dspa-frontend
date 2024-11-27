@@ -57,7 +57,7 @@ function Home() {
 
   const fetchTreatments = async () => {
         try {
-            const response = await fetch(`${config.apiEndpoint}treatment/condition`); // Call the /treatments endpoint
+            const response = await fetch(`${config.apiEndpoint}treatment/condition`); 
             const data = await response.json();
             console.log("treatment", data);
 
@@ -72,7 +72,9 @@ function Home() {
         }
     };
 
-  fetchTreatments()
+  useEffect(() => {
+    fetchTreatments();
+  }, []); 
    
 
   // Combined useEffect to handle both class and data fetching
@@ -86,7 +88,7 @@ function Home() {
     <>
       <main className="dspa-background-beige home-container">
         <div className="logo-container">
-          <img src="/images/dspalogo.webp" alt="DSPAtlas Logo" className="logo" />
+          <img src="/images/newlogo.png" alt="DSPAtlas Logo" className="logo" />
         </div>
         <div className="dspa-text-blue">
           <span className="dspa-jumbo dspa-hide-small">DynaProt</span>
@@ -102,7 +104,7 @@ function Home() {
             <label htmlFor="treatment-select">Select Condition</label>
             <p className="description">Choose a treatment condition to explore its impact on protein structures.</p>
             <select id="treatment-select" onChange={handleTreatmentChange}>
-              <option value="">Select a Treatment</option>
+              <option value="">Select a Condition</option>
               {treatments.map((treatment, index) => (
                   <option key={index} value={treatment}>{treatment}</option>
               ))}

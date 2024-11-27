@@ -18,12 +18,19 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef, onGoTerm
           height = 300 - margin.top - margin.bottom;
 
      // Flatten the data
-     const flattenedData = goEnrichmentData.flatMap(experiment => 
-        experiment.data.map(d => ({ ...d, experimentID: experiment.experimentID }))
-    );
+    const flattenedData = goEnrichmentData
+     .flatMap(experiment =>
+         experiment.data.map(d => ({
+             ...d,
+             experimentID: experiment.experimentID,
+             accessions: d.accessions ? d.accessions.split(";").map(a => a.trim()) : [] // Handle splitting here
+         }))
+         .filter(d => d.adj_pval < 1)
+     );
+ 
 
     // Group by goName
-    const groupedData = d3.groups(flattenedData, d => d.goName);
+    const groupedData = d3.groups(flattenedData, d => d.term);
     const experimentIDs = Array.from(new Set(flattenedData.map(d => d.experimentID)));
 
     // Remove any existing SVG
@@ -91,18 +98,20 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef, onGoTerm
             const baseColor = color(d.experimentID);
             return d.term === selectedGoTerm ? d3.color(baseColor).darker(2) : baseColor; // Darken if selected
         })
-        //.on("click", function(event, d) {
-            // Call onGoTermClick with the goName and study_items of the clicked bar
-          //  if (onGoTermClick) {
-            //    onGoTermClick(d.term, d.study_items.split(', '));
-            //}
-       // })
-        .on("mouseover", function(event, d) {
-            d3.select(this).style("opacity", 0.7);
-        })
-        .on("mouseout", function(event, d) {
-            d3.select(this).style("opacity", 1);
+        .on("click", function (event, d) {
+            console.log("Clicked data:", d);
+            const accessionsList = d.accessions || []; // Ensure accessions is not undefined
+            console.log("Accessions list after processing:", accessionsList);
+            if (onGoTermClick) {
+                onGoTermClick(d.term, accessionsList);
+            }
         });
+        // .on("mouseover", function(event, d) {
+        //     d3.select(this).style("opacity", 0.7);
+        // })
+        // .on("mouseout", function(event, d) {
+        //     d3.select(this).style("opacity", 1);
+        // });
 
     // Add legend for experiment colors
     const legend = svg.append("g")

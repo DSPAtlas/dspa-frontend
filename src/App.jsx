@@ -5,7 +5,6 @@ import ProteinSearch from './components/Search';
 import ProteinVisualization from './components/ProteinView';
 import ExperimentInfo from './components/ExperimentView';
 import ExperimentsOverview from './components/ExperimentsOverview';
-import DoseResponse from './components/DoseResponse';
 import About from './components/About';
 import Contact from './components/Contact';
 import Treatment from './components/TreatmentView';
@@ -49,7 +48,6 @@ const App = () => {
     <Route path="/visualize/:proteinName" element={<ProteinVisualization />} />
     <Route path="/experiment/:experimentID" element={<ExperimentInfo />} />
     <Route path="/experiments" element={<ExperimentsOverview />} />
-    <Route path="/doseresponse" element={<DoseResponse />} />
     <Route path="/treatment/:selectedTreatment" element={<Treatment />} />
     <Route path="/pathway" element={<Pathway />} />
     <Route path="*" element={<NotFound />} />
