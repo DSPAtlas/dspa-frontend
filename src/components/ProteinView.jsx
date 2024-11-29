@@ -71,17 +71,19 @@ function ProteinVisualizationComponents({ proteinData, pdbIds, loading, error })
     }, [pdbIds]);
 
     useEffect(() => {
+        console.log("experimentmetadata", proteinData.experimentMetaData);
         if (scoresSum) {
             const chartElement = document.getElementById("sumlipscorebarplot");
             if (chartElement) {
                 SumLipScoreVisualization({ 
-                    data: scoresSum
+                    data: scoresSum,
+                    experimentMetaData: proteinData.experimentMetaData
                 });
             } else {
                 console.error("Chart element not properly loaded or has zero dimensions");
             }
         }
-    }, [scoresSum]);
+    }, [scoresSum, proteinData.experimentMetaData]);
     
     return (
         <div>
@@ -99,7 +101,7 @@ function ProteinVisualizationComponents({ proteinData, pdbIds, loading, error })
                              setSelectedPdbId={setSelectedPdbId} 
                              selectedExperiment={selectedExperiment}/>
                         <span className="protein-header"> </span><br />
-                        <h2>Sum LiP Score</h2>
+                        <h2>Summed LiP Score in Experiments for {proteinData.proteinName}</h2>
                         <div className="results-experiment-search-container">
                             <div id="sumlipscorebarplot"></div>
                         </div>

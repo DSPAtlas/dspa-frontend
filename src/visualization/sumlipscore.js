@@ -1,17 +1,32 @@
 import * as d3 from 'd3';
 
-export function SumLipScoreVisualization({ data }) {
+export function SumLipScoreVisualization({ data, experimentMetaData }) {
     // data  const data = {"LIP000004": 95.91674263379335,  "LIP000002": 12.856172023786394};
     // Convert the data into an array of objects
-    const formattedData = Object.entries(data).map(([key, value]) => ({ experiment: key, score: value }));
+    const formattedData = Object.entries(data).map(([key, value]) => ({
+        experiment: key,
+        score: value,
+        condition: experimentMetaData.find(meta => meta.lipexperiment_id === key)?.condition || "unknown",
+        perturbation: experimentMetaData.find(meta => meta.lipexperiment_id === key)?.perturbation || "unknown",
+    })) 
+    .sort((a, b) => b.score - a.score);
 
-    // Set the dimensions of the canvas
-    const margin = { top: 50, right: 30, bottom: 70, left: 300 },
-        width = 900 - margin.left - margin.right,
+    // Get the width dynamically from the container
+    const container = document.getElementById("sumlipscorebarplot");
+    const containerWidth = container ? container.offsetWidth : 900; // Fallback width
+
+    const margin = { top: 50, right: 30, bottom: 70, left: 30},
+        width = containerWidth - margin.left - margin.right,
         height = 300 - margin.top - margin.bottom;
-
     // Remove any existing SVG
     d3.select("#sumlipscorebarplot").selectAll("*").remove();
+
+    const perturbationColors = {
+        "low": "#90EE90", // Light green
+        "medium": "#FFD700", // Yellow
+        "Small Molecule": "#FF4500", // Orange-red
+        "unknown": "#D3D3D3", // Light gray
+    };
 
     // Create the SVG container
     const svg = d3.select("#sumlipscorebarplot")
@@ -51,7 +66,7 @@ export function SumLipScoreVisualization({ data }) {
 
     svg.append("g")
         .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x).tickSize(-height))
+        .call(d3.axisBottom(x).tickSize(0))
         .selectAll("text")
         .style("font-size", "16px")
         .style("font-family", "Raleway");
@@ -66,16 +81,20 @@ export function SumLipScoreVisualization({ data }) {
     // Add bars
     svg.selectAll(".bar")
         .data(formattedData)
-      .enter().append("rect")
+        .enter().append("rect")
         .attr("class", "bar")
         .attr("x", d => x(d.experiment))
         .attr("y", d => y(d.score))
         .attr("width", x.bandwidth())
         .attr("height", d => height - y(d.score))
-        .attr("fill", d => color(d.score))
+        .attr("fill", d => perturbationColors[d.perturbation])
         .on("mouseover", function(event, d) {
-            tooltip.html(`<strong>${d.experiment}</strong><br>Score: ${d.score}`)
-                   .style("visibility", "visible");
+            tooltip.html(`
+                <strong>${d.experiment}</strong><br>
+                Score: ${d.score}<br>
+                Condition: ${d.condition}<br>
+                Perturbation: ${d.perturbation}
+            `).style("visibility", "visible");
         })
         .on("mousemove", function(event) {
             tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
