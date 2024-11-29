@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
 export function GOEnrichmentVisualization({ goEnrichmentData, chartRef, onGoTermClick, selectedGoTerm }) {
-    console.log("goenruichmentdata", goEnrichmentData);
+    
     if (!goEnrichmentData || !Array.isArray(goEnrichmentData)) {
         console.error("Invalid goEnrichmentData structure");
         return;

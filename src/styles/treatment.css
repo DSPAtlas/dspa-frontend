@@ -189,7 +189,7 @@ select:focus {
     margin: 20px 0; /* Add spacing around the container */
     display: flex;
     flex-direction: column; /* Stack content vertically */
-}
+} 
 
 /* Wrapper for the chart content */
 .goenrichment-chart-wrapper {

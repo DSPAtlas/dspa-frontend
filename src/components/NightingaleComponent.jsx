@@ -23,6 +23,7 @@ const NightingaleComponent = ({
 }) => {
 
     console.log("proteindata", proteinData);
+    console.log("experimentIDs", passedExperimentIDs);
    
     const experimentIDsList = passedExperimentIDs?.length > 0 
         ? passedExperimentIDs 
@@ -57,6 +58,8 @@ const NightingaleComponent = ({
     const multipleExperimentsContainer = useRef(null);
     const scoreBarcodeContainer = useRef(null);
     const sequenceLength = proteinData.proteinSequence.length;
+    const [selectedButton, setSelectedButton] = useState(null);
+
 
     const [isHeatmapReady, setHeatmapReady] = useState(false);
 
@@ -386,6 +389,10 @@ const NightingaleComponent = ({
         { color: '#0053d6', label: '> 7' },
         { color: 'default', label: 'no LiP Score reported' }
     ];
+    const handleButtonClick = (experimentID, index) => {
+        setSelectedButton(index); // Track the selected button
+        handleExperimentClick(experimentID, index);
+    };
 
     return (
         <div>
@@ -417,7 +424,10 @@ const NightingaleComponent = ({
                     {experimentIDsList.map((experimentID, index) => (
                         <button
                             key={experimentID}
-                            onClick={() => handleExperimentClick(experimentID, index)}
+                            className={`experiment-button ${
+                                selectedButton === index ? "selected" : ""
+                            }`}
+                            onClick={() => handleButtonClick(experimentID, index)}
                         >
                             {`Experiment ${experimentID}`}
                         </button>

@@ -29,7 +29,7 @@ const ExperimentTable = ({ experimentData, onProteinClick, displayedProtein }) =
                 <thead>
                     <tr>
                         <th style={experimentTableStyles}>Protein Accession</th>
-                        <th style={experimentTableStyles}>Average Score</th>
+                        <th style={experimentTableStyles}>Average LiP Score among Experiments</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -174,9 +174,6 @@ const Treatment = () => {
     }, [filteredExperimentData]);
 
     const handleGoTermClick = (term, accessions) => {
-        console.log("Selected GO Term:", term);
-        console.log("Accessions received:", accessions);
-        console.log("proteinscores table", treatmentData.proteinScoresTable);
     
         setSelectedGoTerm(term);
     
@@ -209,9 +206,7 @@ const Treatment = () => {
         setSelectedExperiment(experimentID); 
     };
 
-
-    
-        
+   
     return (
         <div>
             <div className="treatment-dropdown">
@@ -259,7 +254,7 @@ const Treatment = () => {
             {/* Protein Experiment Section */}
             <div className="treatment-section treatment-protein-experiment-wrapper">
                 <div className="treatment-table-container">
-                    <h2>LiP Scores among Experiments</h2>
+                    <h2>Proteins in {selectedGoTerm}</h2>
                     <ExperimentTable
                         experimentData={filteredExperimentData}
                         onProteinClick={handleProteinClick}
@@ -276,6 +271,7 @@ const Treatment = () => {
                             setSelectedPdbId={setSelectedPdbId}
                             selectedExperiment={selectedExperiment}
                             showHeatmap={false}
+                            passedExperimentIDs={extractedExperimentIDs}
                         />
                     )}
                 </div>
