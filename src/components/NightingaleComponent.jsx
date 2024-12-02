@@ -30,6 +30,9 @@ const NightingaleComponent = ({
         : proteinData.experimentIDsList.length > 0
             ? proteinData.experimentIDsList
             : proteinData.lipscoreList.map(entry => entry.experimentID);
+    
+    
+    const [selectedExperimentDropdown, setSelectedExperimentDropdown] = useState(experimentIDsList[0]);
 
     const structureRefs = useRef(experimentIDsList.map(() => React.createRef()));
 
@@ -72,6 +75,19 @@ const NightingaleComponent = ({
     const checkDimensions = (element) => {
         return element && element.offsetWidth > 0 && element.offsetHeight > 0;
     };
+
+    const handleButtonClick = (experimentID, index) => {
+        setSelectedButton(index); // Track the selected button
+        handleExperimentClick(experimentID, index);
+    };
+
+    const handleDropdownChange = (event) => {
+        const selectedExperiment = event.target.value;
+        setSelectedExperimentDropdown(selectedExperiment);
+        const experimentIndex = experimentIDsList.indexOf(selectedExperiment);
+        handleButtonClick(selectedExperiment, experimentIndex);
+    };
+
 
     const handleRowClick = (id) => {
         setSelectedPdbId(id);
@@ -389,15 +405,12 @@ const NightingaleComponent = ({
         { color: '#0053d6', label: '> 7' },
         { color: 'default', label: 'no LiP Score reported' }
     ];
-    const handleButtonClick = (experimentID, index) => {
-        setSelectedButton(index); // Track the selected button
-        handleExperimentClick(experimentID, index);
-    };
+    
 
     return (
         <div>
             <p>{selectedExperiment}</p>
-            <p>{proteinData?.proteinDescription}</p>
+            <p style={{ color: '#1a1a1a', fontSize: '18px' }} >{proteinData?.proteinDescription}</p>
 
             {/* LiP Scores Legend */}
             <div id="nightingale-manager-container">
@@ -419,7 +432,26 @@ const NightingaleComponent = ({
                     ))}
                 </div>
 
-                {/* Button for Experiments */}
+                <div>
+
+            {experimentIDsList.length > 5 ? (
+                // Render dropdown if more than 5 experiments
+                <div>
+                    <label htmlFor="experiment-dropdown">Color structure according to experiment:</label>
+                    <select
+                        id="experiment-dropdown"
+                        value={selectedExperimentDropdown}
+                        onChange={handleDropdownChange}
+                    >
+                        {experimentIDsList.map((experimentID) => (
+                            <option key={experimentID} value={experimentID}>
+                                {`Experiment ${experimentID}`}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            ) : (
+                // Render buttons if 5 or fewer experiments
                 <div className="experiment-buttons">
                     {experimentIDsList.map((experimentID, index) => (
                         <button
@@ -433,6 +465,8 @@ const NightingaleComponent = ({
                         </button>
                     ))}
                 </div>
+            )}
+        </div>
 
                 {/* Nightingale Manager with Two Columns */}
                 <nightingale-manager>
@@ -646,9 +680,10 @@ const NightingaleComponent = ({
                                                 id="id-for-nightingale-sequence-heatmap"
                                                 heatmap-id="seq-heatmap"
                                                 width={minWidth}
-                                                height="80"
+                                                length={sequenceLength} 
+                                                height="100"
                                                 display-start="1"
-                                                margin-left="40"
+                                                margin-left="60"
                                                 display-end={sequenceLength}
                                                 highlight-event="onmouseover"
                                                 highlight-color={highlightColor}

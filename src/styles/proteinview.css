@@ -3,3 +3,17 @@
     display: block;
     margin: 0 auto;
 }
+
+#experiment-dropdown {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+#experiment-dropdown:focus {
+    border-color: #888;
+    outline: none;
+}

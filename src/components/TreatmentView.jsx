@@ -92,10 +92,28 @@ const Treatment = () => {
             setTreatmentData(data.treatmentData);
     
             const extractedLipIDs = data.treatmentData.goEnrichmentList
-                .flatMap(entry => entry.data.map(item => item.experimentID))
-                .filter((id, index, self) => id && self.indexOf(id) === index);
-    
+            .flatMap(entry => entry.data.map(item => item.experimentID))
+            .filter((id, index, self) => id && self.indexOf(id) === index);
+
             setLipIDs(extractedLipIDs);
+
+            // Automatically set the first GO term
+            const firstEnrichmentEntry = data.treatmentData.goEnrichmentList?.[0];
+            console.log("firstEnrichmentEntry", firstEnrichmentEntry);
+            const firstGoTerm = firstEnrichmentEntry?.data?.[0];
+            console.log("firstgozerm", firstGoTerm);
+            //setDisplayedProtein(treatmentData.proteinScoresTable[0].proteinAccession);
+
+            if (firstGoTerm) {
+                console.log("first goterm", firstGoTerm);
+                setSelectedGoTerm(firstGoTerm.term);
+
+                const accessions = firstGoTerm?.accessions?.split(';')?.map(a => a.trim()) || [];
+                const filteredData = data.treatmentData.proteinScoresTable.filter((proteinData) =>
+                    accessions.includes(proteinData.proteinAccession.trim())
+                );
+                setFilteredExperimentData(filteredData);
+            }
 
         } catch (error) {
             console.error("Error fetching data: ", error);
@@ -118,6 +136,7 @@ const Treatment = () => {
 
     useEffect(() => {
         if (displayedProtein) {
+            console.log("Fetching protein data for:", displayedProtein);
             fetchProteinData(displayedProtein);
         }
     }, [displayedProtein, fetchProteinData]);
@@ -128,29 +147,29 @@ const Treatment = () => {
         }
     }, [pdbIds]);
 
-    useEffect(() => {
-        if (treatmentData?.goEnrichmentList?.length > 0) {
-            const firstEnrichmentEntry = treatmentData.goEnrichmentList[0];
-            const firstGoTerm = firstEnrichmentEntry?.data?.[0];
+    // useEffect(() => {
+    //     if (treatmentData?.goEnrichmentList?.length > 0) {
+    //         const firstEnrichmentEntry = treatmentData.goEnrichmentList[0];
+    //         const firstGoTerm = firstEnrichmentEntry?.data?.[0];
     
-            if (firstGoTerm) {
-                console.log("First GO Term:", firstGoTerm);
+    //         if (firstGoTerm) {
+    //             console.log("First GO Term:", firstGoTerm);
     
-                setSelectedGoTerm(firstGoTerm.goName);
+    //             setSelectedGoTerm(firstGoTerm.goName);
     
-                const accessions = firstGoTerm?.accessions?.split(';')?.map(a => a.trim()) || [];
-                console.log("Accessions:", accessions);
-                console.log("proteinscoresTable", treatmentData.proteinScoresTable);
+    //             const accessions = firstGoTerm?.accessions?.split(';')?.map(a => a.trim()) || [];
+    //             console.log("Accessions:", accessions);
+    //             console.log("proteinscoresTable", treatmentData.proteinScoresTable);
     
-                const filteredData = treatmentData.proteinScoresTable.filter((proteinData) =>
-                    accessions.includes(proteinData.proteinAccession.trim())
-                );
-                console.log("Filtered Experiment Data:", filteredData);
+    //             const filteredData = treatmentData.proteinScoresTable.filter((proteinData) =>
+    //                 accessions.includes(proteinData.proteinAccession.trim())
+    //             );
+    //             console.log("Filtered Experiment Data:", filteredData);
     
-                setFilteredExperimentData(filteredData);
-            }
-        }
-    }, [treatmentData]);
+    //             setFilteredExperimentData(filteredData);
+    //         }
+    //     }
+    // }, [treatmentData]);
 
     useEffect(() => {
         if (displayedProteinData) {

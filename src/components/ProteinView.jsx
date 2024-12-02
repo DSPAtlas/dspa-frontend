@@ -92,8 +92,6 @@ function ProteinVisualizationComponents({ proteinData, pdbIds, loading, error })
                     <div>
                     <span className="protein-header"> </span><br />
                         <span className="protein-header">UniProt ID {proteinData.proteinName} </span><br />
-                        <span className="result-text">Taxonomy: {'N/A'}</span><br />
-                        <span className="result-text">Function: {proteinfunction || 'N/A'}</span><br />
                         <NightingaleComponent 
                              proteinData={proteinData} 
                              pdbIds={pdbIds}
@@ -173,20 +171,7 @@ const ProteinVisualization = () => {
 
     return (
         <>
-        <div className="search-form-container">
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    name="proteinName"
-                    value={searchTerm}
-                    onChange={handleSearchTermChange}
-                    required
-                    placeholder="Enter protein name..."
-                />
-                <button type="submit">Search</button>
-            </form>
-            </div>
-            <div className="results-search-container">
+            <div className="results-container">
                 {proteinData && <ProteinVisualizationComponents proteinData={proteinData} pdbIds={pdbIds} loading={loading} error={error}/>}
             </div>
         </>

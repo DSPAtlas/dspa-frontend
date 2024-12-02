@@ -86,8 +86,9 @@ tr {
     z-index: 1001;
     margin-top: 2px; /* Adjusted for navigation bar */
     height: calc(65vh - 60px); /* Full height minus navigation bar */
-    padding:5px;
+    padding: 5px;
     margin-right: 10px;
+    background-color: #fff;
 }
 
 #nightingale-manager-container table {
@@ -96,12 +97,6 @@ tr {
     border-collapse: collapse;
 }
 
-#nightingale-manager-container td,
-#nightingale-manager-container th {
-    padding: 8px;
-    text-align: center;
-    border: 1px solid #ddd;
-}
 
 #nightingale-manager-container td.text-column {
     width: 80px;
@@ -111,16 +106,10 @@ tr {
 }
 
 
-/* Set table layout and alignment */
-#nightingale-manager-container table {
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-}
-
 #nightingale-manager-container td,
 #nightingale-manager-container th {
-    padding: 0;
+    padding: 8px;
+    border: 1px solid #ddd;
     text-align: left;
     border: 1px solid #ddd;
     vertical-align: middle;
@@ -155,8 +144,9 @@ nightingale-navigation {
 /* Nightingale component container */
 .nightingale-component-container {
     width: 100%;
-    max-width: 1200px;
-    margin: auto;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 

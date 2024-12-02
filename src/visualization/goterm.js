@@ -15,7 +15,7 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef, onGoTerm
 
     const margin = { top: 50, right: 70, bottom: 200, left: 70 },
           width = 1750 - margin.left - margin.right,
-          height = 300 - margin.top - margin.bottom;
+          height = 500 - margin.top - margin.bottom;
 
      // Flatten the data
     const flattenedData = goEnrichmentData
@@ -65,14 +65,34 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef, onGoTerm
         .range(d3.schemeTableau10);
 
     // Add x-axis
+    // Add x-axis
     svg.append("g")
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x0))
-        .selectAll("text")
-        .style("font-size", "16px")
-        .style("font-family", "Raleway")
-        .attr("text-anchor", "end")
-        .attr("transform", "rotate(-45)");
+    .attr("transform", `translate(0,${height})`)
+    .call(d3.axisBottom(x0))
+    .selectAll(".tick text")
+    .style("font-size", "16px")
+    .style("font-family", "Raleway")
+    .style("text-anchor", "end") // Align end for better rotation
+    .attr("transform", "rotate(-45)") // Rotate the text
+    .each(function (d) {
+        const self = d3.select(this);
+
+        // Check if the label is longer than 20 characters
+        if (d.length > 30) {
+            const chunks = d.match(/.{1,30}/g); // Split into chunks of 20 characters
+            self.text(""); // Clear existing text
+
+            chunks.forEach((chunk, i) => {
+                self.append("tspan")
+                    .text(chunk)
+                    .attr("x", 0) // Keep x position consistent
+                    .attr("dy", i === 0 ? "0em" : "1em"); // Adjust vertical offset for each line
+            });
+        } else {
+            self.text(d); // If not longer than 20 characters, show the label as is
+        }
+    });
+
 
     // Add y-axis
     svg.append("g")
