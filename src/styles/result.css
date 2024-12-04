@@ -117,17 +117,17 @@ tr {
 
 /* Adjust height specifically for the navigation and sequence rows */
 #nightingale-manager-container .navigation-row td {
-    height: 80px; /* Set higher height for navigation */
-    white-space: nowrap;
+    height: 40px; /* Set higher height for navigation */
 }
 
 #nightingale-manager-container .sequence-row td {
-    height: 60px; /* Set higher height for sequence */
+    height: 30px; /* Set higher height for sequence */
 }
 
 /* Default height for other rows */
 #nightingale-manager-container .track-row td {
     height: 30px;
+    padding: 0;
 }
 
 /* Consistent styling for nightingale components */
@@ -135,11 +135,8 @@ nightingale-track,
 nightingale-sequence,
 nightingale-navigation {
     width: 100%;
-    height: 100%; /* Fill row height */
-    margin: 0;
-    padding: 0;
+    height: 100%; 
 }
-
 
 /* Nightingale component container */
 .nightingale-component-container {

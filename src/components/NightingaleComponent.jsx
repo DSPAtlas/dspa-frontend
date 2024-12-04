@@ -22,24 +22,31 @@ const NightingaleComponent = ({
     passedExperimentIDs
 }) => {
 
-    console.log("proteindata", proteinData);
-    console.log("experimentIDs", passedExperimentIDs);
-   
+    const seqContainer = useRef(null);
+    const residuelevelContainer = useRef(null);
+    const featuresContainer = useRef(null);
+    const multipleExperimentsContainer = useRef(null);
+    const scoreBarcodeContainer = useRef(null);
+    const sequenceLength = proteinData.proteinSequence.length;
+    const [selectedButton, setSelectedButton] = useState(null);
+    const [isHeatmapReady, setHeatmapReady] = useState(false);
     const experimentIDsList = passedExperimentIDs?.length > 0 
-        ? passedExperimentIDs 
-        : proteinData.experimentIDsList.length > 0
-            ? proteinData.experimentIDsList
-            : proteinData.lipscoreList.map(entry => entry.experimentID);
-    
-    
+    ? passedExperimentIDs 
+    : proteinData.experimentIDsList.length > 0
+        ? proteinData.experimentIDsList
+        : proteinData.lipscoreList.map(entry => entry.experimentID);
     const [selectedExperimentDropdown, setSelectedExperimentDropdown] = useState(experimentIDsList[0]);
 
     const structureRefs = useRef(experimentIDsList.map(() => React.createRef()));
 
+    const proteinName = proteinData.proteinName;
+    const margincolorFeatures = "#FF6699";
+    const highlightColor = "rgb(235, 190, 234)";
+    const minWidth = "1200";
+   
     const [structures, setStructures] = useState(experimentIDsList.map((_, index) => {
         const sequenceLength = proteinData.proteinSequence.length;
         const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1)); 
-
         return {
             id: index + 1,
             lipScoreString: defaultLipScoreString,  
@@ -54,23 +61,6 @@ const NightingaleComponent = ({
         borderBottom: "1px solid #ddd",
         height: "30px",
     };
-
-    const seqContainer = useRef(null);
-    const residuelevelContainer = useRef(null);
-    const featuresContainer = useRef(null);
-    const multipleExperimentsContainer = useRef(null);
-    const scoreBarcodeContainer = useRef(null);
-    const sequenceLength = proteinData.proteinSequence.length;
-    const [selectedButton, setSelectedButton] = useState(null);
-
-
-    const [isHeatmapReady, setHeatmapReady] = useState(false);
-
-    const proteinName = proteinData.proteinName;
-
-    const margincolorFeatures = "#FF6699";
-    const highlightColor = "rgb(235, 190, 234)";
-    const minWidth = "1200";
 
     const checkDimensions = (element) => {
         return element && element.offsetWidth > 0 && element.offsetHeight > 0;
@@ -88,9 +78,7 @@ const NightingaleComponent = ({
         handleButtonClick(selectedExperiment, experimentIndex);
     };
 
-
     const handleRowClick = (id) => {
-        console.log("Selected PDB ID:", id);
         setSelectedPdbId(id);
     };
 
@@ -125,34 +113,31 @@ const NightingaleComponent = ({
 
     useEffect(() => {
         const sequenceLength = proteinData.proteinSequence.length;
-        const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1)); // Default to -1
+        const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1)); 
 
         if (selectedExperiment) {
             const lipScoreArray = getLipScoreDataByExperimentID(selectedExperiment);
 
             const lipScoreString = lipScoreArray ? JSON.stringify(lipScoreArray) : defaultLipScoreString;
 
-            // Update the structure with the new lipScore or -1 if no data is found
             setStructures(prevStructures =>
                 prevStructures.map((structure, idx) => ({
                     ...structure,
                     lipScoreString: idx === 0 ? lipScoreString : defaultLipScoreString,
-                    isVisible: idx === 0  // Only the first structure is visible
+                    isVisible: idx === 0  
                 }))
             );
         } else {
-            // If no selected experiment, reset to default -1 for all sequences
             setStructures(prevStructures =>
                 prevStructures.map((structure, idx) => ({
                     ...structure,
                     lipScoreString: defaultLipScoreString,
-                    isVisible: idx === 0  // Only the first structure is visible
+                    isVisible: idx === 0  
                 }))
             );
         }
     }, [selectedExperiment, proteinData.proteinSequence.length]);
     
-
     useEffect(() => {
         structures.forEach((structure, idx) => {
             const structureRef = structureRefs.current[idx]?.current;
@@ -163,6 +148,22 @@ const NightingaleComponent = ({
     }, [selectedPdbId, structures]);
 
     useEffect(() => {
+        const adjustDimensions = () => {
+            const container = document.querySelector('#nightingale-manager-container');
+            if (container) {
+                const width = container.offsetWidth;
+                const height = container.offsetHeight;
+                console.log(`Container dimensions: ${width}x${height}`);
+            }
+        };
+        window.addEventListener('resize', adjustDimensions);
+        adjustDimensions();
+    
+        return () => window.removeEventListener('resize', adjustDimensions);
+    }, []);
+    
+
+    useEffect(() => {
         structures.forEach((structure, idx) => {
             const structureRef = structureRefs.current[idx].current;
             if (structureRef && structure.isVisible) {
@@ -170,7 +171,7 @@ const NightingaleComponent = ({
                 structureRef.structureId = selectedPdbId;
                 structureRef.lipscoreArray = structure.lipScoreString;
                 structureRef.marginColor = "transparent";
-                structureRef.backgroundColor = "white";
+                structureRef.backgroundColor = "transparent";
                 structureRef.highlightColor = "red";
             }
         });
@@ -365,7 +366,6 @@ const NightingaleComponent = ({
                 );
 
                 const xValues = dataHeatmap.map(item => item.xValue);
-
                 const smallestXValue = Math.min(...xValues);
                 const largestXValue = Math.max(...xValues);
 
@@ -383,9 +383,7 @@ const NightingaleComponent = ({
 
     if (isHeatmapReady) {
         const heatmapElement = document.getElementById("id-for-nightingale-sequence-heatmap");
-
         heatmapElement.heatmapInstance.setTooltip((d, x, y, xIndex, yIndex) => {
-        
             let returnHTML = `
                 <div class="tooltip-container">
                     Experiment: <a href="/experiment/${d.yValue}" target="_blank" class="tooltip-link"><strong>${d.yValue}</strong></a><br />
@@ -512,7 +510,6 @@ const NightingaleComponent = ({
                                             <nightingale-navigation
                                                 id="navigation"
                                                 min-width={minWidth}
-                                                height="20"
                                                 length={sequenceLength}
                                                 display-start="1"
                                                 display-end={sequenceLength}
@@ -529,7 +526,6 @@ const NightingaleComponent = ({
                                                 ref={seqContainer}
                                                 sequence={proteinData.featuresData.sequence}
                                                 min-width={minWidth}
-                                                height="20"
                                                 width={minWidth}
                                                 length={sequenceLength}
                                                 display-start="1"
@@ -550,7 +546,7 @@ const NightingaleComponent = ({
                                                     ref={featuresContainer}
                                                     id="domain"
                                                     min-width={minWidth}
-                                                    height="20"
+                                        
                                                     length={sequenceLength}
                                                     display-start="1"
                                                     display-end={sequenceLength}
@@ -569,7 +565,7 @@ const NightingaleComponent = ({
                                         <nightingale-track
                                             id="binding"
                                             min-width={minWidth}
-                                            height="20"
+                                           
                                             length={sequenceLength} 
                                             display-start="1"
                                             display-end={sequenceLength} 
@@ -590,7 +586,7 @@ const NightingaleComponent = ({
                                     id="chain"
                                     layout="non-overlapping"
                                     min-width={minWidth}
-                                    height="20"
+                                    
                                     length={sequenceLength} 
                                     display-start="1"
                                     display-end={sequenceLength} 
@@ -609,7 +605,7 @@ const NightingaleComponent = ({
                                     id="disulfide-bond"
                                     layout="non-overlapping"
                                     min-width={minWidth}
-                                    height="20"
+                                    
                                     length={sequenceLength} 
                                     display-start="1"
                                     display-end={sequenceLength} 
@@ -627,7 +623,7 @@ const NightingaleComponent = ({
                                 <nightingale-track
                                     id="beta-strand"
                                     min-width={minWidth}
-                                    height="20"
+                                    
                                     length={sequenceLength} 
                                     display-start="1"
                                     display-end={sequenceLength} 
@@ -645,7 +641,7 @@ const NightingaleComponent = ({
                                     <nightingale-track
                                         id="site"
                                         min-width={minWidth}
-                                        height="20"
+                                        
                                         length={sequenceLength} 
                                         display-start="1"
                                         display-end={sequenceLength} 
@@ -664,7 +660,7 @@ const NightingaleComponent = ({
                                         ref={featuresContainer}
                                         id="region"
                                         min-width={minWidth}
-                                        height="20"
+                                       
                                         length={sequenceLength} 
                                         display-start="1"
                                         display-end={sequenceLength} 
