@@ -268,28 +268,6 @@ const NightingaleComponent = ({
                         trackElement.setAttribute('label', label);    // Set the label text
                     }
                 });
-        
-                // trackIds.forEach(({ id, type }) => {
-                //         const trackElement = document.querySelector(`#${id}`);
-                //         const trackFeatures = mappedFeatures.filter(({ type: featureType }) => featureType === type);
-        
-                //         trackElement.data = trackFeatures;
-        
-                //         trackElement.addEventListener("mousemove", (event) => {
-                //             // Calculate approximate position
-                //             const trackLength = trackElement.getAttribute("length");
-                //             const relativeX = event.offsetX / trackElement.clientWidth;
-                //             const position = Math.floor(relativeX * trackLength);
-        
-                //             // Find the closest feature to this position
-                //             const feature = trackFeatures.find(f => f.start <= position && f.end >= position);
-                //             if (feature) {
-                //                 updateTooltip(feature.tooltipContent, event.pageX, event.pageY);
-                //             }
-                //         });
-        
-                //         trackElement.addEventListener("mouseleave", hideTooltip);
-                //     });
                 
                 const domain = document.querySelector("#domain");
                 const region = document.querySelector("#region");
@@ -528,6 +506,7 @@ const NightingaleComponent = ({
                                                 min-width={minWidth}
                                                 width={minWidth}
                                                 length={sequenceLength}
+                                              
                                                 display-start="1"
                                                 display-end={sequenceLength}
                                                 highlight-event="onmouseover"
@@ -546,7 +525,7 @@ const NightingaleComponent = ({
                                                     ref={featuresContainer}
                                                     id="domain"
                                                     min-width={minWidth}
-                                        
+                                     
                                                     length={sequenceLength}
                                                     display-start="1"
                                                     display-end={sequenceLength}
@@ -565,7 +544,7 @@ const NightingaleComponent = ({
                                         <nightingale-track
                                             id="binding"
                                             min-width={minWidth}
-                                           
+                                       
                                             length={sequenceLength} 
                                             display-start="1"
                                             display-end={sequenceLength} 
@@ -586,7 +565,7 @@ const NightingaleComponent = ({
                                     id="chain"
                                     layout="non-overlapping"
                                     min-width={minWidth}
-                                    
+                                   
                                     length={sequenceLength} 
                                     display-start="1"
                                     display-end={sequenceLength} 
@@ -605,7 +584,7 @@ const NightingaleComponent = ({
                                     id="disulfide-bond"
                                     layout="non-overlapping"
                                     min-width={minWidth}
-                                    
+                        
                                     length={sequenceLength} 
                                     display-start="1"
                                     display-end={sequenceLength} 
@@ -623,7 +602,6 @@ const NightingaleComponent = ({
                                 <nightingale-track
                                     id="beta-strand"
                                     min-width={minWidth}
-                                    
                                     length={sequenceLength} 
                                     display-start="1"
                                     display-end={sequenceLength} 
@@ -660,7 +638,7 @@ const NightingaleComponent = ({
                                         ref={featuresContainer}
                                         id="region"
                                         min-width={minWidth}
-                                       
+                            
                                         length={sequenceLength} 
                                         display-start="1"
                                         display-end={sequenceLength} 
@@ -698,23 +676,6 @@ const NightingaleComponent = ({
                                         </td>
                                     </tr>
                                     )}
-                                   {/*   <tr>
-                                        <td>Barcodes S/D/I</td>
-                                        <td>
-                                            <nightingale-msa
-                                                ref={multipleExperimentsContainer}
-                                                id="msa"
-                                                height="80"
-                                                width={minWidth}
-                                                label-width="40"
-                                                highlight-color={highlightColor}
-                                                margin-left="0"
-                                                color-scheme="hydro"
-                                                scale="I:-2,D:0,S:2"
-                                                color-range="#ffe6f7:-2,#FF6699:2"
-                                            ></nightingale-msa>
-                                        </td>
-                                    </tr> */}
                                 </tbody>
                             </table>
                         </div>

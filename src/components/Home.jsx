@@ -10,7 +10,6 @@ function Home() {
   const [error, setError] = useState("");
   const { searchResults: initialSearchResults } = location.state || {};
   const [searchResults, setSearchResults] = useState(initialSearchResults || null);
-
   const [treatments, setTreatments] = useState([]);
 
   const navigate = useNavigate();
