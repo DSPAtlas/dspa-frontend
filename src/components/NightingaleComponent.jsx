@@ -90,6 +90,7 @@ const NightingaleComponent = ({
 
 
     const handleRowClick = (id) => {
+        console.log("Selected PDB ID:", id);
         setSelectedPdbId(id);
     };
 
@@ -151,6 +152,15 @@ const NightingaleComponent = ({
         }
     }, [selectedExperiment, proteinData.proteinSequence.length]);
     
+
+    useEffect(() => {
+        structures.forEach((structure, idx) => {
+            const structureRef = structureRefs.current[idx]?.current;
+            if (structureRef) {
+                console.log(`Structure ${idx} ID:`, structureRef.structureId);
+            }
+        });
+    }, [selectedPdbId, structures]);
 
     useEffect(() => {
         structures.forEach((structure, idx) => {
