@@ -91,14 +91,12 @@
     box-sizing: border-box;
 }
 
-
 .treatment-table-container h2, .treatment-protein-container h2 {
     min-height: 50px; /* Set consistent height */
     line-height: 50px; /* Vertically center text */
     margin: 0; /* Reset default margins */
     text-align: center; /* Center-align headings */
 }
-
 
 /* Scrollbar customization for better aesthetics */
 .treatment-table-container::-webkit-scrollbar {
@@ -178,6 +176,13 @@ select:focus {
     margin-top: 10px;
 }
 
+.goenrichment-chart-content {
+    width: 100%; /* Full width of the parent */
+    height: auto; /* Adjust based on content */
+    max-width: 100%; /* Prevent overflow */
+    overflow: hidden; /* Hide anything exceeding the bounds */
+    resize: both; /* Allow resizing for debugging */
+}
 
 .goenrichment-chart-container {
     width: 100%; /* Full width of the container */

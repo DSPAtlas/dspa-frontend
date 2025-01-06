@@ -188,7 +188,13 @@ function Home() {
           </div>
         </div>
       </main>
+
+       {/* Impressum */}
+       <footer style={{ textAlign: "center", marginTop: "20px", padding: "10px", backgroundColor: "#f8f8f8" }}>
+        <p>© 2024 Eidgenössische Technische Hochschule Zürich</p>
+      </footer>
     </>
+
   );
 }
 

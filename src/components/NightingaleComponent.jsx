@@ -21,7 +21,11 @@ const NightingaleComponent = ({
     showHeatmap = true,
     passedExperimentIDs
 }) => {
-
+    
+    const structureRef = useRef(null); 
+    const containerRef = useRef(null); 
+    
+    const [availableHeight, setAvailableHeight] = useState(0);
     const seqContainer = useRef(null);
     const residuelevelContainer = useRef(null);
     const featuresContainer = useRef(null);
@@ -38,6 +42,7 @@ const NightingaleComponent = ({
     const [selectedExperimentDropdown, setSelectedExperimentDropdown] = useState(experimentIDsList[0]);
 
     const structureRefs = useRef(experimentIDsList.map(() => React.createRef()));
+    const [trackHeight, setTrackHeight] = useState(15);
 
     const proteinName = proteinData.proteinName;
     const margincolorFeatures = "#FF6699";
@@ -62,6 +67,52 @@ const NightingaleComponent = ({
         height: "30px",
     };
 
+    const hasDomainData = proteinData.featuresData?.features?.some(({ type }) => type === "DOMAIN");
+    const hasRegionData = proteinData.featuresData.features.some(({ type }) => type === "REGION");
+    const hasSiteData = proteinData.featuresData.features.some(({ type }) => type === "SITE");
+    const hasBindingData = proteinData.featuresData.features.some(({ type }) => type === "BINDING");
+    const hasChainData = proteinData.featuresData.features.some(({ type }) => type === "CHAIN");
+    const hasDisulfidData = proteinData.featuresData.features.some(({ type }) => type === "DISULFID");
+    const hasBetaStrandData = proteinData.featuresData.features.some(({ type }) => type === "STRAND");
+
+    const visibleTracks = [
+        hasDomainData && "domain",
+        hasBindingData && "binding",
+        hasSiteData && "site",
+        hasChainData && "chain",
+        hasDisulfidData && "disulfide-bond",
+        hasBetaStrandData && "beta-strand",
+        hasRegionData && "region",
+        showHeatmap && "heatmap"
+    ].filter(Boolean);
+
+    useEffect(() => {
+        const updateHeight = () => {
+            if (containerRef.current) {
+                const totalHeight = containerRef.current.getBoundingClientRect().height;
+                const structureHeight = structureRef.current
+                    ? structureRef.current.getBoundingClientRect().height
+                    : 0;
+                const navigationHeight = document.getElementById("navigation")
+                    ? document.getElementById("navigation").offsetHeight
+                    : 0;
+                const availableTrackHeight = totalHeight - structureHeight - navigationHeight - 80; // Add padding/margin
+                const dynamicTrackHeight = Math.max(
+                    availableTrackHeight / (visibleTracks.length || 1),
+                    15
+                ); // Minimum height
+                setAvailableHeight(availableTrackHeight);
+                setTrackHeight(dynamicTrackHeight);
+            }
+        };
+    
+        window.addEventListener("resize", updateHeight);
+        updateHeight();
+    
+        return () => window.removeEventListener("resize", updateHeight);
+    }, [visibleTracks.length]);
+    
+    
     const checkDimensions = (element) => {
         return element && element.offsetWidth > 0 && element.offsetHeight > 0;
     };
@@ -375,15 +426,6 @@ const NightingaleComponent = ({
     const lipScoreArray = [-1, -1];
     const lipScoreString = JSON.stringify(lipScoreArray);
 
-    // Check if there is Beta strand data
-    const hasDomainData = proteinData.featuresData.features.some(({ type }) => type === "DOMAIN");
-    const hasRegionData = proteinData.featuresData.features.some(({ type }) => type === "REGION");
-    const hasSiteData = proteinData.featuresData.features.some(({ type }) => type === "SITE");
-    const hasBindingData = proteinData.featuresData.features.some(({ type }) => type === "BINDING");
-    const hasChainData = proteinData.featuresData.features.some(({ type }) => type === "CHAIN");
-    const hasDisulfidData = proteinData.featuresData.features.some(({ type }) => type === "DISULFID");
-    const hasBetaStrandData = proteinData.featuresData.features.some(({ type }) => type === "STRAND");
-
     const legendData = [
         { color: '#ff7d45', label: '0 - 2' },
         { color: '#db13', label: '2 - 4' },
@@ -458,9 +500,9 @@ const NightingaleComponent = ({
                 <nightingale-manager>
                     <div id="tooltip" className="tooltip"></div>
 
-                    <div style={{ display: 'flex' }}>
-                        {/* Left Column: Nightingale Structure */}
-                        <div style={{ flex: '2', paddingRight: '20px' }}>
+                    <div >
+                        {/* Left Column: Nightingale Structurestyle={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', width: '100%'cd */}
+                        <div style={{ position: 'relative', paddingRight: '20px', zIndex: '1' }}>
                             {structures.map((structure, idx) =>
                                 structure.isVisible ? (
                                     <nightingale-structure
@@ -472,14 +514,14 @@ const NightingaleComponent = ({
                                         background-color="white"
                                         lipscore-array={structure.lipScoreString}
                                         highlight-color="#FFEB3B66"
-                                        style={{ height: '1250px', width: '100%' }}
+                                      
                                     ></nightingale-structure>
                                 ) : null
                             )}
                         </div>
 
                         {/* Right Column: Other Nightingale Elements */}
-                        <div style={{ flex: '3' }}>
+                        <div style={{ position: 'relative', paddingRight: '20px', zIndex: '2' }}>
                             <table>
                                 <tbody>
                                     <tr  className="navigation-row">
@@ -490,6 +532,7 @@ const NightingaleComponent = ({
                                                 min-width={minWidth}
                                                 length={sequenceLength}
                                                 display-start="1"
+                                                height={trackHeight}
                                                 display-end={sequenceLength}
                                                 margin-color="white"
                                                 margin-left="50"
@@ -504,9 +547,8 @@ const NightingaleComponent = ({
                                                 ref={seqContainer}
                                                 sequence={proteinData.featuresData.sequence}
                                                 min-width={minWidth}
-                                                width={minWidth}
                                                 length={sequenceLength}
-                                              
+                                                height={trackHeight}
                                                 display-start="1"
                                                 display-end={sequenceLength}
                                                 highlight-event="onmouseover"
@@ -525,7 +567,7 @@ const NightingaleComponent = ({
                                                     ref={featuresContainer}
                                                     id="domain"
                                                     min-width={minWidth}
-                                     
+                                                    height={trackHeight}
                                                     length={sequenceLength}
                                                     display-start="1"
                                                     display-end={sequenceLength}
@@ -544,7 +586,7 @@ const NightingaleComponent = ({
                                         <nightingale-track
                                             id="binding"
                                             min-width={minWidth}
-                                       
+                                            height={trackHeight}
                                             length={sequenceLength} 
                                             display-start="1"
                                             display-end={sequenceLength} 
@@ -565,7 +607,7 @@ const NightingaleComponent = ({
                                     id="chain"
                                     layout="non-overlapping"
                                     min-width={minWidth}
-                                   
+                                    height={trackHeight}
                                     length={sequenceLength} 
                                     display-start="1"
                                     display-end={sequenceLength} 
@@ -584,7 +626,7 @@ const NightingaleComponent = ({
                                     id="disulfide-bond"
                                     layout="non-overlapping"
                                     min-width={minWidth}
-                        
+                                    height={trackHeight}
                                     length={sequenceLength} 
                                     display-start="1"
                                     display-end={sequenceLength} 
@@ -603,6 +645,7 @@ const NightingaleComponent = ({
                                     id="beta-strand"
                                     min-width={minWidth}
                                     length={sequenceLength} 
+                                    height={trackHeight}
                                     display-start="1"
                                     display-end={sequenceLength} 
                                     highlight-color="#FFEB3B66"
@@ -619,7 +662,7 @@ const NightingaleComponent = ({
                                     <nightingale-track
                                         id="site"
                                         min-width={minWidth}
-                                        
+                                        height={trackHeight}
                                         length={sequenceLength} 
                                         display-start="1"
                                         display-end={sequenceLength} 
@@ -638,7 +681,7 @@ const NightingaleComponent = ({
                                         ref={featuresContainer}
                                         id="region"
                                         min-width={minWidth}
-                            
+                                        height={trackHeight}
                                         length={sequenceLength} 
                                         display-start="1"
                                         display-end={sequenceLength} 
@@ -663,7 +706,7 @@ const NightingaleComponent = ({
                                                 ref={scoreBarcodeContainer}
                                                 id="id-for-nightingale-sequence-heatmap"
                                                 heatmap-id="seq-heatmap"
-                                                width={minWidth}
+                                                min-width={minWidth}
                                                 length={sequenceLength} 
                                                 height="100"
                                                 display-start="1"
@@ -683,8 +726,8 @@ const NightingaleComponent = ({
                 </nightingale-manager>
             </div>
 
-            {/* Table for PDB selection */}
-            <div>
+            {/* Table for PDB selection 
+           /* <div>
                 <table className="pdb-selection-container">
                     <thead>
                         <tr>
@@ -712,7 +755,7 @@ const NightingaleComponent = ({
                         ))}
                     </tbody>
                 </table>
-            </div>
+            </div>*/}
             <p>Selected PDB ID: {selectedPdbId}</p>
         </div>
     );
