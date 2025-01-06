@@ -9,6 +9,7 @@ import "@dspa-nightingale/nightingale-structure/nightingale-structure";
 
 import "@nightingale-elements/nightingale-msa";
 import "@nightingale-elements/nightingale-sequence-heatmap";
+import { e } from 'mathjs';
 
 
 
@@ -24,7 +25,6 @@ const NightingaleComponent = ({
     
     const structureRef = useRef(null); 
     const containerRef = useRef(null); 
-    
     const [availableHeight, setAvailableHeight] = useState(0);
     const seqContainer = useRef(null);
     const residuelevelContainer = useRef(null);
@@ -32,7 +32,8 @@ const NightingaleComponent = ({
     const multipleExperimentsContainer = useRef(null);
     const scoreBarcodeContainer = useRef(null);
     const sequenceLength = proteinData.proteinSequence.length;
-    const [selectedButton, setSelectedButton] = useState(null);
+    
+    const [selectedButton, setSelectedButton] = useState(0);
     const [isHeatmapReady, setHeatmapReady] = useState(false);
     const experimentIDsList = passedExperimentIDs?.length > 0 
     ? passedExperimentIDs 
@@ -49,15 +50,35 @@ const NightingaleComponent = ({
     const highlightColor = "rgb(235, 190, 234)";
     const minWidth = "1200";
    
-    const [structures, setStructures] = useState(experimentIDsList.map((_, index) => {
+    const [structures, setStructures] = useState(() => {
+        // Ensure proteinData and experimentIDsList are valid
+        if (!proteinData || !proteinData.proteinSequence || !experimentIDsList) {
+            console.error("Invalid proteinData or experimentIDsList");
+            return [];
+        }
+    
         const sequenceLength = proteinData.proteinSequence.length;
-        const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1)); 
-        return {
-            id: index + 1,
-            lipScoreString: defaultLipScoreString,  
-            isVisible: index === 0
-        };
-    }));
+        const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1));
+    
+        return experimentIDsList.map((experimentID, index) => {
+            let lipScoreArray = null;
+            try {
+                lipScoreArray = getLipScoreDataByExperimentID(experimentID);
+            } catch (err) {
+                console.error(`Error fetching lip score for experimentID ${experimentID}:`, err);
+            }
+    
+            const lipScoreString = lipScoreArray ? JSON.stringify(lipScoreArray) : defaultLipScoreString;
+    
+            return {
+                id: index + 1,
+                lipScoreString: lipScoreString,
+                isVisible: index === 0, // First experiment is visible
+            };
+        });
+    });
+    
+    
 
     const nightingaleTdStyleTrack = {
         padding: "0",
@@ -96,7 +117,7 @@ const NightingaleComponent = ({
                 const navigationHeight = document.getElementById("navigation")
                     ? document.getElementById("navigation").offsetHeight
                     : 0;
-                const availableTrackHeight = totalHeight - structureHeight - navigationHeight - 80; // Add padding/margin
+                const availableTrackHeight = totalHeight - structureHeight - navigationHeight - 80;
                 const dynamicTrackHeight = Math.max(
                     availableTrackHeight / (visibleTracks.length || 1),
                     15
@@ -118,16 +139,37 @@ const NightingaleComponent = ({
     };
 
     const handleButtonClick = (experimentID, index) => {
-        setSelectedButton(index); // Track the selected button
-        handleExperimentClick(experimentID, index);
+        setSelectedButton((prevIndex) => (prevIndex === index ? null : index)); 
+        if (selectedButton === index) {
+            handleExperimentClick(0, index);
+        } else {
+            handleExperimentClick(experimentID, index);
+        }
     };
+
+    const handleUnselectColoring = () => {
+        setStructures((prevStructures) =>
+            prevStructures.map((structure) => ({
+                ...structure,
+                isVisible: false,
+                lipScoreString: JSON.stringify(Array(sequenceLength).fill(-1)), 
+            }))
+        );
+    };
+    
+    
 
     const handleDropdownChange = (event) => {
         const selectedExperiment = event.target.value;
-        setSelectedExperimentDropdown(selectedExperiment);
-        const experimentIndex = experimentIDsList.indexOf(selectedExperiment);
-        handleButtonClick(selectedExperiment, experimentIndex);
+        if (selectedExperiment === "none") {
+            handleUnselectColoring();
+        } else {
+            setSelectedExperimentDropdown(selectedExperiment);
+            const experimentIndex = experimentIDsList.indexOf(selectedExperiment);
+            handleButtonClick(selectedExperiment, experimentIndex);
+        }
     };
+    
 
     const handleRowClick = (id) => {
         setSelectedPdbId(id);
@@ -145,22 +187,36 @@ const NightingaleComponent = ({
     };
 
     const handleExperimentClick = (experimentID, index) => {
-        const lipScoreArray = getLipScoreDataByExperimentID(experimentID);
-
-        if (lipScoreArray) {
-            const lipScoreString = JSON.stringify(lipScoreArray);
-
+        if (experimentID === 0) { // Ensure proper comparison with ===
+            const sequenceLength = 100000//proteinData.proteinSequence.length;
+            const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1));
+    
             setStructures(prevStructures =>
-                prevStructures.map((structure, idx) =>
-                    idx === index
-                        ? { ...structure, lipScoreString, isVisible: true }
-                        : { ...structure, isVisible: false }
-                )
-            )
+                prevStructures.map((structure, idx) => ({
+                    ...structure,
+                    lipScoreString: defaultLipScoreString,
+                    isVisible: idx === 0
+                }))
+            ); 
         } else {
-            console.error(`No data found for experiment ID: ${experimentID}`);
+            const lipScoreArray = getLipScoreDataByExperimentID(experimentID);
+    
+            if (lipScoreArray) {
+                const lipScoreString = JSON.stringify(lipScoreArray);
+    
+                setStructures(prevStructures =>
+                    prevStructures.map((structure, idx) =>
+                        idx === index
+                            ? { ...structure, lipScoreString, isVisible: true }
+                            : { ...structure, isVisible: false }
+                    )
+                );
+            } else {
+                console.error(`No data found for experiment ID: ${experimentID}`);
+            }
         }
     };
+    
 
     useEffect(() => {
         const sequenceLength = proteinData.proteinSequence.length;
@@ -423,8 +479,6 @@ const NightingaleComponent = ({
         });
     }
 
-    const lipScoreArray = [-1, -1];
-    const lipScoreString = JSON.stringify(lipScoreArray);
 
     const legendData = [
         { color: '#ff7d45', label: '0 - 2' },

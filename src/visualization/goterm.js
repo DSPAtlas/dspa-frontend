@@ -1,4 +1,44 @@
 import * as d3 from 'd3';
+
+function wrapText(selection, maxWidth, maxCharsPerLine = 25, maxLines = 25) {
+    selection.each(function () {
+        const text = d3.select(this);
+        const fullText = text.text();
+        const words = fullText.match(new RegExp(`.{1,${maxCharsPerLine}}`, 'g')) || [];
+        const y = text.attr("y") || 0;
+        const x = text.attr("x") || 0;
+        const dy = parseFloat(text.attr("dy")) || 0;
+        const lineHeight = 1.2; // Line height in ems
+        let lineNumber = 0;
+
+        text.text(null); // Clear existing text
+
+        words.slice(0, maxLines).forEach((line, i) => {
+            const tspan = text.append("tspan")
+                .attr("x", x)
+                .attr("y", y)
+                .attr("dy", `${lineNumber * lineHeight + dy}em`)
+                .text(line);
+            lineNumber++;
+        });
+
+        if (words.length > maxLines) {
+            const tspan = text.append("tspan")
+                .attr("x", x)
+                .attr("y", y)
+                .attr("dy", `${lineNumber * lineHeight + dy}em`)
+                .text("...");
+        }
+
+        // Apply rotation for better readability
+        text.attr("transform", `rotate(-45)`)
+            .style("text-anchor", "end");
+    });
+}
+
+
+
+
 export function GOEnrichmentVisualization({ goEnrichmentData, chartRef, onGoTermClick, selectedGoTerm }) {
     if (!goEnrichmentData || !Array.isArray(goEnrichmentData)) {
         console.error("Invalid goEnrichmentData structure");
@@ -71,8 +111,9 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef, onGoTerm
         .selectAll(".tick text")
         .style("font-size", "14px")
         .style("font-family", "Raleway")
-        .style("text-anchor", "end")
-        .attr("transform", "rotate(-45)");
+        .style("text-anchor", "middle")
+       // .attr("transform", "rotate(-45)")
+        .call(wrapText, x0.bandwidth());
 
     // Add y-axis
     svg.append("g")
