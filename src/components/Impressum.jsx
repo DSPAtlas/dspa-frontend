@@ -1,4 +1,4 @@
-function About () {
+function Impressum () {
   return (
     <>
       <main className="about">
@@ -12,4 +12,4 @@ function About () {
   );
 }
 
-export default About;
+export default Impressum;

@@ -124,8 +124,10 @@ const ExperimentInfo = () => {
                 <div className="results-experiment-search-container">
                     <div id="chart"></div>
                 </div>
-                <div>
+                <div >
+                    <div  className="experiment-header">
                 <h1>Top 20 Proteins by Cumulative LiP Score</h1><br />
+                </div>
                 <div className="experiment-protein-container">
                 <table>
                     <thead>

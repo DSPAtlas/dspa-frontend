@@ -5,7 +5,7 @@ import ProteinSearch from './components/Search';
 import ProteinVisualization from './components/ProteinView';
 import ExperimentInfo from './components/ExperimentView';
 import ExperimentsOverview from './components/ExperimentsOverview';
-import About from './components/About';
+import Impressum from './components/Impressum';
 import Contact from './components/Contact';
 import Treatment from './components/TreatmentView';
 import Pathway from './components/Pathway';
@@ -34,8 +34,7 @@ const App = () => {
           <a href="/" className="navigation-bar-item navigation-button">HOME</a>
           <a href="/search" className="navigation-bar-item navigation-button"> SEARCH</a>
           <a href="/experiments" className="navigation-bar-item navigation-button"> EXPERIMENT</a>
-          <a href="/about" className="navigation-bar-item navigation-button"> ABOUT</a>
-          <a href="/contact" className="navigation-bar-item navigation-button"> CONTACT</a>
+          <a href="/impressum" className="navigation-bar-item navigation-button"> IMPRESSUM</a>
         </div>
       </div>  
     </div>    
@@ -43,8 +42,7 @@ const App = () => {
   <Routes>
     <Route path="/" element={<Home />} />
     <Route path="/search" element={<ProteinSearch />} />
-    <Route path="/about" element={<About />} />
-    <Route path="/contact" element={<Contact />} />
+    <Route path="/impressum" element={<Impressum />} />
     <Route path="/visualize/:proteinName" element={<ProteinVisualization />} />
     <Route path="/experiment/:experimentID" element={<ExperimentInfo />} />
     <Route path="/experiments" element={<ExperimentsOverview />} />
