@@ -1,4 +1,4 @@
-.home-container {
+/* .home-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -6,8 +6,25 @@
     padding-top: 60px;
     min-height: 100vh; 
     text-align: center;
-  }
-  
+  } */
+
+
+  .home-container {
+    background-image: url('./../protein_dynamics.gif');
+    background-size: contain; /* Keeps the entire GIF visible */
+    background-position: top center; /* Aligns the GIF at the top of the container */
+    background-repeat: no-repeat; /* Prevents repeating the GIF */
+    background-color: white; /* Fills the rest of the container with a white background */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; /* Adjusts children to space out to top and bottom */
+    padding-top: 60px;
+    min-height: 100vh; /* Ensures the container covers at least the full height of the viewport */
+}
+
+
+
   .logo-container {
     padding-top: 80px;
     text-align: center;
@@ -25,7 +42,7 @@
     padding: 20px;
     border-radius: 5px;
     margin-top: 50px;
-    width: 100%; 
+    width: 80%; 
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); 
     text-align: center;
   }
@@ -42,10 +59,26 @@
 .dspa-xlarge{
     font-size:24px!important
 }.dspa-xxlarge{
-    font-size:36px!important
+    font-size:80px!important
 }.dspa-xxxlarge{
-    font-size:48px!important}.dspa-jumbo{font-size:64px!important}
+    font-size:120px!important
+  }.dspa-jumbo{font-size:64px!important}
 
+  .dspa-text-blue {
+    position: absolute; /* Maintains absolute positioning */
+    top: 20%; /* Adjust this value to move it up or down to find the perfect center */
+    left: 50%; /* Centers horizontally */
+    transform: translate(-50%, -20%); /* Adjust to exact center */
+    z-index: 2; /* Ensures it's above the background */
+    width: 100%; /* Ensures the text is centered in the full width of its container */
+    text-align: center; /* Ensures the text itself is centered */
+}
+
+  .dspa-logo-text{
+    margin-top: 100px;
+    font-size:120px;
+    color:#0A2F59;
+}
 
 @media (min-width:993px){.dspa-modal-content{
     width:900px}.dspa-hide-large{
@@ -76,8 +109,8 @@
     padding: 20px;
   }
   
-.dspa-background-beige {
-    background-color: #d3cab8; 
+.dspa-background-white {
+    background-color: white; 
     border-radius: 5px;
     margin-top: 20px;
   }
@@ -108,23 +141,37 @@
   .three-boxes-container {
     display: flex;
     justify-content: space-around;
-    gap: 40px; /* Adds space between each box */
-    margin-top: 60px;
-  }
-  
-  .box {
-    background-color: #f4f4f4;
+    gap: 20px; /* Reduce the gap for smaller widths */
     padding: 20px;
-    border-radius: 8px;
-    text-align: center; /* Centers text inside each box */
-    width: 30%;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center; /* Centers elements vertically within each box */
-  }
+    width: 80%; /* Make the container smaller */
+    max-width: 960px; /* Adjust maximum width for larger screens */
+    margin-top: 500px; /* Space from the centered text */
+    flex-wrap: wrap; /* Allows boxes to wrap in smaller screens */
+    position: relative;
+}
+  
+.box {
+  flex: 1 1 260px; /* Allows boxes to grow and shrink but not smaller than 260px */
+  max-width: 31%; /* Restricts box from taking more than a third of container width */
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  background-color: #f4f4f4; /* Light background for the boxes */
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
+@media (max-width: 600px) {
+  .three-boxes-container {
+      width: 100%; /* Full width for very small screens */
+  }
+  .box {
+      max-width: 100%; /* Each box takes full width on small screens */
+  }
+}
   .box p.description {
     margin-top: 10px;
     font-size: 14px;

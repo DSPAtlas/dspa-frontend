@@ -85,14 +85,12 @@ function Home() {
 
   return (
     <>
-      <main className="dspa-background-beige home-container">
-        <div className="logo-container">
-          <img src="/images/newlogo.png" alt="DSPAtlas Logo" className="logo" />
-        </div>
+      <main className="home-container">
+
         <div className="dspa-text-blue">
-          <span className="dspa-jumbo dspa-hide-small">DynaProt</span>
+
           <br />
-          <span className="dspa-xxlarge dspa-hide-large dspa-hide-medium">DynaProt</span>
+          <span className="dspa-logo-text">DynaProt</span>
           <br />
           <span className="dspa-large">Explore dynamic changes in protein structure.</span>
         </div>

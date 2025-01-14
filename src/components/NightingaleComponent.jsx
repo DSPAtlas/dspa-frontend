@@ -568,7 +568,6 @@ const NightingaleComponent = ({
                                         background-color="white"
                                         lipscore-array={structure.lipScoreString}
                                         highlight-color="#FFEB3B66"
-                                      
                                     ></nightingale-structure>
                                 ) : null
                             )}
