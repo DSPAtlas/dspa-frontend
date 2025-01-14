@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 
 function wrapText(selection, maxWidth, maxCharsPerLine = 25, maxLines = 25) {
+   
     selection.each(function () {
         const text = d3.select(this);
         const fullText = text.text();
@@ -50,6 +51,17 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef, onGoTerm
         console.error("Chart element is not found.");
         return;
     }
+
+    const dynaprot_colors = [
+        "#be9fd2",
+        "#d89853",
+        "#b3c5da",
+        "#d35eb6",
+        "#71b6c8",
+        "#d9ce74",
+        "#99c2c5"
+    ];
+    
 
     // Get container dimensions
     const containerWidth = chartRef.current.offsetWidth || 800; // Default fallback
@@ -102,7 +114,9 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef, onGoTerm
 
     const color = d3.scaleOrdinal()
         .domain(experimentIDs)
-        .range(d3.schemeTableau10);
+        .range(dynaprot_colors.length >= experimentIDs.length
+            ? dynaprot_colors.slice(0, experimentIDs.length) // Use only the required number of colors
+            : d3.schemeTableau10); 
 
     // Add x-axis
     svg.append("g")

@@ -21,11 +21,21 @@ export function SumLipScoreVisualization({ data, experimentMetaData }) {
     // Remove any existing SVG
     d3.select("#sumlipscorebarplot").selectAll("*").remove();
 
+    const dynaprot_colors = [
+        "#be9fd2",
+        "#d89853",
+        "#b3c5da",
+        "#d35eb6",
+        "#71b6c8",
+        "#d9ce74",
+        "#99c2c5"
+    ];
+
     const perturbationColors = {
         "low": "#90EE90", // Light green
         "medium": "#FFD700", // Yellow
-        "Small Molecule": "#FF4500", // Orange-red
-        "unknown": "#D3D3D3", // Light gray
+        "Small Molecule":  "#be9fd2", // Orange-red
+        "unknown": "#99c2c5", // Light gray
     };
 
     // Create the SVG container

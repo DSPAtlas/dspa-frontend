@@ -16,7 +16,6 @@ const experimentTableStyles = {
 
 
 const ExperimentTable = ({ experimentData, onProteinClick, displayedProtein }) => {
-    console.log("experimenttable", experimentData);
     
     if (!experimentData || !Array.isArray(experimentData)) {
         console.error("experimentData is not an array:", experimentData);
@@ -220,7 +219,7 @@ const Treatment = () => {
    
     return (
         <div>
-            <div className="treatment-dropdown">
+            <div className="treatment-section treatment-dropdown">
                 <label htmlFor="treatmentSelect">Select Treatment: </label>
                 <select 
                     id="treatmentSelect" 

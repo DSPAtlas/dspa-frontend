@@ -29,7 +29,7 @@ const App = () => {
   <header className="app-header">
     <div className="navbar-top">
       <div className="navigation-bar navigation-white navigation-card">
-        <a href="/" className="navigation-bar-item navigation-button navigation-wide">Dynamic Structural Proteome Atlas</a>
+        <a href="/" className="navigation-bar-item navigation-button navigation-wide">DynaProt</a>
         <div className="navigation-right navigation-hide-small">
           <a href="/" className="navigation-bar-item navigation-button">HOME</a>
           <a href="/search" className="navigation-bar-item navigation-button"> SEARCH</a>

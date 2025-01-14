@@ -126,23 +126,19 @@
     padding: 15px 20px; 
     font-size: 20px;
     line-height: 2; 
-    color: #444; 
     background-color: #ffffff; 
-    border: 2px solid #b99f9d; 
     border-radius: 4px; /* Rounded corners for a modern look */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
     -webkit-appearance: none; /* Removes default styling in WebKit browsers */
     -moz-appearance: none; /* Removes default styling in Mozilla browsers */
     appearance: none; /* Standard way to remove default arrow */
     cursor: pointer; /* Indicates the dropdown can be interacted with */
-}
-
-.treatment-dropdown {
     margin-bottom: 20px; /* Adds spacing below the dropdown */
     margin-top: 60px;
     /* Ensure it appears above other components z-index: 1000;*/
     position: relative; 
 }
+
 
 select {
     padding: 10px; /* Increase padding for better appearance */
