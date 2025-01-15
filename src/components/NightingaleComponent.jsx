@@ -266,21 +266,36 @@ const NightingaleComponent = ({
     
         return () => window.removeEventListener('resize', adjustDimensions);
     }, []);
-    
+
 
     useEffect(() => {
         structures.forEach((structure, idx) => {
             const structureRef = structureRefs.current[idx].current;
             if (structureRef && structure.isVisible) {
-                structureRef.proteinAccession = proteinName;
-                structureRef.structureId = selectedPdbId;
-                structureRef.lipscoreArray = structure.lipScoreString;
-                structureRef.marginColor = "transparent";
-                structureRef.backgroundColor = "transparent";
-                structureRef.highlightColor = "red";
+                console.log("structure", structure);
+                
+                structureRef.setAttribute('protein-accession', proteinName);
+                structureRef.setAttribute('structure-id', selectedPdbId);
+                structureRef.setAttribute('highlight-color', '#FF6699');
+                structureRef.setAttribute('lipscore-array',  structure.lipScoreString);
             }
         });
     }, [structures, proteinName, selectedPdbId]);
+    
+
+    // useEffect(() => {
+    //     structures.forEach((structure, idx) => {
+    //         const structureRef = structureRefs.current[idx].current;
+    //         if (structureRef && structure.isVisible) {
+    //             structureRef.proteinAccession = proteinName;
+    //             structureRef.structureId = selectedPdbId;
+    //             structureRef.lipscoreArray = structure.lipScoreString;
+    //             structureRef.marginColor = "transparent";
+    //             structureRef.backgroundColor = "transparent";
+    //             structureRef.highlightColor = "red";
+    //         }
+    //     });
+    // }, [structures, proteinName, selectedPdbId]);
 
     useEffect(()=> {
         if(seqContainer && customElements.whenDefined("nightingale-sequence")) {
