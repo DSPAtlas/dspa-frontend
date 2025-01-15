@@ -9,8 +9,6 @@ import "@dspa-nightingale/nightingale-structure/nightingale-structure";
 
 import "@nightingale-elements/nightingale-msa";
 import "@nightingale-elements/nightingale-sequence-heatmap";
-import { e } from 'mathjs';
-
 
 
 const NightingaleComponent = ({
@@ -480,12 +478,13 @@ const NightingaleComponent = ({
     }
 
 
-    const legendData = [
-        { color: '#ff7d45', label: '0 - 2' },
-        { color: '#db13', label: '2 - 4' },
-        { color: '#65cbf3', label: '4 - 7' },
-        { color: '#0053d6', label: '> 7' },
-        { color: 'default', label: 'no LiP Score reported' }
+    const legendData = [ 
+        { color: '#acc1db', label: '0 - 3' },
+        { color: '#fbeaf5', label: '3 - 4' },
+        { color: '#f2c0e1', label: '4 - 5' },
+        { color: '#da49a9', label: '5 - 7' },
+        { color: '#782162', label: '> 7' },
+        { color: '#CCCCCC', label: 'no LiP Score reported' }
     ];
     
 
