@@ -6,6 +6,7 @@ import { GOEnrichmentVisualization } from '../visualization/goterm.js';
 import NightingaleComponent from './NightingaleComponent.jsx';
 import { useProteinData } from '../hooks/useProteinData.js'; 
 import "@nightingale-elements/nightingale-sequence";
+import VolcanoPlot from '../visualization/volcanoplot.js';
 
 
 const experimentTableStyles = {
@@ -59,9 +60,10 @@ const Treatment = () => {
     const { selectedTreatment: treatmentParam } = useParams();
    
     const chartRef = useRef(null);
+    const chartRefVolcano = useRef(null);
 
     const navigate = useNavigate();
-    const [selectedTreatment, setSelectedTreatment] = useState(treatmentParam || treatments[0]);
+   
     const [loading, setLoading] = useState(false);
     const [treatmentData, setTreatmentData] = useState([]);
     const [error, setError] = useState('');
@@ -70,19 +72,19 @@ const Treatment = () => {
     const [selectedExperiment, setSelectedExperiment] = useState("");
     const [lipIDs, setLipIDs] = useState([]);
     const [treatments, setTreatments] = useState([]);
+    const [selectedTreatment, setSelectedTreatment] = useState(treatmentParam || treatments[0]);
    
     const [filteredExperimentData, setFilteredExperimentData] = useState([]); 
     const [selectedGoTerm, setSelectedGoTerm] = useState(null);
 
     const [filteredProteinData, setFilteredProteinData] = useState(null);
 
-    const { loading: proteinLoading, error: proteinError, proteinData: displayedProteinData, pdbIds, fetchProteinData } = useProteinData();
+    const {proteinData: displayedProteinData, pdbIds, fetchProteinData } = useProteinData();
 
     const fetchTreatments = async () => {
         try {
             const response = await fetch(`${config.apiEndpoint}treatment/condition`); 
             const data = await response.json();
-            console.log("treatment", data);
 
             if (data.success && Array.isArray(data.conditions)) {
                 setTreatments(data.conditions); 
@@ -110,11 +112,17 @@ const Treatment = () => {
             }
             
             const data = await response.json();
+
+            if (!data.treatmentData) {
+                console.error("treatmentData is missing from the response");
+                throw new Error("treatmentData is missing from the response");
+            }
+
             setTreatmentData(data.treatmentData);
     
             const extractedLipIDs = data.treatmentData.goEnrichmentList
-            .flatMap(entry => entry.data.map(item => item.experimentID))
-            .filter((id, index, self) => id && self.indexOf(id) === index);
+                .flatMap(entry => entry.data.map(item => item.experimentID))
+                .filter((id, index, self) => id && self.indexOf(id) === index);
 
             setLipIDs(extractedLipIDs);
 
@@ -123,7 +131,6 @@ const Treatment = () => {
             const firstGoTerm = firstEnrichmentEntry?.data?.[0];
 
             if (firstGoTerm) {
-                console.log("first goterm", firstGoTerm);
                 setSelectedGoTerm(firstGoTerm.term);
 
                 const accessions = firstGoTerm?.accessions?.split(';')?.map(a => a.trim()) || [];
@@ -154,7 +161,6 @@ const Treatment = () => {
 
     useEffect(() => {
         if (displayedProtein) {
-            console.log("Fetching protein data for:", displayedProtein);
             fetchProteinData(displayedProtein);
         }
     }, [displayedProtein, fetchProteinData]);
@@ -167,7 +173,6 @@ const Treatment = () => {
 
     useEffect(() => {
         if (displayedProteinData) {
-            console.log("lipids", lipIDs);
             setFilteredProteinData({
                 ...displayedProteinData,
                 experimentIDsList: lipIDs
@@ -192,7 +197,6 @@ const Treatment = () => {
             const filteredData = treatmentData.proteinScoresTable.filter(proteinData =>
                 accessions.includes(proteinData.proteinAccession)
             );
-            console.log("Filtered Experiment Data after GO Term click:", filteredData);
             setFilteredExperimentData(filteredData);
         } else {
             console.warn("No accessions to filter experiment data");
@@ -203,7 +207,7 @@ const Treatment = () => {
     const handleTreatmentChange = (event) => {
         const newTreatment = event.target.value;
         setSelectedTreatment(newTreatment);
-        navigate("/treatment/${newTreatment}");
+        navigate(`/treatment/${newTreatment}`);
     };
 
     const handleProteinClick = (proteinAccession) => {
@@ -245,6 +249,7 @@ const Treatment = () => {
             )}
     
             <div className="treatment-section-wrapper">
+            
             {/* Gene Ontology Chart Section */}
             <div className="treatment-section goenrichment-chart-wrapper">
                 <h2>Gene Ontology Enrichment Analysis</h2>
@@ -259,6 +264,18 @@ const Treatment = () => {
                 )}
             </div>
 
+             {/* Volcano Plot Section */}
+             <div className="treatment-section goenrichment-chart-wrapper">
+                <h2>Volcano Plot</h2>
+                <div ref={chartRefVolcano} className="goenrichment-chart-content"></div>
+                {treatmentData?.differentialAbundanceDataList && (
+                    <VolcanoPlot
+                        differentialAbundanceDataList={treatmentData.differentialAbundanceDataList}
+                        chartRef={chartRefVolcano}
+                    />
+                )}
+            </div>
+
             {/* Protein Experiment Section */}
             <div className="treatment-section treatment-protein-experiment-wrapper">
                 <div className="treatment-table-container">
@@ -266,7 +283,7 @@ const Treatment = () => {
                     <ExperimentTable
                         experimentData={filteredExperimentData}
                         onProteinClick={handleProteinClick}
-                        displayedProtein={displayedProtein}
+                        displayedfProtein={displayedProtein}
                     />
                 </div>
                 <div className="treatment-protein-container">

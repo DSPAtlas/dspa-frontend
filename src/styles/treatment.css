@@ -1,3 +1,17 @@
+/* Add this in your main.css or within a <style> tag in your component */
+.highlighted {
+    fill: #d89853 !important; /* Ensure it overrides any other fill color */
+    stroke: black;
+    stroke-width: 1.5px;
+}
+
+text.pep-key-label, text.protein-name-label {
+    fill: black;
+    stroke: none;
+    pointer-events: none; /* Prevents tooltip from interfering with mouse events */
+}
+
+
 .container {
     display: flex;
     flex-direction: column; 
