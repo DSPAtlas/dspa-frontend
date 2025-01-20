@@ -151,12 +151,19 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef, onGoTerm
         .attr("height", d => height - y(-Math.log10(d.adj_pval)))
         .attr("fill", d => d.term === selectedGoTerm ? d3.color(color(d.experimentID)).darker(2) : color(d.experimentID))
         .on("click", (event, d) => {
+            onTermInteraction(d);
+        })
+        .on("touchstart", (event, d) => {
+            event.preventDefault(); // Prevent scrolling when touching the element
+            onTermInteraction(d);
+        }, { passive: false });
+
+    function onTermInteraction(d) {
             const accessionsList = d.accessions || [];
             if (onGoTermClick) {
                 onGoTermClick(d.term, accessionsList);
             }
-        });
-
+        }
     // Add legend dynamically
     const legend = svg.append("g")
         .attr("class", "legend")

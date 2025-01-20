@@ -12,6 +12,7 @@ function Home() {
   const [searchResults, setSearchResults] = useState(initialSearchResults || null);
   const [treatments, setTreatments] = useState([]);
 
+
   const navigate = useNavigate();
 
   const handleTreatmentChange = (event) => {
@@ -23,7 +24,7 @@ function Home() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    navigate("/search", { state: { searchTerm } });
+    navigate(`/search`, { state: { searchTerm } });
   };
   
   const handleProteinNameChange = (event) => {
@@ -39,7 +40,6 @@ function Home() {
 
       if (data.success) {
         setSearchResults(data.results);
-        console.log('Search results:', data.results); 
       } else {
         throw new Error(data.message || "Failed to fetch data");
       }
@@ -48,17 +48,10 @@ function Home() {
     }
   };
 
-  const handleSearchSubmit = async (event) => {
-    event.preventDefault();
-    performSearch(searchTerm);
-  };
-
-
   const fetchTreatments = async () => {
         try {
             const response = await fetch(`${config.apiEndpoint}treatment/condition`); 
             const data = await response.json();
-            console.log("treatment", data);
 
             if (data.success && Array.isArray(data.conditions)) {
                 setTreatments(data.conditions); // Directly set treatments from API response

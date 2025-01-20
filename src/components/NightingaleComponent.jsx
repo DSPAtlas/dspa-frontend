@@ -23,7 +23,6 @@ const NightingaleComponent = ({
     
     const structureRef = useRef(null); 
     const containerRef = useRef(null); 
-    const [availableHeight, setAvailableHeight] = useState(0);
     const seqContainer = useRef(null);
     const residuelevelContainer = useRef(null);
     const featuresContainer = useRef(null);
@@ -44,7 +43,6 @@ const NightingaleComponent = ({
     const [trackHeight, setTrackHeight] = useState(15);
 
     const proteinName = proteinData.proteinName;
-    const margincolorFeatures = "#FF6699";
     const highlightColor = "rgb(235, 190, 234)";
     const minWidth = "1200";
    
@@ -119,17 +117,30 @@ const NightingaleComponent = ({
                 const dynamicTrackHeight = Math.max(
                     availableTrackHeight / (visibleTracks.length || 1),
                     15
-                ); // Minimum height
-                setAvailableHeight(availableTrackHeight);
+                ); 
                 setTrackHeight(dynamicTrackHeight);
             }
         };
     
+        const handleTouchStart = () => {
+            // You can call updateHeight here if touch interactions could affect element sizes
+            updateHeight();
+        };
+    
+        // Add both resize and touchstart listeners
         window.addEventListener("resize", updateHeight);
+        window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    
+        // Initial call to update the height
         updateHeight();
     
-        return () => window.removeEventListener("resize", updateHeight);
-    }, [visibleTracks.length]);
+        // Cleanup function to remove both event listeners
+        return () => {
+            window.removeEventListener("resize", updateHeight);
+            window.removeEventListener("touchstart", handleTouchStart);
+        };
+    }, [visibleTracks.length]); // Dependencies stay the same
+    
     
     
     const checkDimensions = (element) => {
@@ -166,16 +177,6 @@ const NightingaleComponent = ({
             const experimentIndex = experimentIDsList.indexOf(selectedExperiment);
             handleButtonClick(selectedExperiment, experimentIndex);
         }
-    };
-    
-
-    const handleRowClick = (id) => {
-        setSelectedPdbId(id);
-    };
-
-    const getPropertyValue = (properties, key) => {
-        const property = properties.find(prop => prop.key === key);
-        return property ? property.value : '';
     };
 
     const getLipScoreDataByExperimentID = (experimentID) => {
@@ -242,15 +243,6 @@ const NightingaleComponent = ({
             );
         }
     }, [selectedExperiment, proteinData.proteinSequence.length]);
-    
-    useEffect(() => {
-        structures.forEach((structure, idx) => {
-            const structureRef = structureRefs.current[idx]?.current;
-            if (structureRef) {
-                console.log(`Structure ${idx} ID:`, structureRef.structureId);
-            }
-        });
-    }, [selectedPdbId, structures]);
 
     useEffect(() => {
         const adjustDimensions = () => {
@@ -258,7 +250,6 @@ const NightingaleComponent = ({
             if (container) {
                 const width = container.offsetWidth;
                 const height = container.offsetHeight;
-                console.log(`Container dimensions: ${width}x${height}`);
             }
         };
         window.addEventListener('resize', adjustDimensions);
@@ -267,13 +258,10 @@ const NightingaleComponent = ({
         return () => window.removeEventListener('resize', adjustDimensions);
     }, []);
 
-
     useEffect(() => {
         structures.forEach((structure, idx) => {
             const structureRef = structureRefs.current[idx].current;
             if (structureRef && structure.isVisible) {
-                console.log("structure", structure);
-                
                 structureRef.setAttribute('protein-accession', proteinName);
                 structureRef.setAttribute('structure-id', selectedPdbId);
                 structureRef.setAttribute('highlight-color', '#FF6699');
@@ -281,21 +269,6 @@ const NightingaleComponent = ({
             }
         });
     }, [structures, proteinName, selectedPdbId]);
-    
-
-    // useEffect(() => {
-    //     structures.forEach((structure, idx) => {
-    //         const structureRef = structureRefs.current[idx].current;
-    //         if (structureRef && structure.isVisible) {
-    //             structureRef.proteinAccession = proteinName;
-    //             structureRef.structureId = selectedPdbId;
-    //             structureRef.lipscoreArray = structure.lipScoreString;
-    //             structureRef.marginColor = "transparent";
-    //             structureRef.backgroundColor = "transparent";
-    //             structureRef.highlightColor = "red";
-    //         }
-    //     });
-    // }, [structures, proteinName, selectedPdbId]);
 
     useEffect(()=> {
         if(seqContainer && customElements.whenDefined("nightingale-sequence")) {
@@ -350,10 +323,6 @@ const NightingaleComponent = ({
                     tooltip.style.left = `${x}px`;
                     tooltip.style.visibility = "visible";
                 };
-        
-                const hideTooltip = () => {
-                    tooltip.style.visibility = "hidden";
-                };
 
                 const trackIds = [
                     { id: "domain", type: "DOMAIN" },
@@ -399,43 +368,36 @@ const NightingaleComponent = ({
     
                 if (domain) {
                     const domainData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "DOMAIN");
-                    console.log("Domain Data: ", domainData);
                     domain.data = domainData;
                 }
     
                 if (region) {
                     const regionData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "REGION");
-                    console.log("Region Data: ", regionData);
                     region.data = regionData;
                 }
     
                 if (site) {
                     const siteData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "SITE");
-                    console.log("Site Data: ", siteData);
                     site.data = siteData;
                 }
     
                 if (binding) {
                     const bindingData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "BINDING");
-                    console.log("Binding Data: ", bindingData);
                     binding.data = bindingData;
                 }
     
                 if (chain) {
                     const chainData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "CHAIN");
-                    console.log("Chain Data: ", chainData);
                     chain.data = chainData;
                 }
     
                 if (disulfide) {
                     const disulfideData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "DISULFID");
-                    console.log("Disulfide Data: ", disulfideData);
                     disulfide.data = disulfideData;
                 }
     
                 if (betaStrand) {
                     const betaStrandData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "STRAND");
-                    console.log("Beta Strand Data: ", betaStrandData);
                     betaStrand.data = betaStrandData;
                 }
             }

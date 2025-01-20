@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import config from '../config.json';
-import { GOEnrichmentVisualization } from '../visualization/goterm.js';
 
 const getTop20Proteins = (proteinScores) => {
     const sortedData = proteinScores.sort((a, b) => b.cumulativeScore - a.cumulativeScore);
@@ -11,28 +10,21 @@ const getTop20Proteins = (proteinScores) => {
 
 const ExperimentInfo = () => {
     const { experimentID } = useParams(); 
-    const [loading, setLoading] = useState(false);
     const [experimentData, setExperimentData] = useState([]);
-    const [error, setError] = useState('');
     const [topProteins, setTopProteins] = useState([]);
 
     const fetchExperimentData = useCallback(async () => {
         const url = `${config.apiEndpoint}experiment?experimentID=${experimentID}`;
         try {
           const response = await fetch(url);
-          console.log('Response:', response);
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
           const data = await response.json();
-          console.log("exoerumentdata", data.experimentData);
           setExperimentData(data.experimentData);
         } catch (error) {
           console.error("Error fetching data: ", error);
-          setError(`Failed to load experiment data: ${error}`);
-        }finally {
-            setLoading(false);
-        } 
+        }
       }, [experimentID]);
     
     const handleDownloadPDF = () => {
