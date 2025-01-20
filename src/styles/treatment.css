@@ -1,6 +1,29 @@
 /* Add this in your main.css or within a <style> tag in your component */
+.header-or-tab {
+    font-family: 'Raleway', Arial, sans-serif; /* Example font */
+    font-size: 16px; /* Adjust size as needed */
+    text-align: center;
+    background-color: #f9f9f9; /* Light grey background */
+    color: #333; /* Dark grey text */
+    padding: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.tab-button {
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.tab-button.active {
+    background-color: #e0e0e0;
+}
+
+
+
 .highlighted {
-    fill: #d89853 !important; /* Ensure it overrides any other fill color */
     stroke: black;
     stroke-width: 1.5px;
 }

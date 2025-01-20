@@ -220,6 +220,61 @@ const Treatment = () => {
         navigate(`/experiment/${experimentID}`);
     };
 
+    const TABS = {
+        VOLCANO_PLOT: 'Volcano Plot',
+        GENE_ONTOLOGY: 'Gene Ontology Enrichment Analysis'
+    };
+
+    const [activeTab, setActiveTab] = useState(TABS.VOLCANO_PLOT);
+    const renderTabNav = () => (
+        <div className="tab-navigation">
+            <button
+                className={`header-or-tab tab-button ${activeTab === TABS.VOLCANO_PLOT ? 'active' : ''}`}
+                onClick={() => setActiveTab(TABS.VOLCANO_PLOT)}
+            >
+                Volcano Plot
+            </button>
+            <button
+                className={`header-or-tab tab-button ${activeTab === TABS.GENE_ONTOLOGY ? 'active' : ''}`}
+                onClick={() => setActiveTab(TABS.GENE_ONTOLOGY)}
+            >
+                Gene Ontology Enrichment Analysis
+            </button>
+        </div>
+    );
+    
+    const renderTabContent = () => {
+        switch (activeTab) {
+            case TABS.VOLCANO_PLOT:
+                return (
+                    <div ref={chartRefVolcano} className="treatment-section goenrichment-chart-content">
+                        {treatmentData?.differentialAbundanceDataList && (
+                            <VolcanoPlot
+                                differentialAbundanceDataList={treatmentData.differentialAbundanceDataList}
+                                chartRef={chartRefVolcano}
+                                highlightedProtein={displayedProtein}
+                            />
+                        )}
+                    </div>
+                );
+            case TABS.GENE_ONTOLOGY:
+                return (
+                    <div ref={chartRef} className="treatment-section goenrichment-chart-content">
+                        {treatmentData?.goEnrichmentList && (
+                            <GOEnrichmentVisualization
+                                goEnrichmentData={treatmentData.goEnrichmentList}
+                                onGoTermClick={handleGoTermClick}
+                                chartRef={chartRef}
+                                selectedGoTerm={selectedGoTerm}
+                            />
+                        )}
+                    </div>
+                );
+            default:
+                return <p>Invalid tab</p>;
+        }
+    };
+    
    
     return (
         <div>
@@ -247,35 +302,12 @@ const Treatment = () => {
                     </div>
                 )
             )}
+
+            {renderTabNav()}
     
             <div className="treatment-section-wrapper">
+                {renderTabContent()}
             
-            {/* Gene Ontology Chart Section */}
-            <div className="treatment-section goenrichment-chart-wrapper">
-                <h2>Gene Ontology Enrichment Analysis</h2>
-                <div ref={chartRef} className="goenrichment-chart-content"></div>
-                {treatmentData?.goEnrichmentList && (
-                    <GOEnrichmentVisualization
-                        goEnrichmentData={treatmentData.goEnrichmentList}
-                        onGoTermClick={handleGoTermClick}
-                        chartRef={chartRef}
-                        selectedGoTerm={selectedGoTerm}
-                    />
-                )}
-            </div>
-
-             {/* Volcano Plot Section */}
-             <div className="treatment-section goenrichment-chart-wrapper">
-                <h2>Volcano Plot</h2>
-                <div ref={chartRefVolcano} className="goenrichment-chart-content"></div>
-                {treatmentData?.differentialAbundanceDataList && (
-                    <VolcanoPlot
-                        differentialAbundanceDataList={treatmentData.differentialAbundanceDataList}
-                        chartRef={chartRefVolcano}
-                    />
-                )}
-            </div>
-
             {/* Protein Experiment Section */}
             <div className="treatment-section treatment-protein-experiment-wrapper">
                 <div className="treatment-table-container">
