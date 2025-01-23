@@ -16,15 +16,32 @@ const experimentTableStyles = {
 };
 
 
-const ExperimentTable = ({ experimentData, onProteinClick, displayedProtein }) => {
-    
-    if (!experimentData || !Array.isArray(experimentData)) {
-        console.error("experimentData is not an array:", experimentData);
-        return <div>No valid data to display</div>;  
+
+const ExperimentTable = ({ experimentData, onProteinClick, displayedProtein, goTerms, onGoTermSelect }) => {
+    const sortedExperimentData = useMemo(() => {
+        return [...experimentData].sort((a, b) => b.averageScore - a.averageScore);
+    }, [experimentData]);
+
+    if (!sortedExperimentData || !Array.isArray(sortedExperimentData)) {
+        console.error("experimentData is not an array or is undefined:", experimentData);
+        return <div>No valid data to display</div>;
     }
 
     return (
         <div>
+            <div>
+                <label htmlFor="goTermSelect">Filter by GO Term: </label>
+                <select 
+                    id="goTermSelect" 
+                    onChange={(e) => onGoTermSelect(e.target.value)}
+                    defaultValue=""
+                >
+                    <option value="">All</option>
+                    {goTerms && goTerms.map((term, index) => (
+                        <option key={index} value={term.term}>{term.term}</option>
+                    ))}
+                </select>
+            </div>
             <table border="1" cellPadding="10" cellSpacing="0">
                 <thead>
                     <tr>
@@ -33,20 +50,17 @@ const ExperimentTable = ({ experimentData, onProteinClick, displayedProtein }) =
                     </tr>
                 </thead>
                 <tbody>
-                    {experimentData.map((proteinData) => (
+                    {sortedExperimentData.map((proteinData) => (
                         <tr 
                             key={proteinData.proteinAccession}
                             style={{
                                 cursor: 'pointer',
                                 backgroundColor: displayedProtein === proteinData.proteinAccession ? '#f0f0f0' : 'white'
                             }}
+                            onClick={() => onProteinClick(proteinData.proteinAccession)}
                         >
-                            <td onClick={() => onProteinClick(proteinData.proteinAccession)}>
-                                {proteinData.proteinAccession}
-                            </td>
-                            <td style={{ ...experimentTableStyles }}>
-                                {Math.round(proteinData.averageScore || 0)}
-                            </td>
+                            <td>{proteinData.proteinAccession}</td>
+                            <td style={experimentTableStyles}>{Math.round(proteinData.averageScore || 0)}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -56,11 +70,15 @@ const ExperimentTable = ({ experimentData, onProteinClick, displayedProtein }) =
 };
 
 
+
 const Treatment = () => {
     const { selectedTreatment: treatmentParam } = useParams();
    
     const chartRef = useRef(null);
     const chartRefVolcano = useRef(null);
+
+    const [allGoTerms, setAllGoTerms] = useState([]); 
+    const [allProteinData, setAllProteinData] = useState([]); 
 
     const navigate = useNavigate();
    
@@ -106,42 +124,39 @@ const Treatment = () => {
         const url = `${config.apiEndpoint}treatment/treatment?treatment=${selectedTreatment}`;
         try {
             const response = await fetch(url);
-    
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            
             const data = await response.json();
-
             if (!data.treatmentData) {
-                console.error("treatmentData is missing from the response");
                 throw new Error("treatmentData is missing from the response");
             }
-
-            setTreatmentData(data.treatmentData);
     
-            const extractedLipIDs = data.treatmentData.goEnrichmentList
-                .flatMap(entry => entry.data.map(item => item.experimentID))
-                .filter((id, index, self) => id && self.indexOf(id) === index);
+            setTreatmentData(data.treatmentData);
+            setAllProteinData(data.treatmentData.proteinScoresTable); 
 
-            setLipIDs(extractedLipIDs);
-
-            // Automatically set the first GO term
-            const firstEnrichmentEntry = data.treatmentData.goEnrichmentList?.[0];
-            const firstGoTerm = firstEnrichmentEntry?.data?.[0];
-
-            if (firstGoTerm) {
-                setSelectedGoTerm(firstGoTerm.term);
-
-                const accessions = firstGoTerm?.accessions?.split(';')?.map(a => a.trim()) || [];
-                const filteredData = data.treatmentData.proteinScoresTable.filter((proteinData) =>
-                    accessions.includes(proteinData.proteinAccession.trim())
+            if (data.treatmentData.goEnrichmentList && data.treatmentData.goEnrichmentList.length > 0) {
+                const extractedTerms = data.treatmentData.goEnrichmentList.flatMap(item =>
+                    item.data.map(term => ({
+                        term: term.term,
+                        adj_pval: term.adj_pval,
+                        lipexperiment_id: term.lipexperiment_id,
+                        accessions: term.accessions.split(';').map(accession => accession.trim())
+                    }))
                 );
-                setFilteredExperimentData(filteredData);
+                
+                const uniqueTerms = Array.from(new Set(extractedTerms.map(term => term.term)))
+                    .map(uniqueTerm => {
+                        return extractedTerms.find(term => term.term === uniqueTerm);
+                    });
+               
+                setAllGoTerms(uniqueTerms);
+            } else {
+                setAllGoTerms([]);
             }
-
+        
+            setFilteredExperimentData(data.treatmentData.proteinScoresTable); 
         } catch (error) {
-            console.error("Error fetching data: ", error);
             setError(`Failed to load experiment data: ${error.message}`);
         } finally {
             setLoading(false);
@@ -203,6 +218,26 @@ const Treatment = () => {
             setFilteredExperimentData([]);
         }
     };
+
+    const handleGoTermSelect = (selectedTerm) => {
+        
+        setSelectedGoTerm(selectedTerm);
+        if (selectedTerm === "") {
+            setFilteredExperimentData(allProteinData); 
+        } else {
+            
+            const termDetails = allGoTerms.find(term => term.term === selectedTerm);
+            if (termDetails && termDetails.accessions) {
+                const filteredData = allProteinData.filter(proteinData =>
+                    termDetails.accessions.includes(proteinData.proteinAccession)
+                );
+                setFilteredExperimentData(filteredData);
+            } else {
+                setFilteredExperimentData([]); 
+            }
+        }
+    };
+    
     
     const handleTreatmentChange = (event) => {
         const newTreatment = event.target.value;
@@ -315,7 +350,9 @@ const Treatment = () => {
                     <ExperimentTable
                         experimentData={filteredExperimentData}
                         onProteinClick={handleProteinClick}
-                        displayedfProtein={displayedProtein}
+                        displayedProtein={displayedProtein}
+                        goTerms={allGoTerms}
+                        onGoTermSelect={handleGoTermSelect}
                     />
                 </div>
                 <div className="treatment-protein-container">
