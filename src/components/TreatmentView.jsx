@@ -74,7 +74,7 @@ const ExperimentTable = ({ experimentData, onProteinClick, displayedProtein, goT
 const Treatment = () => {
     const { selectedTreatment: treatmentParam } = useParams();
    
-    const chartRef = useRef(null);
+    const chartRefGO = useRef(null);
     const chartRefVolcano = useRef(null);
 
     const [allGoTerms, setAllGoTerms] = useState([]); 
@@ -88,53 +88,58 @@ const Treatment = () => {
     const [displayedProtein, setDisplayedProtein] = useState("");
     const [selectedPdbId, setSelectedPdbId] = useState("");
     const [selectedExperiment, setSelectedExperiment] = useState("");
-    const [lipIDs, setLipIDs] = useState([]);
     const [treatments, setTreatments] = useState([]);
     const [selectedTreatment, setSelectedTreatment] = useState(treatmentParam || treatments[0]);
    
     const [filteredExperimentData, setFilteredExperimentData] = useState([]); 
     const [selectedGoTerm, setSelectedGoTerm] = useState(null);
 
-    const [filteredProteinData, setFilteredProteinData] = useState(null);
-
     const {proteinData: displayedProteinData, pdbIds, fetchProteinData } = useProteinData();
 
-    const fetchTreatments = async () => {
-        try {
-            const response = await fetch(`${config.apiEndpoint}treatment/condition`); 
-            const data = await response.json();
-
-            if (data.success && Array.isArray(data.conditions)) {
-                setTreatments(data.conditions); 
-            } else {
-                throw new Error(data.message || "Failed to fetch treatments");
-            }
-        } catch (error) {
-            console.error("Error fetching treatments:", error);
-            setError(error.message);
-        }
-    };
-
     useEffect(() => {
+        let isActive = true;
+        const fetchTreatments = async () => {
+            try {
+                const response = await fetch(`${config.apiEndpoint}treatment/condition`); 
+                const data = await response.json();
+    
+                if (data.success && Array.isArray(data.conditions)) {
+                    setTreatments(data.conditions); 
+                } else {
+                    throw new Error(data.message || "Failed to fetch treatments");
+                }
+            } catch (error) {
+                console.error("Error fetching treatments:", error);
+                setError(error.message);
+            }
+        };
         fetchTreatments();
+        return () => {
+            isActive = false;  
+        };
     }, []); 
+
 
     const fetchTreatmentData = useCallback(async () => {
         setLoading(true);
         const url = `${config.apiEndpoint}treatment/treatment?treatment=${selectedTreatment}`;
         try {
             const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
             const data = await response.json();
-            if (!data.treatmentData) {
-                throw new Error("treatmentData is missing from the response");
-            }
+    
+            if (!data.treatmentData) throw new Error("treatmentData is missing from the response");
     
             setTreatmentData(data.treatmentData);
-            setAllProteinData(data.treatmentData.proteinScoresTable); 
-
+            console.log("tramentdata", data.treatmentData.goEnrichmentList);
+            setAllProteinData(data.treatmentData.proteinScoresTable);
+    
+            if (data.treatmentData.proteinScoresTable?.length > 0) {
+                const initialProtein = data.treatmentData.proteinScoresTable[0].proteinAccession;
+                setDisplayedProtein(initialProtein);
+                fetchProteinData(initialProtein); 
+            }
+    
             if (data.treatmentData.goEnrichmentList && data.treatmentData.goEnrichmentList.length > 0) {
                 const extractedTerms = data.treatmentData.goEnrichmentList.flatMap(item =>
                     item.data.map(term => ({
@@ -146,54 +151,40 @@ const Treatment = () => {
                 );
                 
                 const uniqueTerms = Array.from(new Set(extractedTerms.map(term => term.term)))
-                    .map(uniqueTerm => {
-                        return extractedTerms.find(term => term.term === uniqueTerm);
-                    });
-               
+                    .map(uniqueTerm => extractedTerms.find(term => term.term === uniqueTerm));
+                
                 setAllGoTerms(uniqueTerms);
             } else {
                 setAllGoTerms([]);
             }
-        
-            setFilteredExperimentData(data.treatmentData.proteinScoresTable); 
+    
+            setFilteredExperimentData(data.treatmentData.proteinScoresTable);
         } catch (error) {
             setError(`Failed to load experiment data: ${error.message}`);
         } finally {
             setLoading(false);
         }
-    }, [selectedTreatment]);
-    
+    }, [selectedTreatment, fetchProteinData]);  
     
     useEffect(() => {
         fetchTreatmentData();
-    }, [fetchTreatmentData]);
+    }, [fetchTreatmentData]);  
 
     useEffect(() => {
-        if (treatmentData?.proteinScoresTable?.length > 0) {
-            setDisplayedProtein(treatmentData.proteinScoresTable[0].proteinAccession);
-        }
-    }, [treatmentData]);
+        if (pdbIds?.length > 0) setSelectedPdbId(pdbIds[0].id);
+    }, [pdbIds]);
+    
 
     useEffect(() => {
-        if (displayedProtein) {
-            fetchProteinData(displayedProtein);
-        }
-    }, [displayedProtein, fetchProteinData]);
+        fetchTreatmentData();
+    }, [fetchTreatmentData]); 
+    
 
     useEffect(() => {
         if (pdbIds && pdbIds.length > 0) {
             setSelectedPdbId(pdbIds[0].id);
         }
     }, [pdbIds]);
-
-    useEffect(() => {
-        if (displayedProteinData) {
-            setFilteredProteinData({
-                ...displayedProteinData,
-                experimentIDsList: lipIDs
-            });
-        }
-    }, [displayedProteinData, lipIDs]);
 
     const extractedExperimentIDs = useMemo(() => {
         if (!filteredExperimentData || filteredExperimentData.length === 0) return [];
@@ -237,7 +228,6 @@ const Treatment = () => {
             }
         }
     };
-    
     
     const handleTreatmentChange = (event) => {
         const newTreatment = event.target.value;
@@ -294,13 +284,12 @@ const Treatment = () => {
                 );
             case TABS.GENE_ONTOLOGY:
                 return (
-                    <div ref={chartRef} className="treatment-section goenrichment-chart-content">
-                        {treatmentData?.goEnrichmentList && (
+                    <div ref={chartRefGO} className="treatment-section goenrichment-chart-content">
+                        {treatmentData?.goEnrichmentList && chartRefGO.current &&(
                             <GOEnrichmentVisualization
                                 goEnrichmentData={treatmentData.goEnrichmentList}
                                 onGoTermClick={handleGoTermClick}
-                                chartRef={chartRef}
-                                selectedGoTerm={selectedGoTerm}
+                                chartRef={chartRefGO}
                             />
                         )}
                     </div>
@@ -357,9 +346,9 @@ const Treatment = () => {
                 </div>
                 <div className="treatment-protein-container">
                     <h2>{displayedProtein}</h2>
-                    {filteredProteinData && pdbIds && (
+                    {displayedProteinData && pdbIds && extractedExperimentIDs &&(
                         <NightingaleComponent
-                            proteinData={filteredProteinData}
+                            proteinData={displayedProteinData}
                             pdbIds={pdbIds}
                             selectedPdbId={selectedPdbId}
                             setSelectedPdbId={setSelectedPdbId}

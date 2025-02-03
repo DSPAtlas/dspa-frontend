@@ -38,132 +38,95 @@ function wrapText(selection, maxWidth, maxCharsPerLine = 25, maxLines = 25) {
 }
 
 
-
-
-export function GOEnrichmentVisualization({ goEnrichmentData, chartRef, onGoTermClick, selectedGoTerm }) {
-    if (!goEnrichmentData || !Array.isArray(goEnrichmentData)) {
-        console.error("Invalid goEnrichmentData structure");
-        return;
+export function GOEnrichmentVisualization({ goEnrichmentData, onGoTermClick, chartRef }) {
+    if (!goEnrichmentData || goEnrichmentData.length === 0) {
+        console.error("GO enrichment data is empty or undefined.");
+        return <p>No data available.</p>;
     }
 
     const chartElement = d3.select(chartRef.current);
-    if (chartElement.empty()) {
+    if (!chartElement.node()) {
         console.error("Chart element is not found.");
         return;
     }
 
     const dynaprot_colors = [
-        "#be9fd2",
-        "#d89853",
-        "#b3c5da",
-        "#d35eb6",
-        "#71b6c8",
-        "#d9ce74",
-        "#99c2c5"
+        "#be9fd2", "#d89853", "#b3c5da", "#d35eb6", "#71b6c8", "#d9ce74", "#99c2c5"
     ];
-    
 
-    // Get container dimensions
-    const containerWidth = chartRef.current.offsetWidth || 800; // Default fallback
-    const containerHeight = chartRef.current.offsetHeight || 400;
+    const flattenedData = goEnrichmentData.flatMap(experiment =>
+        experiment.data.map(d => ({
+            ...d,
+            experimentID: experiment.experimentID,
+            accessions: d.accessions ? d.accessions.split(";").map(a => a.trim()) : []
+        }))
+    ).filter(d => d.adj_pval < 1);
 
-    const margin = { top: 50, right: 70, bottom: 200, left: 70 };
-    const width = containerWidth - margin.left - margin.right;
-    const height = containerHeight - margin.top - margin.bottom;
-
-    // Flatten the data
-    const flattenedData = goEnrichmentData
-        .flatMap(experiment =>
-            experiment.data.map(d => ({
-                ...d,
-                experimentID: experiment.experimentID,
-                accessions: d.accessions ? d.accessions.split(";").map(a => a.trim()) : [] // Handle splitting here
-            }))
-        )
-        .filter(d => d.adj_pval < 1);
-
-    // Group by goName
-    const groupedData = d3.groups(flattenedData, d => d.term);
     const experimentIDs = Array.from(new Set(flattenedData.map(d => d.experimentID)));
+    const groupedData = d3.groups(flattenedData, d => d.term);
 
-    // Remove any existing SVG
+    const maxAdjPValLog = d3.max(flattenedData, d => -Math.log10(d.adj_pval) || 0);
+    const dynamicHeight = Math.max(400, maxAdjPValLog * 20 * groupedData.length);
+
+    const containerWidth = chartRef.current.offsetWidth || 800;
+    const margin = { top: 50, right: 70, bottom: 250, left: 100 };
+    let width = containerWidth - margin.left - margin.right;
+    let height = dynamicHeight - margin.top - margin.bottom;
+
     chartElement.selectAll("*").remove();
 
-    // Create the SVG container
     const svg = chartElement.append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-      .append("g")
+        .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Create scales
-    const x0 = d3.scaleBand()
-        .domain(groupedData.map(d => d[0])) // GO terms
+    const xScale = d3.scaleBand()
+        .domain(groupedData.map(d => d[0]))
         .range([0, width])
-        .padding(0.2);
+        .padding(0.1);
 
-    const x1 = d3.scaleBand()
-        .domain(experimentIDs) // Experiments within each GO term
-        .range([0, x0.bandwidth()])
+    const xSubgroup = d3.scaleBand()
+        .domain(experimentIDs)
+        .range([0, xScale.bandwidth()])
         .padding(0.05);
 
-    const y = d3.scaleLinear()
-        .domain([0, d3.max(flattenedData, d => -Math.log10(d.adj_pval) || 0)]) // Ensure no NaN in y-domain
-        .nice()
+    const yScale = d3.scaleLinear()
+        .domain([0, maxAdjPValLog])
         .range([height, 0]);
 
-    const color = d3.scaleOrdinal()
+    const colorScale = d3.scaleOrdinal()
         .domain(experimentIDs)
-        .range(dynaprot_colors.length >= experimentIDs.length
-            ? dynaprot_colors.slice(0, experimentIDs.length) // Use only the required number of colors
-            : d3.schemeTableau10); 
+        .range(dynaprot_colors);
 
-    // Add x-axis
     svg.append("g")
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x0))
+        .attr("transform", `translate(0, ${height})`)
+        .call(d3.axisBottom(xScale))
         .selectAll(".tick text")
         .style("font-size", "14px")
         .style("font-family", "Raleway")
         .style("text-anchor", "middle")
-       // .attr("transform", "rotate(-45)")
-        .call(wrapText, x0.bandwidth());
+        .call(wrapText, xScale.bandwidth());;
 
-    // Add y-axis
     svg.append("g")
-        .call(d3.axisLeft(y))
-        .selectAll("text")
-        .style("font-size", "14px")
-        .style("font-family", "Raleway");
+        .call(d3.axisLeft(yScale));
 
-    // Add bars
-    svg.selectAll("g.goTermGroup")
+    const barGroups = svg.selectAll("g.bar")
         .data(groupedData)
         .enter().append("g")
-        .attr("class", "goTermGroup")
-        .attr("transform", d => `translate(${x0(d[0])}, 0)`)
-        .selectAll("rect")
-        .data(d => d[1])
-        .enter().append("rect")
-        .attr("x", d => x1(d.lipexperiment_id))
-        .attr("y", d => y(-Math.log10(d.adj_pval)))
-        .attr("width", x1.bandwidth())
-        .attr("height", d => height - y(-Math.log10(d.adj_pval)))
-        .attr("fill", d => d.term === selectedGoTerm ? d3.color(color(d.experimentID)).darker(2) : color(d.experimentID))
-        .on("click", (event, d) => {
-            onTermInteraction(d);
-        })
-        .on("touchstart", (event, d) => {
-            event.preventDefault(); // Prevent scrolling when touching the element
-            onTermInteraction(d);
-        }, { passive: false });
+        .attr("transform", d => `translate(${xScale(d[0])}, 0)`);
 
-    function onTermInteraction(d) {
-            const accessionsList = d.accessions || [];
-            if (onGoTermClick) {
-                onGoTermClick(d.term, accessionsList);
-            }
-        }
+    barGroups.selectAll("rect")
+        .data(d => d[1].map(data => ({ ...data, xGroup: d[0] })))
+        .enter().append("rect")
+        .attr("x", d => xSubgroup(d.experimentID))
+        .attr("y", d => yScale(-Math.log10(d.adj_pval)))
+        .attr("width", xSubgroup.bandwidth())
+        .attr("height", d => height - yScale(-Math.log10(d.adj_pval)))
+        .attr("fill", d => colorScale(d.experimentID))
+        .on("click", d => onGoTermClick(d.term, d.accessions));
+
+
     // Add legend dynamically
     const legend = svg.append("g")
         .attr("class", "legend")
@@ -175,7 +138,7 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef, onGoTerm
             .attr("y", index * 20)
             .attr("width", 15)
             .attr("height", 15)
-            .attr("fill", color(id));
+            .attr("fill", colorScale(id));
 
         legend.append("text")
             .attr("x", 20)
@@ -205,9 +168,22 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef, onGoTerm
         .style("font-family", "Raleway")
         .text("-log10(Adj-pValue)");
 
-    // Resize event listener for dynamic scaling
+    
+    
     window.addEventListener("resize", () => {
-        chartElement.selectAll("*").remove();
-        GOEnrichmentVisualization({ goEnrichmentData, chartRef, onGoTermClick, selectedGoTerm });
-    });
+        width = chartRef.current.offsetWidth - margin.left - margin.right;
+        height = chartRef.current.offsetHeight - margin.top - margin.bottom;
+        svg.attr("width", width + margin.left + margin.right)
+               .attr("height", height + margin.top + margin.bottom);
+        xScale.range([0, width]);
+        yScale.range([height, 0]);
+        svg.selectAll(".bar")
+               .attr("x", d => xScale(d.term))
+               .attr("width", xScale.bandwidth())
+               .attr("y", d => yScale(-Math.log10(d.adj_pval)))
+               .attr("height", d => height - yScale(-Math.log10(d.adj_pval)));
+        svg.select(".x-axis").call(d3.axisBottom(xScale));
+        svg.select(".y-axis").call(d3.axisLeft(yScale));
+        });
+        
 }

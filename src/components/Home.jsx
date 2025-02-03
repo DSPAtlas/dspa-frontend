@@ -48,28 +48,33 @@ function Home() {
     }
   };
 
-  const fetchTreatments = async () => {
+  useEffect(() => {
+    const controller = new AbortController();
+    const fetchTreatments = async () => {
         try {
-            const response = await fetch(`${config.apiEndpoint}treatment/condition`); 
+            const response = await fetch(`${config.apiEndpoint}treatment/condition`, { signal: controller.signal });
             const data = await response.json();
-
             if (data.success && Array.isArray(data.conditions)) {
-                setTreatments(data.conditions); // Directly set treatments from API response
+                setTreatments(data.conditions);
             } else {
                 throw new Error(data.message || "Failed to fetch treatments");
             }
         } catch (error) {
-            console.error("Error fetching treatments:", error);
-            setError(error.message);
+            if (error.name !== 'AbortError') {
+                console.error("Error fetching treatments:", error);
+                setError(error.message);
+            }
         }
     };
 
-  useEffect(() => {
     fetchTreatments();
-  }, []); 
-   
 
-  // Combined useEffect to handle both class and data fetching
+    return () => {
+        controller.abort(); 
+    };
+}, []);
+
+
   useEffect(() => {
     if (location.state?.searchTerm) {
       performSearch(location.state.searchTerm);
@@ -181,7 +186,7 @@ function Home() {
       </main>
 
        {/* Impressum */}
-       <footer style={{ textAlign: "center", marginTop: "20px", padding: "10px", backgroundColor: "#f8f8f8" }}>
+       <footer style={{ textAlign: "center", marginTop: "20px", padding: "10px", backgroundColor: "white" }}>
         <p>© 2024 Eidgenössische Technische Hochschule Zürich</p>
       </footer>
     </>
