@@ -54,18 +54,10 @@ export function GOEnrichmentVisualization({ goEnrichmentData, onGoTermClick, cha
         "#be9fd2", "#d89853", "#b3c5da", "#d35eb6", "#71b6c8", "#d9ce74", "#99c2c5"
     ];
 
-    const flattenedData = goEnrichmentData.flatMap(experiment =>
-        experiment.data.map(d => ({
-            ...d,
-            experimentID: experiment.experimentID,
-            accessions: d.accessions ? d.accessions.split(";").map(a => a.trim()) : []
-        }))
-    ).filter(d => d.adj_pval < 0.9);
+    const experimentIDs = Array.from(new Set(goEnrichmentData.map(d => d.experimentID)));
+    const groupedData = d3.groups(goEnrichmentData, d => d.term);
 
-    const experimentIDs = Array.from(new Set(flattenedData.map(d => d.experimentID)));
-    const groupedData = d3.groups(flattenedData, d => d.term);
-
-    const maxAdjPValLog = d3.max(flattenedData, d => -Math.log10(d.adj_pval) || 0);
+    const maxAdjPValLog = d3.max(goEnrichmentData, d => -Math.log10(d.adj_pval) || 0);
     const dynamicHeight = Math.max(400, maxAdjPValLog * 2 * groupedData.length);
 
     let maxLabelWidth = d3.max(experimentIDs, id => id.length * 12); 

@@ -15,8 +15,6 @@ const experimentTableStyles = {
     backgroundColor: "#f9f9f9",
 };
 
-
-
 const ExperimentTable = ({ experimentData, onProteinClick, displayedProtein, goTerms, onGoTermSelect }) => {
     const sortedExperimentData = useMemo(() => {
         return [...experimentData].sort((a, b) => b.averageScore - a.averageScore);
@@ -85,6 +83,8 @@ const Treatment = () => {
    
     const [loading, setLoading] = useState(false);
     const [treatmentData, setTreatmentData] = useState([]);
+    const [goEnrichmentData, setGoEnrichmentData] = useState([]);
+    const [experimentIDs, setExperimentIDs] = useState([]);
     const [error, setError] = useState('');
     const [displayedProtein, setDisplayedProtein] = useState("");
     const [selectedPdbId, setSelectedPdbId] = useState("");
@@ -132,7 +132,16 @@ const Treatment = () => {
             if (!data.treatmentData) throw new Error("treatmentData is missing from the response");
     
             setTreatmentData(data.treatmentData);
-            console.log("tramentdata", data.treatmentData.goEnrichmentList);
+            const goEnrichemntData = data.treatmentData.goEnrichmentList.flatMap(experiment =>
+                experiment.data.map(d => ({
+                    ...d,
+                    experimentID: experiment.experimentID,
+                    accessions: d.accessions ? d.accessions.split(";").map(a => a.trim()) : []
+                }))
+            ).filter(d => d.adj_pval < 0.9);
+            const experimentIDs = Array.from(new Set(goEnrichemntData.map(d => d.experimentID)));
+            setGoEnrichmentData(goEnrichemntData);
+            setExperimentIDs(experimentIDs);
             setAllProteinData(data.treatmentData.proteinScoresTable);
     
             if (data.treatmentData.proteinScoresTable?.length > 0) {
@@ -187,16 +196,6 @@ const Treatment = () => {
         }
     }, [pdbIds]);
 
-    const extractedExperimentIDs = useMemo(() => {
-        if (!filteredExperimentData || filteredExperimentData.length === 0) return [];
-        return [
-            ...new Set(
-                filteredExperimentData.flatMap((proteinData) =>
-                    proteinData.experiments ? Object.keys(proteinData.experiments) : []
-                )
-            ),
-        ];
-    }, [filteredExperimentData]);
 
     const handleGoTermClick = (term, accessions) => {
         setSelectedGoTerm(term);
@@ -276,7 +275,7 @@ const Treatment = () => {
                     <div ref={chartRefVolcano} className="treatment-section goenrichment-chart-content">
                         {treatmentData?.differentialAbundanceDataList && (
                             <VolcanoPlot
-                                differentialAbundanceDataList={treatmentData.differentialAbundanceDataList}
+                                differentialAbundanceDataList={treatmentData?.differentialAbundanceDataList}
                                 chartRef={chartRefVolcano}
                                 highlightedProtein={displayedProtein}
                             />
@@ -286,9 +285,9 @@ const Treatment = () => {
             case TABS.GENE_ONTOLOGY:
                 return (
                     <div ref={chartRefGO} className="treatment-section goenrichment-chart-content">
-                        {treatmentData?.goEnrichmentList && chartRefGO.current &&(
+                        {goEnrichmentData && chartRefGO.current &&(
                             <GOEnrichmentVisualization
-                                goEnrichmentData={treatmentData.goEnrichmentList}
+                                goEnrichmentData={goEnrichmentData}
                                 onGoTermClick={handleGoTermClick}
                                 chartRef={chartRefGO}
                             />
@@ -347,7 +346,7 @@ const Treatment = () => {
                 </div>
                 <div className="treatment-protein-container">
                     <h2>{displayedProtein}</h2>
-                    {displayedProteinData && pdbIds && extractedExperimentIDs &&(
+                    {displayedProteinData && pdbIds && experimentIDs &&(
                         <NightingaleComponent
                             proteinData={displayedProteinData}
                             pdbIds={pdbIds}
@@ -355,7 +354,7 @@ const Treatment = () => {
                             setSelectedPdbId={setSelectedPdbId}
                             selectedExperiment={selectedExperiment}
                             showHeatmap={false}
-                            passedExperimentIDs={extractedExperimentIDs}
+                            passedExperimentIDs={experimentIDs}
                         />
                     )}
                 </div>
@@ -365,7 +364,7 @@ const Treatment = () => {
             <div className="treatment-section treatment-experiment-container">
                 <h2>Experiments</h2>
                 <div className="experiment-boxes">
-                    {extractedExperimentIDs.map((experimentID, index) => (
+                    {experimentIDs.map((experimentID, index) => (
                         <div
                             key={index}
                             className="experiment-box"
