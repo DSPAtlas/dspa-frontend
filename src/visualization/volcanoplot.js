@@ -9,17 +9,29 @@ function VolcanoPlot({ differentialAbundanceDataList, chartRef, highlightedProte
             console.error("Invalid data structure");
             return;
         }
-    
+
         d3.select(chartRef.current).selectAll("*").remove();
-    
+
+        const allData = differentialAbundanceDataList.flatMap(exp => exp.data);
+        const xExtent = d3.extent(allData, d => d.diff);
+        const yMax = d3.max(allData, d => -Math.log10(d.adj_pval));
+
+        const x = d3.scaleLinear()
+            .domain(xExtent)
+            .range([0, 800 - 60 - 50]); 
+
+        const y = d3.scaleLinear()
+            .domain([0, yMax])
+            .range([400 - 50 - 100, 0]); 
+
         chartsRef.current = differentialAbundanceDataList.map((experiment, index) => {
-            return createPlot(chartRef.current, experiment.data, index, highlightedProtein);
+            return createPlot(chartRef.current, experiment.data, index, highlightedProtein, x, y, experiment.experimentID);
         });
-    
+
         if (chartsRef.current.length > 0) {
             addLegend(d3.select(chartRef.current).append("svg")
-                .attr("width", 200) // Set appropriate width for the legend
-                .attr("height", 100) // Set appropriate height for the legend
+                .attr("width", 200)
+                .attr("height", 100)
             );
         }
     }, [differentialAbundanceDataList, highlightedProtein]);
@@ -74,7 +86,7 @@ function VolcanoPlot({ differentialAbundanceDataList, chartRef, highlightedProte
     
     
     
-    function createPlot(container, data, index, highlightedProtein) {
+    function createPlot(container, data, index, highlightedProtein, x,y, experimentID) {
         const svgWidth = 800;
         const svgHeight = 400;
         const margin = { top: 50, right: 50, bottom: 100, left: 60 };
@@ -87,6 +99,14 @@ function VolcanoPlot({ differentialAbundanceDataList, chartRef, highlightedProte
             .attr("id", `volcano-plot-${index}`)
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
+        
+        svg.append("text")
+            .attr("x", width)  // Position text at the right side of the plot
+            .attr("y", 0)      // Position text at the very top of the plot
+            .attr("text-anchor", "end")  // Anchor text to the end (right side)
+            .attr("fill", "#888")  // Grey color for the text
+            .text(experimentID)  // Display the experiment ID
+            .style("font-size", "12px"); 
 
         const tooltip = svg.append("g")
             .style("display", "none");
@@ -112,15 +132,17 @@ function VolcanoPlot({ differentialAbundanceDataList, chartRef, highlightedProte
             .attr("width", 0)
             .attr("height", 0);
 
-        const x = d3.scaleLinear()
-            .domain(d3.extent(data, d => d.diff))
-            .range([0, width]);
+        const xAxis = svg.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(x));
+        
+        const yAxis = svg.append("g")
+            .call(d3.axisLeft(y));
 
-        const y = d3.scaleLinear()
-            .domain([0, 10])
-            .range([height, 0]);
-
-        svg.append("g").call(d3.axisLeft(y));
+        xAxis.selectAll("path, line")
+            .attr("stroke", "#d9d9d9"); 
+        yAxis.selectAll("path, line")
+            .attr("stroke", "#d9d9d9");
 
         const points = svg.selectAll("circle")
             .data(data)
@@ -132,7 +154,6 @@ function VolcanoPlot({ differentialAbundanceDataList, chartRef, highlightedProte
             .style("fill", d => d.pg_protein_accessions === highlightedProtein ? "#ffa500" : "#d9d9d9")
             .classed("highlighted", d => d.pg_protein_accessions === highlightedProtein);
 
-        // Bring highlighted protein points to the front initially
         svg.selectAll(".highlighted").raise();
 
         points.on("mouseover", function(event, d) {
