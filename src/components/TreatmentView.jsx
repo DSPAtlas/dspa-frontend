@@ -28,13 +28,14 @@ const ExperimentTable = ({ experimentData, onProteinClick, displayedProtein, goT
     }
 
     return (
-        <div>
-            <div>
+        <div className="experiment-table-container">
+            <div className="go-term-selector">
                 <label htmlFor="goTermSelect">Filter by GO Term: </label>
                 <select 
                     id="goTermSelect" 
                     onChange={(e) => onGoTermSelect(e.target.value)}
                     defaultValue=""
+                    className="go-term-dropdown"
                 >
                     <option value="">All</option>
                     {goTerms && goTerms.map((term, index) => (
