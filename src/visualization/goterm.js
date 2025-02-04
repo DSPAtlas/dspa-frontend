@@ -60,23 +60,25 @@ export function GOEnrichmentVisualization({ goEnrichmentData, onGoTermClick, cha
             experimentID: experiment.experimentID,
             accessions: d.accessions ? d.accessions.split(";").map(a => a.trim()) : []
         }))
-    ).filter(d => d.adj_pval < 1);
+    ).filter(d => d.adj_pval < 0.9);
 
     const experimentIDs = Array.from(new Set(flattenedData.map(d => d.experimentID)));
     const groupedData = d3.groups(flattenedData, d => d.term);
 
     const maxAdjPValLog = d3.max(flattenedData, d => -Math.log10(d.adj_pval) || 0);
-    const dynamicHeight = Math.max(400, maxAdjPValLog * 20 * groupedData.length);
+    const dynamicHeight = Math.max(400, maxAdjPValLog * 2 * groupedData.length);
+
+    let maxLabelWidth = d3.max(experimentIDs, id => id.length * 12); 
+    let margin = { top: 50, right: maxLabelWidth + 40, bottom: 250, left: 100 }; 
 
     const containerWidth = chartRef.current.offsetWidth || 800;
-    const margin = { top: 50, right: 70, bottom: 250, left: 100 };
     let width = containerWidth - margin.left - margin.right;
     let height = dynamicHeight - margin.top - margin.bottom;
 
     chartElement.selectAll("*").remove();
 
     const svg = chartElement.append("svg")
-        .attr("width", width + margin.left + margin.right)
+        .attr("width", containerWidth)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -93,6 +95,7 @@ export function GOEnrichmentVisualization({ goEnrichmentData, onGoTermClick, cha
 
     const yScale = d3.scaleLinear()
         .domain([0, maxAdjPValLog])
+        .nice()
         .range([height, 0]);
 
     const colorScale = d3.scaleOrdinal()
@@ -130,7 +133,7 @@ export function GOEnrichmentVisualization({ goEnrichmentData, onGoTermClick, cha
     // Add legend dynamically
     const legend = svg.append("g")
         .attr("class", "legend")
-        .attr("transform", `translate(${width - 20}, 0)`);
+        .attr("transform", `translate(${width - 20}, 20)`);
 
     experimentIDs.forEach((id, index) => {
         legend.append("rect")
@@ -171,19 +174,18 @@ export function GOEnrichmentVisualization({ goEnrichmentData, onGoTermClick, cha
     
     
     window.addEventListener("resize", () => {
-        width = chartRef.current.offsetWidth - margin.left - margin.right;
-        height = chartRef.current.offsetHeight - margin.top - margin.bottom;
-        svg.attr("width", width + margin.left + margin.right)
-               .attr("height", height + margin.top + margin.bottom);
+        const currentWidth = chartRef.current.offsetWidth;
+        width = currentWidth - margin.left - margin.right;
+        svg.attr("width", currentWidth);
+        legend.attr("transform", `translate(${width + 20}, 20)`);
+            // Update scales and axes
         xScale.range([0, width]);
         yScale.range([height, 0]);
-        svg.selectAll(".bar")
-               .attr("x", d => xScale(d.term))
-               .attr("width", xScale.bandwidth())
-               .attr("y", d => yScale(-Math.log10(d.adj_pval)))
-               .attr("height", d => height - yScale(-Math.log10(d.adj_pval)));
+            // Update axis and bars positions
         svg.select(".x-axis").call(d3.axisBottom(xScale));
         svg.select(".y-axis").call(d3.axisLeft(yScale));
+            // Update bar positions and dimensions if necessary
+            // [...]
         });
         
 }
