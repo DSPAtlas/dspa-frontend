@@ -15,7 +15,8 @@ const experimentTableStyles = {
     backgroundColor: "#f9f9f9",
 };
 
-const ExperimentTable = ({ experimentData, onProteinClick, displayedProtein, goTerms, onGoTermSelect }) => {
+
+const ProteinScoresTable = ({ experimentData, onProteinClick, displayedProtein, goTerms, onGoTermSelect }) => {
     const sortedExperimentData = useMemo(() => {
         return [...experimentData].sort((a, b) => b.averageScore - a.averageScore);
     }, [experimentData]);
@@ -46,6 +47,7 @@ const ExperimentTable = ({ experimentData, onProteinClick, displayedProtein, goT
                     <tr>
                         <th style={experimentTableStyles}>Protein Accession</th>
                         <th style={experimentTableStyles}>Average LiP Score among Experiments</th>
+                        <th style={experimentTableStyles}>Description</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,7 +61,8 @@ const ExperimentTable = ({ experimentData, onProteinClick, displayedProtein, goT
                             onClick={() => onProteinClick(proteinData.proteinAccession)}
                         >
                             <td>{proteinData.proteinAccession}</td>
-                            <td style={experimentTableStyles}>{Math.round(proteinData.averageScore || 0)}</td>
+                            <td>{Math.round(proteinData.averageScore || 0)}</td>
+                            <td>{proteinData.protein_description}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -336,7 +339,7 @@ const Treatment = () => {
             <div className="treatment-section treatment-protein-experiment-wrapper">
                 <div className="treatment-table-container">
                     <h2>Proteins in {selectedGoTerm}</h2>
-                    <ExperimentTable
+                    <ProteinScoresTable
                         experimentData={filteredExperimentData}
                         onProteinClick={handleProteinClick}
                         displayedProtein={displayedProtein}
