@@ -45,9 +45,9 @@ const NightingaleComponent = ({
     const proteinName = proteinData.proteinName;
     const highlightColor = "rgb(235, 190, 234)";
     const minWidth = "1200";
+    const layout = "non-overlapping";
    
     const [structures, setStructures] = useState(() => {
-        // Ensure proteinData and experimentIDsList are valid
         if (!proteinData || !proteinData.proteinSequence || !experimentIDsList) {
             console.error("Invalid proteinData or experimentIDsList");
             return [];
@@ -69,21 +69,11 @@ const NightingaleComponent = ({
             return {
                 id: index + 1,
                 lipScoreString: lipScoreString,
-                isVisible: index === 0, // First experiment is visible
+                isVisible: index === 0,
             };
         });
     });
     
-    
-
-    const nightingaleTdStyleTrack = {
-        padding: "0",
-        margin: "0",
-        backgroundColor: "#f9f9f9",
-        borderBottom: "1px solid #ddd",
-        height: "30px",
-    };
-
     const hasDomainData = proteinData.featuresData?.features?.some(({ type }) => type === "DOMAIN");
     const hasRegionData = proteinData.featuresData.features.some(({ type }) => type === "REGION");
     const hasSiteData = proteinData.featuresData.features.some(({ type }) => type === "SITE");
@@ -118,34 +108,35 @@ const NightingaleComponent = ({
                     availableTrackHeight / (visibleTracks.length || 1),
                     15
                 ); 
-                setTrackHeight(dynamicTrackHeight);
+                setTrackHeight(20);
             }
         };
     
         const handleTouchStart = () => {
-            // You can call updateHeight here if touch interactions could affect element sizes
             updateHeight();
         };
-    
-        // Add both resize and touchstart listeners
         window.addEventListener("resize", updateHeight);
         window.addEventListener("touchstart", handleTouchStart, { passive: true });
     
-        // Initial call to update the height
         updateHeight();
-    
-        // Cleanup function to remove both event listeners
+
         return () => {
             window.removeEventListener("resize", updateHeight);
             window.removeEventListener("touchstart", handleTouchStart);
         };
-    }, [visibleTracks.length]); // Dependencies stay the same
-    
-    
+    }, [visibleTracks.length]); 
     
     const checkDimensions = (element) => {
-        return element && element.offsetWidth > 0 && element.offsetHeight > 0;
+
+        if (element) {
+            if ('offsetWidth' in element && 'offsetHeight' in element) {
+                return element.offsetWidth > 0 && element.offsetHeight > 0;
+            }
+        }
+
+        return false;
     };
+    
 
     const handleButtonClick = (experimentID, index) => {
         setSelectedButton((prevIndex) => (prevIndex === index ? null : index)); 
@@ -165,8 +156,6 @@ const NightingaleComponent = ({
             }))
         );
     };
-    
-    
 
     const handleDropdownChange = (event) => {
         const selectedExperiment = event.target.value;
@@ -186,8 +175,8 @@ const NightingaleComponent = ({
     };
 
     const handleExperimentClick = (experimentID, index) => {
-        if (experimentID === 0) { // Ensure proper comparison with ===
-            const sequenceLength = 100000//proteinData.proteinSequence.length;
+        if (experimentID === 0) {
+            const sequenceLength = proteinData.proteinSequence.length;
             const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1));
     
             setStructures(prevStructures =>
@@ -199,7 +188,6 @@ const NightingaleComponent = ({
             ); 
         } else {
             const lipScoreArray = getLipScoreDataByExperimentID(experimentID);
-    
             if (lipScoreArray) {
                 const lipScoreString = JSON.stringify(lipScoreArray);
     
@@ -215,7 +203,6 @@ const NightingaleComponent = ({
             }
         }
     };
-    
 
     useEffect(() => {
         const sequenceLength = proteinData.proteinSequence.length;
@@ -223,7 +210,6 @@ const NightingaleComponent = ({
 
         if (selectedExperiment) {
             const lipScoreArray = getLipScoreDataByExperimentID(selectedExperiment);
-
             const lipScoreString = lipScoreArray ? JSON.stringify(lipScoreArray) : defaultLipScoreString;
 
             setStructures(prevStructures =>
@@ -246,17 +232,20 @@ const NightingaleComponent = ({
 
     useEffect(() => {
         const adjustDimensions = () => {
-            const container = document.querySelector('#nightingale-manager-container');
-            if (container) {
-                const width = container.offsetWidth;
-                const height = container.offsetHeight;
+            if (containerRef.current) {
+                const width = containerRef.current.offsetWidth;
+                const height = containerRef.current.offsetHeight;
+                console.log(`Width: ${width}, Height: ${height}`);
             }
         };
+    
         window.addEventListener('resize', adjustDimensions);
         adjustDimensions();
     
         return () => window.removeEventListener('resize', adjustDimensions);
     }, []);
+    
+
 
     useEffect(() => {
         structures.forEach((structure, idx) => {
@@ -342,19 +331,17 @@ const NightingaleComponent = ({
                         trackElement.data = trackFeatures;
 
                         trackElement.addEventListener("mousemove", (event) => {
-                                        // Calculate approximate position
-                                        const trackLength = trackElement.getAttribute("length");
-                                        const relativeX = event.offsetX / trackElement.clientWidth;
-                                        const position = Math.floor(relativeX * trackLength);
+                            const trackLength = trackElement.getAttribute("length");
+                            const relativeX = event.offsetX / trackElement.clientWidth;
+                            const position = Math.floor(relativeX * trackLength);
                     
-                                        // Find the closest feature to this position
-                                        const feature = trackFeatures.find(f => f.start <= position && f.end >= position);
-                                        if (feature) {
-                                            updateTooltip(feature.tooltipContent, event.pageX, event.pageY);
-                                        }
-                                    });
-                        trackElement.setAttribute('show-label', '');  // Enable labels
-                        trackElement.setAttribute('label', label);    // Set the label text
+                            const feature = trackFeatures.find(f => f.start <= position && f.end >= position);
+                            if (feature) {
+                                updateTooltip(feature.tooltipContent, event.pageX, event.pageY);
+                                }
+                            });
+                        trackElement.setAttribute('show-label', '');  
+                        trackElement.setAttribute('label', label);    
                     }
                 });
                 
@@ -454,7 +441,6 @@ const NightingaleComponent = ({
         });
     }
 
-
     const legendData = [ 
         { color: '#acc1db', label: '0 - 3' },
         { color: '#fbeaf5', label: '3 - 4' },
@@ -464,7 +450,6 @@ const NightingaleComponent = ({
         { color: '#CCCCCC', label: 'no LiP Score reported' }
     ];
     
-
     return (
         <div>
             <p>{selectedExperiment}</p>
@@ -493,7 +478,6 @@ const NightingaleComponent = ({
                 <div>
 
             {experimentIDsList.length > 5 ? (
-                // Render dropdown if more than 5 experiments
                 <div>
                     <label htmlFor="experiment-dropdown">Color structure according to experiment:</label>
                     <select
@@ -509,7 +493,6 @@ const NightingaleComponent = ({
                     </select>
                 </div>
             ) : (
-                // Render buttons if 5 or fewer experiments
                 <div className="experiment-buttons">
                     {experimentIDsList.map((experimentID, index) => (
                         <button
@@ -529,10 +512,8 @@ const NightingaleComponent = ({
                 {/* Nightingale Manager with Two Columns */}
                 <nightingale-manager>
                     <div id="tooltip" className="tooltip"></div>
-
                     <div >
-                        {/* Left Column: Nightingale Structurestyle={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', width: '100%'cd */}
-                        <div style={{ position: 'relative', paddingRight: '20px', zIndex: '1' }}>
+                        <div>
                             {structures.map((structure, idx) =>
                                 structure.isVisible ? (
                                     <nightingale-structure
@@ -548,13 +529,11 @@ const NightingaleComponent = ({
                                 ) : null
                             )}
                         </div>
-
-                        {/* Right Column: Other Nightingale Elements */}
-                        <div style={{ position: 'relative', paddingRight: '20px', zIndex: '2' }}>
+                        <div>
                             <table>
                                 <tbody>
-                                    <tr  className="navigation-row">
-                                    <td  className="text-column"></td>
+                                    <tr className="track-row">
+                                    <td className="text-column"></td>
                                         <td >
                                             <nightingale-navigation
                                                 id="navigation"
@@ -565,12 +544,13 @@ const NightingaleComponent = ({
                                                 display-end={sequenceLength}
                                                 margin-color="white"
                                                 margin-left="50"
-                                                highlight-color="#FFEB3B66"
+                                                highlight-color={highlightColor}
+                                                layout = {layout}
                                             ></nightingale-navigation>
                                         </td>
                                     </tr>
-                                    <tr  className="sequence-row">
-                                        <td  className="text-column"> Sequence</td> 
+                                    <tr className="track-row">
+                                        <td className="text-column">Sequence</td> 
                                         <td>
                                             <nightingale-sequence
                                                 ref={seqContainer}
@@ -581,16 +561,15 @@ const NightingaleComponent = ({
                                                 display-start="1"
                                                 display-end={sequenceLength}
                                                 highlight-event="onmouseover"
-                                                highlight-color="#FFEB3B66"
+                                                highlight-color={highlightColor}
                                                 margin-left="40"
-                                                margin-color="aliceblue"
+                                                layout = {layout}
                                             ></nightingale-sequence>
                                         </td>
                                     </tr>
-                                    {/* Additional Track Elements */}
                                     {hasDomainData && (
                                         <tr className="track-row">
-                                         <td  className="text-column">Domain</td>
+                                         <td className="text-column">Domain</td>
                                         <td >
                                                 <nightingale-track
                                                     ref={featuresContainer}
@@ -601,16 +580,16 @@ const NightingaleComponent = ({
                                                     display-start="1"
                                                     display-end={sequenceLength}
                                                     margin-left="40"
-                                                    highlight-color="#FFEB3B66"
+                                                    highlight-color={highlightColor}
                                                     highlight-event="onmouseover"
+                                                    layout = {layout}
                                                 ></nightingale-track>
                                             </td>
                                         </tr>
                                     )}
                                     {hasBindingData && (
                                   <tr className="track-row">
-                                         <td  className="text-column">Binding site
-                                        </td>
+                                        <td className="text-column">Binding site </td>
                                         <td >
                                         <nightingale-track
                                             id="binding"
@@ -619,57 +598,56 @@ const NightingaleComponent = ({
                                             length={sequenceLength} 
                                             display-start="1"
                                             display-end={sequenceLength} 
-                                            highlight-color="#FFEB3B66"
+                                            highlight-color={highlightColor}
                                             highlight-event="onmouseover"
                                             margin-left="40"
+                                            layout={layout}
                                         ></nightingale-track>
                                         </td>
                                     </tr>
                                     )}
-                               
-                              
                              {hasChainData && (
                            <tr className="track-row">
-                                <td  className="text-column">Chain </td>
-                                <td style={nightingaleTdStyleTrack}> 
+                                <td className="text-column">Chain </td>
+                                <td> 
                                 <nightingale-track
                                     id="chain"
-                                    layout="non-overlapping"
                                     min-width={minWidth}
                                     height={trackHeight}
                                     length={sequenceLength} 
                                     display-start="1"
                                     display-end={sequenceLength} 
-                                    highlight-color="#FFEB3B66"
+                                    highlight-color={highlightColor}
                                     highlight-event="onmouseover"
                                     margin-left="40"
+                                    layout={layout}
                                 ></nightingale-track>
                                 </td>
                             </tr>
                         )}
                             {hasDisulfidData && (
                             <tr className="track-row">
-                                 <td  className="text-column">Disulfide bond</td>
-                                <td style={nightingaleTdStyleTrack}>
+                                 <td className="text-column">Disulfide bond</td>
+                                <td>
                                 <nightingale-track
                                     id="disulfide-bond"
-                                    layout="non-overlapping"
                                     min-width={minWidth}
                                     height={trackHeight}
                                     length={sequenceLength} 
                                     display-start="1"
                                     display-end={sequenceLength} 
-                                    highlight-color="#FFEB3B66"
+                                    highlight-color={highlightColor}
                                     highlight-event="onmouseover"
                                     margin-left="40"
+                                    layout={layout}
                                 ></nightingale-track>
                                 </td>
                             </tr>
                             )}
                             {hasBetaStrandData && (
                             <tr className="track-row">
-                                <td  className="text-column">Beta strand</td>
-                                <td style={nightingaleTdStyleTrack}>
+                                <td className="text-column">Beta strand</td>
+                                <td>
                                 <nightingale-track
                                     id="beta-strand"
                                     min-width={minWidth}
@@ -677,16 +655,17 @@ const NightingaleComponent = ({
                                     height={trackHeight}
                                     display-start="1"
                                     display-end={sequenceLength} 
-                                    highlight-color="#FFEB3B66"
+                                    highlight-color={highlightColor}
                                     highlight-event="onmouseover"
                                     margin-left="40"
+                                    layout={layout}
                                 ></nightingale-track>
                                 </td>
                             </tr>
                             )}
                               {hasSiteData && (
                                <tr className="track-row">
-                                    <td  className="text-column">Site</td>
+                                    <td className="text-column">Site</td>
                                     <td >
                                     <nightingale-track
                                         id="site"
@@ -695,16 +674,17 @@ const NightingaleComponent = ({
                                         length={sequenceLength} 
                                         display-start="1"
                                         display-end={sequenceLength} 
-                                        highlight-color="#FFEB3B66"
+                                        highlight-color={highlightColor}
                                         highlight-event="onmouseover"
                                         margin-left="40"
+                                        layout={layout}
                                     ></nightingale-track>
                                     </td>
                                 </tr>
                             )}
                              {hasRegionData && (
                               <tr className="track-row">
-                                     <td  className="text-column">Region </td>
+                                     <td className="text-column">Region </td>
                                     <td>
                                     <nightingale-track
                                         ref={featuresContainer}
@@ -714,22 +694,17 @@ const NightingaleComponent = ({
                                         length={sequenceLength} 
                                         display-start="1"
                                         display-end={sequenceLength} 
-                                        highlight-color="#FFEB3B66"
+                                        highlight-color={highlightColor}
                                         highlight-event="onmouseover"
                                         margin-left="40"
+                                        layout={layout}
                                     ></nightingale-track>
                                     </td>
                                 </tr>
                             )}
-                             <tr className="track-row">
-                                <td  className="text-column"></td>
-                                <td style={nightingaleTdStyleTrack}>
-                                </td>
-                            </tr>
-                                 {/* Continue with other track elements */}
-                                 {showHeatmap && ( // Conditional rendering of heatmap
-                                     <tr>
-                                        <td>Score-Barcode</td>
+                                 {showHeatmap && ( 
+                                     <tr className="track-row">
+                                        <td className="text-column">Score-Barcode</td>
                                         <td>
                                             <nightingale-sequence-heatmap
                                                 ref={scoreBarcodeContainer}
@@ -754,37 +729,6 @@ const NightingaleComponent = ({
                     </div>
                 </nightingale-manager>
             </div>
-
-            {/* Table for PDB selection 
-           /* <div>
-                <table className="pdb-selection-container">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Method</th>
-                            <th>Resolution</th>
-                            <th>Chains</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {pdbIds.map((structure) => (
-                            <tr
-                                key={structure.id}
-                                onClick={() => handleRowClick(structure.id)}
-                                style={{
-                                    backgroundColor: selectedPdbId === structure.id ? '#f0f0f0' : 'white',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                <td>{structure.id}</td>
-                                <td>{getPropertyValue(structure.properties, 'Method')}</td>
-                                <td>{getPropertyValue(structure.properties, 'Resolution')}</td>
-                                <td>{getPropertyValue(structure.properties, 'Chains')}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>*/}
             <p>Selected PDB ID: {selectedPdbId}</p>
         </div>
     );
