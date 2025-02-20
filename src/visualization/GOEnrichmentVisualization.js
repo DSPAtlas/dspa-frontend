@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import React, { useEffect, useMemo} from 'react';
+import React, { useEffect, useMemo, useRef} from 'react';
 
 function wrapText(selection, maxWidth, maxCharsPerLine = 25, maxLines = 25) {
    
@@ -40,12 +40,14 @@ function wrapText(selection, maxWidth, maxCharsPerLine = 25, maxLines = 25) {
 
 
 export function GOEnrichmentVisualization({ goEnrichmentData, chartRef }) {
+    const isMounted = useRef(true);
+
     const setup = useMemo(() => {
         if (!goEnrichmentData || goEnrichmentData.length === 0) {
             return null; // Return null if data is not available
         }
 
-        const dynaprot_colors = [
+        const dynaprotColors = [
             "#be9fd2", "#d89853", "#b3c5da", "#d35eb6", "#71b6c8", "#d9ce74", "#99c2c5"
         ];
 
@@ -54,25 +56,43 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef }) {
         const maxAdjPValLog = d3.max(goEnrichmentData, d => -Math.log10(d.adj_pval) || 0);
         const colorScale = d3.scaleOrdinal()
             .domain(experimentIDs)
-            .range(dynaprot_colors);
+            .range(dynaprotColors);
 
         return { experimentIDs, groupedData, maxAdjPValLog, colorScale };
     }, [goEnrichmentData]);
 
-    useEffect(() =>{
-        if (!chartRef.current || !goEnrichmentData || goEnrichmentData.length === 0) {
+    useEffect(() => {
+        if (!chartRef.current) {
             console.error("GO enrichment data is empty or the chart container is not found.");
             return;
         }
 
+        const resizeObserver = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                if (entry.target === chartRef.current) {
+                    renderChart(entry.contentRect.width);
+                }
+            }
+        });
+
+        resizeObserver.observe(chartRef.current);
+
+        return () => {
+            if (chartRef.current) {
+                resizeObserver.unobserve(chartRef.current);
+            }
+            if (isMounted.current) {
+                d3.select(chartRef.current).selectAll("*").remove();
+            }
+        };
+    }, [setup, chartRef]);
+
+    const renderChart = (containerWidth) => {
+        if (!setup || !isMounted.current) return;
         const { experimentIDs, groupedData, maxAdjPValLog, colorScale } = setup;
-
         const dynamicHeight = Math.max(400, maxAdjPValLog * 2 * groupedData.length);
-
-        let maxLabelWidth = d3.max(experimentIDs, id => id.length * 12); 
-        let margin = { top: 50, right: maxLabelWidth + 40, bottom: 250, left: 100 }; 
-
-        const containerWidth = chartRef.current.offsetWidth || 800;
+        let maxLabelWidth = d3.max(experimentIDs, id => id.length * 12);
+        let margin = { top: 50, right: maxLabelWidth + 40, bottom: 250, left: 100 };
         let width = containerWidth - margin.left - margin.right;
         let height = dynamicHeight - margin.top - margin.bottom;
 
@@ -85,7 +105,7 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef }) {
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
-        const xScale = d3.scaleBand()
+            const xScale = d3.scaleBand()
             .domain(groupedData.map(d => d[0]))
             .range([0, width])
             .padding(0.1);
@@ -167,34 +187,20 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef }) {
             .style("font-family", "Raleway")
             .text("-log10(Adj-pValue)");
 
-        
-        window.addEventListener("resize", () => {
-            const currentWidth = chartRef.current.offsetWidth || 800;
-            width = currentWidth - margin.left - margin.right;
-            svg.attr("width", currentWidth);
-            legend.attr("transform", `translate(${width + 20}, 20)`);
-                // Update scales and axes
-            xScale.range([0, width]);
-            yScale.range([height, 0]);
-                // Update axis and bars positions
-            svg.select(".x-axis").call(d3.axisBottom(xScale));
-            svg.select(".y-axis").call(d3.axisLeft(yScale));
-                // Update bar positions and dimensions if necessary
-                // [...]
-        });
+       
+    };
+
+    useEffect(() => {
         return () => {
-            svgContainer.select("svg").remove();
-            };
-        }, [goEnrichmentData, chartRef]);
-    
-        return (
+            isMounted.current = false;
+        };
+    }, []);
+
+    return (
         <div ref={chartRef} className="go-enrichment-visualization">
-            {/* Visualization attaches here */}
         </div>
     ); 
 }
-
-
 
 
 

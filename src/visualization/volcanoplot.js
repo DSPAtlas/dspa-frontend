@@ -2,7 +2,8 @@ import * as d3 from 'd3';
 import React, { useEffect, useRef } from 'react';
 
 function VolcanoPlot({ differentialAbundanceDataList, chartRef, highlightedProtein }) {
-    const chartsRef = useRef([]);
+    const chartsRef = useRef([])
+    const isMounted = useRef(true);
 
     useEffect(() => {
         if (!differentialAbundanceDataList || !Array.isArray(differentialAbundanceDataList)) {
@@ -10,7 +11,13 @@ function VolcanoPlot({ differentialAbundanceDataList, chartRef, highlightedProte
             return;
         }
 
-        d3.select(chartRef.current).selectAll("*").remove();
+        const svgContainer = d3.select(chartRef.current);
+        svgContainer.selectAll("*").remove();
+
+        // Create new SVG element
+        const svg = svgContainer.append('svg')
+            .attr('width', '100%')
+            .attr('height', '100%');
 
         const allData = differentialAbundanceDataList.flatMap(exp => exp.data);
         const xExtent = d3.extent(allData, d => d.diff);
@@ -34,8 +41,19 @@ function VolcanoPlot({ differentialAbundanceDataList, chartRef, highlightedProte
                 .attr("height", 100)
             );
         }
+        return () => {
+            if (isMounted.current){
+                svgContainer.selectAll("*").remove();  
+            }
+                   
+        };
     }, [differentialAbundanceDataList, highlightedProtein]);
-    
+
+    useEffect(() => {
+        return () => {
+            isMounted.current = false;  
+        };
+    }, []);
 
     function highlightOthers(pepKey, shouldHighlight) {
         chartsRef.current.forEach(chart => {
