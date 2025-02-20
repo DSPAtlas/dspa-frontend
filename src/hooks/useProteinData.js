@@ -1,46 +1,52 @@
-import { useState, useCallback } from 'react';
+import { useState, useRef,useCallback } from 'react';
 import config from '../config.json'; // Ensure you have config properly imported
 
 async function getPdbIds(uniprotAccession) {
     const url = `https://rest.uniprot.org/uniprotkb/${uniprotAccession}.json`;
 
-    const alphafoldstructure = [
-        { id: `AF-${uniprotAccession}-F1`, properties: [
-            { key: 'Method', value: 'AlphaFold' }, 
-            { key: 'Resolution', value: ' ' }, 
-            { key: 'Chains', value: ' ' }] },
-       ];
+    const alphafoldStructure = [
+        { 
+            id: `AF-${uniprotAccession}-F1`, 
+            properties: [
+                { key: 'Method', value: 'AlphaFold' }, 
+                { key: 'Resolution', value: 'N/A' }, 
+                { key: 'Chains', value: 'N/A' }
+            ] 
+        },
+    ];
     
     try {
         const response = await fetch(url);
-        
         if (!response.ok) {
             throw new Error(`Failed to retrieve data for accession ${uniprotAccession}`);
         }
         
         const data = await response.json();
         const pdbIds = data.uniProtKBCrossReferences
-            .filter(ref => ref.database === 'PDB')
-            .map(ref=> ({
+            ?.filter(ref => ref.database === 'PDB')
+            .map(ref => ({
                 id: ref.id,
-                properties: ref.properties
-            }));
-        
-        return [...alphafoldstructure, ...pdbIds];
+                properties: ref.properties || [],
+            })) || [];
+
+        return [...alphafoldStructure, ...pdbIds];
     } catch (error) {
-        console.error(error);
-        return alphafoldstructure;
+        console.error(`Error fetching PDB IDs for ${uniprotAccession}:`, error);
+        return alphafoldStructure;
     }
 }
 
-// Custom hook for fetching protein data
 export const useProteinData = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [proteinData, setProteinData] = useState(null);
     const [pdbIds, setPdbIds] = useState([]);
 
+    const isMounted = useRef(true);
+
     const fetchProteinData = useCallback(async (proteinName) => {
+        if (!proteinName) return;
+
         setLoading(true);
         setError('');
 
@@ -48,22 +54,40 @@ export const useProteinData = () => {
         const url = `${config.apiEndpoint}proteins?${queryParams}`;
 
         try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            const data = await response.json(); 
-            setProteinData(data.proteinData);
+            const [proteinResponse, pdbResponse] = await Promise.all([
+                fetch(url),
+                getPdbIds(proteinName)
+            ]);
 
-            const pdbIds = await getPdbIds(proteinName);  
-            setPdbIds(pdbIds);
+            if (!proteinResponse.ok) {
+                throw new Error(`Failed to fetch protein data: ${proteinResponse.statusText}`);
+            }
+
+            const data = await proteinResponse.json();
+
+            if (!isMounted.current) return;
+
+            setProteinData(data.proteinData || {});
+            setPdbIds(pdbResponse);
         } catch (error) {
-            console.error("Error fetching data: ", error);
-            setError('Failed to load protein data');
-            setProteinData({});
+            console.error(`Error fetching protein data: ${error.message}`);
+            if (isMounted.current) {
+                setError(error.message);
+                setProteinData({});
+            }
         } finally {
-            setLoading(false);
+            if (isMounted.current) {
+                setLoading(false);
+            }
         }
+    }, []);
+
+    // Cleanup to prevent memory leaks
+    useState(() => {
+        isMounted.current = true;
+        return () => {
+            isMounted.current = false;
+        };
     }, []);
 
     return { loading, error, proteinData, pdbIds, fetchProteinData };
