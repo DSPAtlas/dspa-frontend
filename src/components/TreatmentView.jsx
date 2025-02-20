@@ -2,9 +2,9 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import config from '../config.json';
-import { GOEnrichmentVisualization } from '../visualization/GOEnrichmentVisualization.js';
+import GOEnrichmentVisualization  from '../visualization/GOEnrichmentVisualization.js';
 import NightingaleComponent from './NightingaleComponent.jsx';
-import { useProteinData } from '../hooks/useProteinData.js'; 
+import { getPdbIds } from '../hooks/useProteinData.js'; 
 import "@nightingale-elements/nightingale-sequence";
 import VolcanoPlot from '../visualization/volcanoplot.js';
 
@@ -91,20 +91,24 @@ const Treatment = () => {
     const [experimentIDs, setExperimentIDs] = useState([]);
     const [error, setError] = useState('');
     const [displayedProtein, setDisplayedProtein] = useState("");
+    const [pdbIds, setPdbIds] = useState([]);
     const [selectedPdbId, setSelectedPdbId] = useState("");
+    
     const [selectedExperiment, setSelectedExperiment] = useState("");
     const [treatments, setTreatments] = useState([]);
     const [selectedTreatment, setSelectedTreatment] = useState(treatmentParam || treatments[0]);
    
     const [filteredExperimentData, setFilteredExperimentData] = useState([]); 
     const [selectedGoTerm, setSelectedGoTerm] = useState(null);
+    const [displayedProteinData, setdisplayedProteinData] = useState(null);
 
-    const {proteinData: displayedProteinData, pdbIds, fetchProteinData } = useProteinData();
+    
 
-    const fetchTreatments = async () => {
+    const fetchTreatments = async (signal) => {
         try {
-            const response = await fetch(`${config.apiEndpoint}treatment/condition`);
+            const response = await fetch(`${config.apiEndpoint}treatment/condition`, signal);
             const data = await response.json();
+
 
             if (!isMounted.current) return;
 
@@ -122,108 +126,165 @@ const Treatment = () => {
     };
 
     useEffect(() => {
-        fetchTreatments();
+        const abortController = new AbortController();
+        fetchTreatments(abortController.signal);
         return () => {
+            abortController.abort();
             isMounted.current = false;
         };
     }, []);
 
+    async function fetchData(url, abortSignal) {
+        const response = await fetch(url, { signal: abortSignal });
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return await response.json();
+    }
 
-    const fetchTreatmentData = useCallback(async () => {
-        setLoading(true);
-        const url = `${config.apiEndpoint}treatment/treatment?treatment=${selectedTreatment}`;
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-            const data = await response.json();
+
+    const fetchProteinData = useCallback(async (proteinName, signal) => {
+        if (!proteinName) return;
+        setError('');
     
-            if (!data.treatmentData) throw new Error("treatmentData is missing from the response");
-        
-            if (isMounted.current){
-                setTreatmentData(data.treatmentData);
-                const goEnrichemntData = data.treatmentData.goEnrichmentList.flatMap(experiment =>
-                    experiment.data.map(d => ({
-                        ...d,
-                        experimentID: experiment.experimentID,
-                        accessions: d.accessions ? d.accessions.split(";").map(a => a.trim()) : []
-                    }))
-                ).filter(d => d.adj_pval < 0.9);
-                setGoEnrichmentData(goEnrichemntData);
-                const experimentIDs = Array.from(new Set(goEnrichemntData.map(d => d.experimentID)));
-                setExperimentIDs(experimentIDs);
-                setAllProteinData(data.treatmentData.proteinScoresTable);
-                if (data.treatmentData.proteinScoresTable?.length > 0) {
-                    const initialProtein = data.treatmentData.proteinScoresTable[0].proteinAccession;
-                    setDisplayedProtein(initialProtein);
-                    fetchProteinData(initialProtein); 
-                    
-                }
-                if (data.treatmentData.goEnrichmentList && data.treatmentData.goEnrichmentList.length > 0) {
-                    const extractedTerms = data.treatmentData.goEnrichmentList.flatMap(item =>
-                        item.data.map(term => ({
+        try {
+            const queryParams = `proteinName=${encodeURIComponent(proteinName)}`;
+            const url = `${config.apiEndpoint}proteins?${queryParams}`;
+            const response = await fetch(url, { signal });
+    
+            if (!response.ok) {
+                throw new Error(`Failed to fetch protein data: ${response.statusText}`);
+            }
+    
+            const data = await response.json();
+            const pdbResponse = await getPdbIds(proteinName);  
+            setPdbIds(pdbResponse);
+            setdisplayedProteinData(data.proteinData || {});  
+            
+        } catch (error) {
+            if (isMounted.current) {
+                setError(`Error fetching protein data: ${error.message}`);
+                setdisplayedProteinData({});
+            }
+        }
+    }, [setPdbIds, setSelectedPdbId, setdisplayedProteinData, setError]);  
+    
+
+    useEffect(() => {
+        const abortController = new AbortController();
+        fetchProteinData(displayedProtein, abortController.signal);
+        return () => {
+            abortController.abort();
+            isMounted.current = false;
+        };
+    }, [displayedProtein, fetchProteinData]);
+
+    useEffect(() => {
+        if (pdbIds.length > 0) {
+            setSelectedPdbId(pdbIds[0].id);
+        }
+    }, [pdbIds]);
+    
+    
+    function processData(data) {
+        if (!data.treatmentData) {
+            throw new Error("treatmentData is missing from the response");
+        }
+    
+        const goEnrichmentData = data.treatmentData.goEnrichmentList.flatMap(experiment =>
+            experiment.data.map(d => ({
+                ...d,
+                experimentID: experiment.experimentID,
+                accessions: d.accessions ? d.accessions.split(";").map(a => a.trim()) : []
+            }))
+        ).filter(d => d.adj_pval < 0.9);
+    
+        const experimentIDs = Array.from(new Set(goEnrichmentData.map(d => d.experimentID)));
+        const termMap = new Map();
+    
+        if (data.treatmentData.goEnrichmentList?.length > 0) {
+            for (const item of data.treatmentData.goEnrichmentList) {
+                for (const term of item.data) {
+                    const accessions = term.accessions ? term.accessions.split(';').map(accession => accession.trim()) : [];
+                    if (!termMap.has(term.term)) {
+                        termMap.set(term.term, {
                             term: term.term,
                             adj_pval: term.adj_pval,
                             lipexperiment_id: term.lipexperiment_id,
-                            accessions: term.accessions.split(';').map(accession => accession.trim())
-                        }))
-                    );
-                    
-                    const uniqueTerms = Array.from(new Set(extractedTerms.map(term => term.term)))
-                        .map(uniqueTerm => extractedTerms.find(term => term.term === uniqueTerm));
-                    
-                    setAllGoTerms(uniqueTerms);
-            }
-            
-            } else {
-                setAllGoTerms([]);
-            }
-    
-            setFilteredExperimentData(data.treatmentData.proteinScoresTable);
-        } catch (error) {
-            if (isMounted.current) {
-                setError(`Failed to load experiment data: ${error.message}`);
-            }
-        } finally {
-            if (isMounted.current) {
-                setLoading(false);
+                            accessions
+                        });
+                    }
+                }
             }
         }
-    }, [selectedTreatment, fetchProteinData, pdbIds]);  
     
-    useEffect(() => {
-        fetchTreatmentData();
-        return () => {
-            isMounted.current = false; 
+        return {
+            goEnrichmentData,
+            experimentIDs,
+            allGoTerms: [...termMap.values()],
+            proteinData: data.treatmentData.proteinScoresTable,
+            initialProtein: data.treatmentData.proteinScoresTable?.[0]?.proteinAccession
         };
-    }, [fetchTreatmentData]);
-
+    }
+    
     useEffect(() => {
-        if (pdbIds?.length > 0) setSelectedPdbId(pdbIds[0].id);
-    }, [pdbIds]);
-
-
-    const handleGoTermClick = (term, accessions) => {
-        setSelectedGoTerm(term);
-        if (accessions && accessions.length > 0 && treatmentData?.proteinScoresTable) {
-            const filteredData = treatmentData.proteinScoresTable.filter(proteinData =>
-                accessions.includes(proteinData.proteinAccession)
-            );
-            setFilteredExperimentData(filteredData);
-        } else {
-            console.warn("No accessions to filter experiment data");
-            setFilteredExperimentData([]);
+        const abortController = new AbortController();
+      
+        const fetchTreatmentData = async (signal) =>{
+            setLoading(true);
+            console.log("fetch data again");
+            const url = `${config.apiEndpoint}treatment/treatment?treatment=${selectedTreatment}`;
+            try {
+                const rawData = await fetchData(url, signal);
+                if (!abortController.signal.aborted) {
+                    const {
+                        goEnrichmentData,
+                        experimentIDs,
+                        allGoTerms,
+                        proteinData,
+                        initialProtein
+                    } = processData(rawData);
+                    console.log("raw data", rawData);
+            
+                    //if (isMounted.current) {
+                    console.log("Loading data");
+                    setTreatmentData(rawData.treatmentData);
+                    setGoEnrichmentData(goEnrichmentData);
+                    setExperimentIDs(experimentIDs);
+                    setAllProteinData(proteinData);
+                    setFilteredExperimentData(proteinData);
+                    setAllGoTerms(allGoTerms);
+                    setDisplayedProtein(initialProtein);  
+                    
+                }
+            } catch (error) {
+                if (!signal.aborted && isMounted.current) {
+                    console.log(error);
+                    setError(error.toString());
+                }
+            } finally {
+                if (isMounted.current) {
+                    setLoading(false);   
+                }
+            }
         }
-    };
+        fetchTreatmentData(abortController.signal);
+    
+        return () => {
+            abortController.abort(); 
+            isMounted.current = false;
+        };
+    }, [selectedTreatment])
+
 
     const handleGoTermSelect = (selectedTerm) => {
-        
         setSelectedGoTerm(selectedTerm);
-        if (selectedTerm === "") {
+        if (selectedTerm === "" && isMounted.xurrent) {
             setFilteredExperimentData(allProteinData); 
         } else {
             
             const termDetails = allGoTerms.find(term => term.term === selectedTerm);
-            if (termDetails && termDetails.accessions) {
+            if (termDetails && termDetails.accessions && isMounted.current) {
                 const filteredData = allProteinData.filter(proteinData =>
                     termDetails.accessions.includes(proteinData.proteinAccession)
                 );
@@ -237,6 +298,8 @@ const Treatment = () => {
     const handleTreatmentChange = (event) => {
         const newTreatment = event.target.value;
         setSelectedTreatment(newTreatment);
+        isMounted.current = true;
+        console.log("selected treamted", selectedTreatment);
         navigate(`/treatment/${newTreatment}`);
     };
 
@@ -277,9 +340,10 @@ const Treatment = () => {
         switch (activeTab) {
             case TABS.VOLCANO_PLOT:
                 return (
-                    <div ref={chartRefVolcano} key="volcano-plot" className="treatment-section goenrichment-chart-content">
+                    <div ref={chartRefVolcano} key={`volcano-plot-${selectedTreatment}`} className="treatment-section goenrichment-chart-content">
                         {treatmentData?.differentialAbundanceDataList && (
                             <VolcanoPlot
+                                key={selectedTreatment}
                                 differentialAbundanceDataList={treatmentData?.differentialAbundanceDataList}
                                 chartRef={chartRefVolcano}
                                 highlightedProtein={displayedProtein}
@@ -289,9 +353,10 @@ const Treatment = () => {
                 );
             case TABS.GENE_ONTOLOGY:
                 return (
-                    <div ref={chartRefGO} key="go-enrichemtn-visualization" className="treatment-section goenrichment-chart-content">
+                    <div ref={chartRefGO} key={`go-plot-${selectedTreatment}`} className="treatment-section goenrichment-chart-content">
                         {goEnrichmentData && chartRefGO.current &&(
                             <GOEnrichmentVisualization
+                                key={selectedTreatment}
                                 goEnrichmentData={goEnrichmentData}
                                 chartRef={chartRefGO}
                             />
@@ -381,7 +446,6 @@ const Treatment = () => {
                         </div>
                     ))}
                 </div>
-   
                 </div>
                 </div>
         </div>

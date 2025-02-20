@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import React, { useEffect, useMemo, useRef} from 'react';
+import React, { useEffect, useMemo, useRef,memo} from 'react';
 
 function wrapText(selection, maxWidth, maxCharsPerLine = 25, maxLines = 25) {
    
@@ -39,8 +39,8 @@ function wrapText(selection, maxWidth, maxCharsPerLine = 25, maxLines = 25) {
 }
 
 
-export function GOEnrichmentVisualization({ goEnrichmentData, chartRef }) {
-    const isMounted = useRef(true);
+const GOEnrichmentVisualization = memo(({ goEnrichmentData, chartRef }) => {
+    let isMounted = useRef(true);
 
     const setup = useMemo(() => {
         if (!goEnrichmentData || goEnrichmentData.length === 0) {
@@ -60,32 +60,6 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef }) {
 
         return { experimentIDs, groupedData, maxAdjPValLog, colorScale };
     }, [goEnrichmentData]);
-
-    useEffect(() => {
-        if (!chartRef.current) {
-            console.error("GO enrichment data is empty or the chart container is not found.");
-            return;
-        }
-
-        const resizeObserver = new ResizeObserver(entries => {
-            for (let entry of entries) {
-                if (entry.target === chartRef.current) {
-                    renderChart(entry.contentRect.width);
-                }
-            }
-        });
-
-        resizeObserver.observe(chartRef.current);
-
-        return () => {
-            if (chartRef.current) {
-                resizeObserver.unobserve(chartRef.current);
-            }
-            if (isMounted.current) {
-                d3.select(chartRef.current).selectAll("*").remove();
-            }
-        };
-    }, [setup, chartRef]);
 
     const renderChart = (containerWidth) => {
         if (!setup || !isMounted.current) return;
@@ -191,6 +165,30 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef }) {
     };
 
     useEffect(() => {
+        const resizeObserver = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                if (entry.target === chartRef.current) {
+                    renderChart(entry.contentRect.width);
+                }
+            }
+        });
+    
+        if (chartRef.current) {
+            resizeObserver.observe(chartRef.current);
+        }
+    
+        return () => {
+            if (chartRef.current) {
+                resizeObserver.unobserve(chartRef.current);
+            }
+            if (isMounted.current) {
+                d3.select(chartRef.current).selectAll("*").remove();
+            }
+        };
+    }, [setup, chartRef, renderChart]);
+    
+
+    useEffect(() => {
         return () => {
             isMounted.current = false;
         };
@@ -200,8 +198,9 @@ export function GOEnrichmentVisualization({ goEnrichmentData, chartRef }) {
         <div ref={chartRef} className="go-enrichment-visualization">
         </div>
     ); 
-}
+});
 
+export default GOEnrichmentVisualization;
 
 
 
