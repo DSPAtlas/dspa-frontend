@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import config from '../config.json';
-import { GOEnrichmentVisualization } from '../visualization/goterm.js';
+import { GOEnrichmentVisualization } from '../visualization/GOEnrichmentVisualization.js';
 import NightingaleComponent from './NightingaleComponent.jsx';
 import { useProteinData } from '../hooks/useProteinData.js'; 
 import "@nightingale-elements/nightingale-sequence";
@@ -78,6 +78,7 @@ const Treatment = () => {
    
     const chartRefGO = useRef(null);
     const chartRefVolcano = useRef(null);
+    const isMounted = useRef(true);
 
     const [allGoTerms, setAllGoTerms] = useState([]); 
     const [allProteinData, setAllProteinData] = useState([]); 
@@ -100,28 +101,32 @@ const Treatment = () => {
 
     const {proteinData: displayedProteinData, pdbIds, fetchProteinData } = useProteinData();
 
-    useEffect(() => {
-        let isActive = true;
-        const fetchTreatments = async () => {
-            try {
-                const response = await fetch(`${config.apiEndpoint}treatment/condition`); 
-                const data = await response.json();
-    
-                if (data.success && Array.isArray(data.conditions)) {
-                    setTreatments(data.conditions); 
-                } else {
-                    throw new Error(data.message || "Failed to fetch treatments");
-                }
-            } catch (error) {
-                console.error("Error fetching treatments:", error);
+    const fetchTreatments = async () => {
+        try {
+            const response = await fetch(`${config.apiEndpoint}treatment/condition`);
+            const data = await response.json();
+
+            if (!isMounted.current) return;
+
+            if (data.success && Array.isArray(data.conditions)) {
+                setTreatments(data.conditions);
+            } else {
+                throw new Error(data.message || "Failed to fetch treatments");
+            }
+        } catch (error) {
+            console.error("Error fetching treatments:", error);
+            if (isMounted.current) {
                 setError(error.message);
             }
-        };
+        }
+    };
+
+    useEffect(() => {
         fetchTreatments();
         return () => {
-            isActive = false;  
+            isMounted.current = false;
         };
-    }, []); 
+    }, []);
 
 
     const fetchTreatmentData = useCallback(async () => {
@@ -133,70 +138,67 @@ const Treatment = () => {
             const data = await response.json();
     
             if (!data.treatmentData) throw new Error("treatmentData is missing from the response");
-    
-            setTreatmentData(data.treatmentData);
-            const goEnrichemntData = data.treatmentData.goEnrichmentList.flatMap(experiment =>
-                experiment.data.map(d => ({
-                    ...d,
-                    experimentID: experiment.experimentID,
-                    accessions: d.accessions ? d.accessions.split(";").map(a => a.trim()) : []
-                }))
-            ).filter(d => d.adj_pval < 0.9);
-            const experimentIDs = Array.from(new Set(goEnrichemntData.map(d => d.experimentID)));
-            setGoEnrichmentData(goEnrichemntData);
-            setExperimentIDs(experimentIDs);
-            setAllProteinData(data.treatmentData.proteinScoresTable);
-    
-            if (data.treatmentData.proteinScoresTable?.length > 0) {
-                const initialProtein = data.treatmentData.proteinScoresTable[0].proteinAccession;
-                setDisplayedProtein(initialProtein);
-                fetchProteinData(initialProtein); 
-            }
-    
-            if (data.treatmentData.goEnrichmentList && data.treatmentData.goEnrichmentList.length > 0) {
-                const extractedTerms = data.treatmentData.goEnrichmentList.flatMap(item =>
-                    item.data.map(term => ({
-                        term: term.term,
-                        adj_pval: term.adj_pval,
-                        lipexperiment_id: term.lipexperiment_id,
-                        accessions: term.accessions.split(';').map(accession => accession.trim())
+        
+            if (isMounted.current){
+                setTreatmentData(data.treatmentData);
+                const goEnrichemntData = data.treatmentData.goEnrichmentList.flatMap(experiment =>
+                    experiment.data.map(d => ({
+                        ...d,
+                        experimentID: experiment.experimentID,
+                        accessions: d.accessions ? d.accessions.split(";").map(a => a.trim()) : []
                     }))
-                );
-                
-                const uniqueTerms = Array.from(new Set(extractedTerms.map(term => term.term)))
-                    .map(uniqueTerm => extractedTerms.find(term => term.term === uniqueTerm));
-                
-                setAllGoTerms(uniqueTerms);
+                ).filter(d => d.adj_pval < 0.9);
+                setGoEnrichmentData(goEnrichemntData);
+                const experimentIDs = Array.from(new Set(goEnrichemntData.map(d => d.experimentID)));
+                setExperimentIDs(experimentIDs);
+                setAllProteinData(data.treatmentData.proteinScoresTable);
+                if (data.treatmentData.proteinScoresTable?.length > 0) {
+                    const initialProtein = data.treatmentData.proteinScoresTable[0].proteinAccession;
+                    setDisplayedProtein(initialProtein);
+                    fetchProteinData(initialProtein); 
+                    
+                }
+                if (data.treatmentData.goEnrichmentList && data.treatmentData.goEnrichmentList.length > 0) {
+                    const extractedTerms = data.treatmentData.goEnrichmentList.flatMap(item =>
+                        item.data.map(term => ({
+                            term: term.term,
+                            adj_pval: term.adj_pval,
+                            lipexperiment_id: term.lipexperiment_id,
+                            accessions: term.accessions.split(';').map(accession => accession.trim())
+                        }))
+                    );
+                    
+                    const uniqueTerms = Array.from(new Set(extractedTerms.map(term => term.term)))
+                        .map(uniqueTerm => extractedTerms.find(term => term.term === uniqueTerm));
+                    
+                    setAllGoTerms(uniqueTerms);
+            }
+            
             } else {
                 setAllGoTerms([]);
             }
     
             setFilteredExperimentData(data.treatmentData.proteinScoresTable);
         } catch (error) {
-            setError(`Failed to load experiment data: ${error.message}`);
+            if (isMounted.current) {
+                setError(`Failed to load experiment data: ${error.message}`);
+            }
         } finally {
-            setLoading(false);
+            if (isMounted.current) {
+                setLoading(false);
+            }
         }
-    }, [selectedTreatment, fetchProteinData]);  
+    }, [selectedTreatment, fetchProteinData, pdbIds]);  
     
     useEffect(() => {
         fetchTreatmentData();
-    }, [fetchTreatmentData]);  
+        return () => {
+            isMounted.current = false; 
+        };
+    }, [fetchTreatmentData]);
 
     useEffect(() => {
         if (pdbIds?.length > 0) setSelectedPdbId(pdbIds[0].id);
-    }, [pdbIds]);
-    
-
-    useEffect(() => {
-        fetchTreatmentData();
-    }, [fetchTreatmentData]); 
-    
-
-    useEffect(() => {
-        if (pdbIds && pdbIds.length > 0) {
-            setSelectedPdbId(pdbIds[0].id);
-        }
     }, [pdbIds]);
 
 
@@ -275,7 +277,7 @@ const Treatment = () => {
         switch (activeTab) {
             case TABS.VOLCANO_PLOT:
                 return (
-                    <div ref={chartRefVolcano} className="treatment-section goenrichment-chart-content">
+                    <div ref={chartRefVolcano} key="volcano-plot" className="treatment-section goenrichment-chart-content">
                         {treatmentData?.differentialAbundanceDataList && (
                             <VolcanoPlot
                                 differentialAbundanceDataList={treatmentData?.differentialAbundanceDataList}
@@ -287,16 +289,16 @@ const Treatment = () => {
                 );
             case TABS.GENE_ONTOLOGY:
                 return (
-                    <div ref={chartRefGO} className="treatment-section goenrichment-chart-content">
+                    <div ref={chartRefGO} key="go-enrichemtn-visualization" className="treatment-section goenrichment-chart-content">
                         {goEnrichmentData && chartRefGO.current &&(
                             <GOEnrichmentVisualization
                                 goEnrichmentData={goEnrichmentData}
-                                onGoTermClick={handleGoTermClick}
                                 chartRef={chartRefGO}
                             />
                         )}
                     </div>
                 );
+                
             default:
                 return <p>Invalid tab</p>;
         }
