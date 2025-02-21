@@ -102,13 +102,10 @@ const Treatment = () => {
     const [selectedGoTerm, setSelectedGoTerm] = useState(null);
     const [displayedProteinData, setdisplayedProteinData] = useState(null);
 
-    
-
     const fetchTreatments = async (signal) => {
         try {
             const response = await fetch(`${config.apiEndpoint}treatment/condition`, signal);
             const data = await response.json();
-
 
             if (!isMounted.current) return;
 
@@ -142,7 +139,6 @@ const Treatment = () => {
         return await response.json();
     }
 
-
     const fetchProteinData = useCallback(async (proteinName, signal) => {
         if (!proteinName) return;
         setError('');
@@ -169,7 +165,6 @@ const Treatment = () => {
         }
     }, [setPdbIds, setSelectedPdbId, setdisplayedProteinData, setError]);  
     
-
     useEffect(() => {
         const abortController = new AbortController();
         fetchProteinData(displayedProtein, abortController.signal);
@@ -184,7 +179,6 @@ const Treatment = () => {
             setSelectedPdbId(pdbIds[0].id);
         }
     }, [pdbIds]);
-    
     
     function processData(data) {
         if (!data.treatmentData) {
@@ -232,7 +226,6 @@ const Treatment = () => {
       
         const fetchTreatmentData = async (signal) =>{
             setLoading(true);
-            console.log("fetch data again");
             const url = `${config.apiEndpoint}treatment/treatment?treatment=${selectedTreatment}`;
             try {
                 const rawData = await fetchData(url, signal);
@@ -244,10 +237,7 @@ const Treatment = () => {
                         proteinData,
                         initialProtein
                     } = processData(rawData);
-                    console.log("raw data", rawData);
-            
-                    //if (isMounted.current) {
-                    console.log("Loading data");
+                    
                     setTreatmentData(rawData.treatmentData);
                     setGoEnrichmentData(goEnrichmentData);
                     setExperimentIDs(experimentIDs);
@@ -263,9 +253,7 @@ const Treatment = () => {
                     setError(error.toString());
                 }
             } finally {
-                if (isMounted.current) {
-                    setLoading(false);   
-                }
+                setLoading(false);    
             }
         }
         fetchTreatmentData(abortController.signal);
@@ -282,7 +270,6 @@ const Treatment = () => {
         if (selectedTerm === "" && isMounted.xurrent) {
             setFilteredExperimentData(allProteinData); 
         } else {
-            
             const termDetails = allGoTerms.find(term => term.term === selectedTerm);
             if (termDetails && termDetails.accessions && isMounted.current) {
                 const filteredData = allProteinData.filter(proteinData =>
@@ -298,8 +285,6 @@ const Treatment = () => {
     const handleTreatmentChange = (event) => {
         const newTreatment = event.target.value;
         setSelectedTreatment(newTreatment);
-        isMounted.current = true;
-        console.log("selected treamted", selectedTreatment);
         navigate(`/treatment/${newTreatment}`);
     };
 
@@ -337,37 +322,43 @@ const Treatment = () => {
     );
     
     const renderTabContent = () => {
-        switch (activeTab) {
-            case TABS.VOLCANO_PLOT:
-                return (
-                    <div ref={chartRefVolcano} key={`volcano-plot-${selectedTreatment}`} className="treatment-section goenrichment-chart-content">
-                        {treatmentData?.differentialAbundanceDataList && (
-                            <VolcanoPlot
-                                key={selectedTreatment}
-                                differentialAbundanceDataList={treatmentData?.differentialAbundanceDataList}
-                                chartRef={chartRefVolcano}
-                                highlightedProtein={displayedProtein}
-                            />
-                        )}
-                    </div>
-                );
-            case TABS.GENE_ONTOLOGY:
-                return (
-                    <div ref={chartRefGO} key={`go-plot-${selectedTreatment}`} className="treatment-section goenrichment-chart-content">
-                        {goEnrichmentData && chartRefGO.current &&(
-                            <GOEnrichmentVisualization
-                                key={selectedTreatment}
-                                goEnrichmentData={goEnrichmentData}
-                                chartRef={chartRefGO}
-                            />
-                        )}
-                    </div>
-                );
-                
-            default:
-                return <p>Invalid tab</p>;
-        }
+        const contentStyle = (tabName) => ({
+            display: activeTab === tabName ? 'block' : 'none'
+        });
+    
+        return (
+            <div className="treatment-section-wrapper">
+                <div 
+                    style={contentStyle(TABS.VOLCANO_PLOT)} 
+                    ref={chartRefVolcano} 
+                    key={`volcano-plot-${selectedTreatment}`} 
+                    className="treatment-section goenrichment-chart-content"
+                >
+                    {treatmentData?.differentialAbundanceDataList && (
+                        <VolcanoPlot
+                            differentialAbundanceDataList={treatmentData?.differentialAbundanceDataList}
+                            chartRef={chartRefVolcano}
+                            highlightedProtein={displayedProtein}
+                        />
+                    )}
+                </div>
+                <div 
+                    style={contentStyle(TABS.GENE_ONTOLOGY)} 
+                    ref={chartRefGO} 
+                    key={`go-plot-${selectedTreatment}`} 
+                    className="treatment-section goenrichment-chart-content"
+                >
+                    {goEnrichmentData && chartRefGO.current && (
+                        <GOEnrichmentVisualization
+                            goEnrichmentData={goEnrichmentData}
+                            chartRef={chartRefGO}
+                        />
+                    )}
+                </div>
+            </div>
+        );
     };
+    
     
    
     return (
