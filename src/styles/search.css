@@ -101,6 +101,33 @@
     border-bottom: 1px solid #ddd;
     vertical-align: middle;
   }
+
+  /* Styles for the search container */
+.results-search-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  margin-top: 60px;
+  background-color: transparent;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Search form styling */
+.results-search-container form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%; /* Full width of the container */
+}
+
+.results-search-container select,
+.results-search-container input,
+.results-search-container button {
+  flex: 1; /* Equal spacing for form items */
+  margin: 0 10px;
+  padding: 10px;
+}
+
   
   /* Styling for the protein name buttons */
   .protein-name-button {

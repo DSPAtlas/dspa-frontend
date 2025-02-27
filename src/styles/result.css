@@ -5,37 +5,12 @@
     padding-top: 10px;
 }
 
-/* Styles for the search container */
-.results-search-container {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-    margin-top: 60px;
-    background-color: #f8f8f8;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-}
-
-/* Search form styling */
-.results-search-container form {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%; /* Full width of the container */
-}
-
-.results-search-container select,
-.results-search-container input,
-.results-search-container button {
-    flex: 1; /* Equal spacing for form items */
-    margin: 0 10px;
-    padding: 10px;
-}
 
 /* Results container styling */
 .result-container {
     overflow-y: auto; /* Scrollable overflow content */
     padding: 2px;
-    background-color: #ffffff;
+    background-color: transparent;
     -webkit-font-smoothing: auto;
     -moz-font-smoothing: auto;
     -moz-osx-font-smoothing: grayscale;
@@ -51,89 +26,6 @@ h1, h2, h3, p {
     margin: 0;
     padding: 0;
 }
-
-td {
-    padding: 5px;
-  }
-  td:first-child {
-    background-color: transparent;
-    font: 1em "Raleway";
-    white-space: nowrap;
-  }
-  td:nth-child(2) {
-    background-color: transparent;
-  }
-  tr:nth-child(-n + 3) > td {
-    background-color: transparent;
-  }
-
-.nightingale-grid {
-    grid-gap: 0;
-}
-
-.nightingale-flex {
-    gap: 0; /* Remove flex gaps */
-}
-
-
-
-#nightingale-manager-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%; 
-    margin-top: 10px;
-    background-color: transparent;
-}
-
-#nightingale-manager-container table {
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-} 
-
-
-#nightingale-manager-container td.text-column {
-    width: 80px;
-    white-space: nowrap; 
-    text-align: center; 
-
-}
-
-#nightingale-manager-container td,
-#nightingale-manager-container th {
-    padding: 8px;
-    border: 1px solid #ddd;
-    text-align: left;
-    border: 1px solid #ddd;
-    vertical-align: middle;
-} 
-
-
-#nightingale-manager-container .track-row td {
-    padding: 0;
-}
-
-
-/* Nightingale component container */
-.nightingale-component-container {
-    height: 100%;
-}
-
-
-/*nightingale-track {
-    display: block;
-    margin: 0; /* Remove any margin */
-/*     /* padding: 2px; /* Remove any padding */
-
-
-
-/* .domain-row,
-.site-row,
-.chain-row {
-    height: 2px;
-} */
-
-/* Grid layout for Nightingale components */
 
 /* Protein header styling */
 .protein-header {

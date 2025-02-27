@@ -1,0 +1,52 @@
+#nightingale-manager-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%; 
+    margin-top: 10px;
+    background-color: transparent;
+} 
+
+#nightingale-manager-container table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    border-spacing: 0; /* Removes extra white space */
+} 
+
+#nightingale-manager-container td.text-column {
+    width: 80px;
+    white-space: nowrap; 
+    text-align: center; 
+    padding: 2px; /* Reduce padding */
+}
+
+#nightingale-manager-container td,
+#nightingale-manager-container th {
+    padding: 0px; /* Ensure minimal padding */
+    border: 1px solid #ddd;
+    text-align: left;
+    vertical-align: middle;
+}  
+
+#nightingale-manager-container .track-row td {
+    padding: 0px;  /* Remove default padding */
+}
+
+#nightingale-manager-container .track-row td:nth-child(2) {
+    display: flex;  
+    align-items: center;
+    justify-content: center;
+    padding: 0; /* Remove extra padding */
+}
+
+/* Ensure all Nightingale elements take full width */
+nightingale-navigation,
+nightingale-sequence,
+nightingale-track,
+nightingale-sequence-heatmap {
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    display: block; /* Ensure block layout for full width */
+}

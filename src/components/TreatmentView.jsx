@@ -8,13 +8,11 @@ import { getPdbIds } from '../hooks/useProteinData.js';
 import "@nightingale-elements/nightingale-sequence";
 import VolcanoPlot from '../visualization/volcanoplot.js';
 
-
 const experimentTableStyles = {
     border: "1px solid #ccc",
     padding: "10px",
     backgroundColor: "#f9f9f9",
 };
-
 
 const ProteinScoresTable = ({ experimentData, onProteinClick, displayedProtein, goTerms, onGoTermSelect }) => {
     const sortedExperimentData = useMemo(() => {
@@ -79,6 +77,7 @@ const Treatment = () => {
     const chartRefGO = useRef(null);
     const chartRefVolcano = useRef(null);
     const isMounted = useRef(true);
+    const containerRef = useRef(null); 
 
     const [allGoTerms, setAllGoTerms] = useState([]); 
     const [allProteinData, setAllProteinData] = useState([]); 
@@ -405,7 +404,9 @@ const Treatment = () => {
                         onGoTermSelect={handleGoTermSelect}
                     />
                 </div>
-                <div className="treatment-protein-container">
+                <div 
+                    ref={containerRef} 
+                    className="treatment-protein-container">
                     <h2>{displayedProtein}</h2>
                     {displayedProteinData && pdbIds && experimentIDs &&(
                         <NightingaleComponent
@@ -416,6 +417,7 @@ const Treatment = () => {
                             selectedExperiment={selectedExperiment}
                             showHeatmap={false}
                             passedExperimentIDs={experimentIDs}
+                            containerRef={containerRef}
                         />
                     )}
                 </div>

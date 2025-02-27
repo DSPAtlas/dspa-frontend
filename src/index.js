@@ -24,6 +24,7 @@ import "./styles/graphs.css";
 import "./styles/treatment.css";
 import "./styles/proteinview.css";
 import "./styles/experimentView.css";
+import "./styles/nightingale.css";
 
 const root = createRoot(document.getElementById("root"));
 
