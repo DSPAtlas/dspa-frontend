@@ -1,16 +1,28 @@
 import React, { useEffect, useRef, useState } from 'react';
-//import "@nightingale-elements/nightingale-sequence";
+import "@nightingale-elements/nightingale-sequence";
 import "@nightingale-elements/nightingale-navigation";
 import "@nightingale-elements/nightingale-manager";
 import "@nightingale-elements/nightingale-colored-sequence";
 import "@nightingale-elements/nightingale-track";
 
 import "@dspa-nightingale/nightingale-structure/nightingale-structure";
-import "@dspa-nightingale/nightingale-sequence";
+//import "@dspa-nightingale/nightingale-sequence/nightingale-sequence";
 
 import "@nightingale-elements/nightingale-msa";
 import "@nightingale-elements/nightingale-sequence-heatmap";
 import { debounce } from 'lodash'; 
+
+const defaultAttributes = {
+    "min-width": "1200",
+    length: 0, // This will be set dynamically
+    height: 40, // Default height, can be updated dynamically
+    "display-start": "1",
+    "display-end": 0, // This will be set dynamically
+    "margin-left": "40",
+    "margin-color": "white",
+    "highlight-event": "onmouseover",
+    "highlight-color": "rgb(235, 190, 234)"
+};
 
 const NightingaleComponent = ({
     proteinData, 
@@ -34,6 +46,8 @@ const NightingaleComponent = ({
     const siteRef = useRef(null);
     const regionRef = useRef(null);
 
+    const [mappedFeatures, setMappedFeatures] = useState([]);
+
     const residuelevelContainer = useRef(null);
     const multipleExperimentsContainer = useRef(null);
     const scoreBarcodeContainer = useRef(null);
@@ -49,23 +63,10 @@ const NightingaleComponent = ({
     const [selectedExperimentDropdown, setSelectedExperimentDropdown] = useState(experimentIDsList[0]);
 
     const structureRefs = useRef(experimentIDsList.map(() => React.createRef()));
-    const [trackHeight, setTrackHeight] = useState(15);
+    const [trackHeight, setTrackHeight] = useState(null);
 
     const proteinName = proteinData.proteinName;
-   
-    const defaultAttributes = {
-        "min-width": "1200",
-        length:sequenceLength,
-        height: trackHeight,
-        "display-start":"1",
-        "display-end": sequenceLength,
-        "margin-left":"40",
-        "layout": "non-overlapping",
-        "margin-color": "white",
-        "highlight-event":"onmouseover",
-        "highlight-color": "rgb(235, 190, 234)",
-    };
-   
+
     const [structures, setStructures] = useState(() => {
         if (!proteinData || !proteinData.proteinSequence || !experimentIDsList) {
             console.error("Invalid proteinData or experimentIDsList");
@@ -124,13 +125,15 @@ const NightingaleComponent = ({
                         structureRef.current.style.setProperty('--custom-structure-height', `${structureHeight}px`);
                     }
                 });
+
+                const tracks_len = visibleTracks.length + 2;
     
                 const availableTrackHeight = structureHeight;
-                const dynamicTrackHeight = Math.max(
-                    availableTrackHeight / (visibleTracks.length + 2 || 1), 
+                const dynamicTrackHeight = Math.min(Math.max(
+                    availableTrackHeight / ( tracks_len|| 1), 
                     15
-                );
-    
+                ), 40);
+        
                 setTrackHeight(dynamicTrackHeight);
             }
         };
@@ -227,19 +230,67 @@ const NightingaleComponent = ({
         }
     };
 
-    useEffect(()=> {
-        if(structureRef.current) {
-            const attributes = {
-                ...defaultAttributes,
-                "protein-accession": proteinName, 
-                "structure-id": selectedPdbId,
-                id: "structure",           
+    useEffect(() => {
+        if (proteinData?.featuresData?.features && trackHeight) {
+            defaultAttributes.length = proteinData.featuresData.sequence.length;
+            defaultAttributes['display-end'] = proteinData.featuresData.sequence.length;
+
+            setMappedFeatures(proteinData.featuresData.features.map(ft => ({
+                ...ft,
+                start: ft.start || ft.begin
+            })));
         }
+    }, [proteinData, trackHeight]);
+
+    useEffect(() => {
+        const updateElementAttributes = (ref, id) => {
+            if (ref.current) {
+                ref.current.setAttribute("id", id);
+                Object.keys(defaultAttributes).forEach(key => {
+                    ref.current.setAttribute(key, defaultAttributes[key]);
+                });
+                ref.current.addEventListener('customEvent', handleCustomEvent);
+            }
+        };
+
+        const updateTracks = () => {
+            const trackIds = ["domain", "region", "site", "binding", "chain", "disulfid", "betastrand"];
+            trackIds.forEach(id => {
+                const trackElement = document.querySelector(`#${id}`);
+                if (trackElement) {
+                    const trackFeatures = mappedFeatures.filter(({ type }) => type.toUpperCase() === id.toUpperCase());
+                    trackElement.data = trackFeatures;
+                }
+            });
+        };
+
+        updateElementAttributes(navigationRef, "navigation");
+        updateElementAttributes(domainRef, "domain");
+        updateElementAttributes(bindingRef, "binding");
+        updateElementAttributes(chainRef, "chain");
+        updateElementAttributes(disulfidRef, "disulfid");
+        updateElementAttributes(betastrandRef, "betastrand");
+        updateElementAttributes(siteRef, "site");
+        updateElementAttributes(regionRef, "region");
+
+        const attributes = {
+            ...defaultAttributes,
+            sequence: proteinData.featuresData.sequence,
+            id: "sequence",
+        };
+    
         Object.keys(attributes).forEach(key => {
-            structureRef.current.setAttribute(key, attributes[key]);
+            sequenceRef.current.setAttribute(key, attributes[key]);
         });
-        }
-      }, [proteinName, selectedPdbId]);
+    
+
+        updateTracks();
+    }, [mappedFeatures]);
+
+
+    const handleCustomEvent = (e) => {
+        console.log('Event received:', e.detail);
+      };
 
     useEffect(() => {
         let isMounted = true;
@@ -288,21 +339,6 @@ const NightingaleComponent = ({
         });
     }, [structures, proteinName, selectedPdbId]);
 
-   
-
-    useEffect(()=> {
-        if(sequenceRef.current) {
-            const attributes = {
-                ...defaultAttributes,
-                sequence: proteinData.featuresData.sequence,
-                id: "sequence",           
-        }
-        Object.keys(attributes).forEach(key => {
-           sequenceRef.current.setAttribute(key, attributes[key]);
-        });
-        }
-      }, [proteinData.featuresData.sequence, defaultAttributes]);
-
     useEffect(() => {
         customElements.whenDefined("nightingale-colored-sequence").then(() => {
             if (residuelevelContainer.current && checkDimensions(residuelevelContainer.current)) {
@@ -322,163 +358,7 @@ const NightingaleComponent = ({
             }
         });
     }, [proteinData.barcodeSequence]);
-
-    useEffect(() => {
-        let eventListeners = [];
-
-        customElements.whenDefined("nightingale-track").then(() => {
-            console.log("proteindata", proteinData.featuresData);
-            
-            if (proteinData.featuresData.features) {
-
-                const tooltip = document.getElementById("tooltip");
-                if (!tooltip) {
-                    console.error("Tooltip element not found!");
-                    return;
-                }
-        
-                const mappedFeatures = proteinData.featuresData.features.map((ft) => ({
-                    ...ft,
-                    start: ft.start || ft.begin,
-                    tooltipContent: ft.type === "BINDING" && !ft.description ? 
-                    `Ligand: ${ft.ligand?.name || "No ligand information"}` : 
-                    (ft.description || "No description available"),
-                }));
-
-                const updateTooltip = (content, x, y) => {
-                    tooltip.innerHTML = `
-                        <div class="simple-tooltip">
-                            ${content}
-                        </div>
-                    `;
-                    tooltip.style.top = `${y}px`;
-                    tooltip.style.left = `${x}px`;
-                    tooltip.style.visibility = "visible";
-                };
-
-                const trackIds = [
-                "domain", "region", "site", "binding", "chain", "disulfid", "betastrand"
-                ];
-
-                trackIds.forEach(id => {
-                    const trackElement = document.querySelector(`#${id}`);
-                    if (trackElement) {
-                        const trackFeatures = mappedFeatures.filter(({ type }) => type.toUpperCase() === id.toUpperCase());
-                        trackElement.data = trackFeatures;
-
-                        const mouseMoveHandler = event => {
-                            const trackLength = trackElement.getAttribute("length");
-                            const relativeX = event.offsetX / trackElement.clientWidth;
-                            const position = Math.floor(relativeX * trackLength);
-                            const feature = trackFeatures.find(f => f.start <= position && f.end >= position);
-                            if (feature) {
-                                updateTooltip(feature.tooltipContent, event.pageX, event.pageY);
-                            }
-                        };
-
-                        trackElement.addEventListener("mousemove", mouseMoveHandler);
-                        eventListeners.push({ element: trackElement, handler: mouseMoveHandler }); // Store for cleanup
-                        trackElement.setAttribute('show-label', '');  
-                        trackElement.setAttribute('label', id.toUpperCase());
-                    }
-                });
-                
-    
-                if (domainRef.current) {
-                    const data = mappedFeatures.filter(({ type }) => type.toUpperCase() === "DOMAIN");
-                    const attributes = {
-                        ...defaultAttributes,
-                        data: data,
-                        id: "domain",           
-                    };
-                    console.log("domain", data);
-                    Object.keys(attributes).forEach(key => {
-                        domainRef.current.setAttribute(key, attributes[key]);
-                     });
-                }
-
-                if (regionRef.current) {
-                    const data = mappedFeatures.filter(({ type }) => type.toUpperCase() === "REGION");
-                    const attributes = {
-                        ...defaultAttributes,
-                        data: data,
-                        id: "region",           
-                    };
-                    Object.keys(attributes).forEach(key => {
-                        regionRef.current.setAttribute(key, attributes[key]);
-                     });
-                }
-
-                if (siteRef.current) {
-                    const data = mappedFeatures.filter(({ type }) => type.toUpperCase() === "SITE");
-                    const attributes = {
-                        ...defaultAttributes,
-                        data: data,
-                        id: "site",           
-                    };
-                    Object.keys(attributes).forEach(key => {
-                        siteRef.current.setAttribute(key, attributes[key]);
-                     });
-                }
-
-                if (bindingRef.current) {
-                    
-                    const data = mappedFeatures.filter(({ type }) => type.toUpperCase() === "BINDING");
-                    const attributes = {
-                        ...defaultAttributes,
-                        data: data,
-                        id: "binding",           
-                    };
-                    Object.keys(attributes).forEach(key => {
-                        bindingRef.current.setAttribute(key, attributes[key]);
-                     });
-                    };
-                    
-
-                if (chainRef.current) {
-                    const data = mappedFeatures.filter(({ type }) => type.toUpperCase() === "CHAIN");
-                    const attributes = {
-                        ...defaultAttributes,
-                        data: data,
-                        id: "chain",           
-                    };
-                    Object.keys(attributes).forEach(key => {
-                        chainRef.current.setAttribute(key, attributes[key]);
-                     });
-                }
-
-                if (disulfidRef.current) {
-                    const data = mappedFeatures.filter(({ type }) => type.toUpperCase() === "DISULFID");
-                    const attributes = {
-                        ...defaultAttributes,
-                        data: data,
-                        id: "disulfid",           
-                    };
-                    Object.keys(attributes).forEach(key => {
-                        disulfidRef.current.setAttribute(key, attributes[key]);
-                     });
-                }
-
-                if (betastrandRef.current) {
-                    const data = mappedFeatures.filter(({ type }) => type.toUpperCase() === "STRAND");
-                    const attributes = {
-                        ...defaultAttributes,
-                        data: data,
-                        id: "betastrand",           
-                    }
-                    Object.keys(attributes).forEach(key => {
-                        betastrandRef.current.setAttribute(key, attributes[key]);
-                     });
-                }
-
-            }
-        });
-        return () => {
-            eventListeners.forEach(({ element, handler }) => {
-                element.removeEventListener("mousemove", handler);
-            });
-        };
-    }, [proteinData.featuresData]);    
+ 
 
     useEffect(() => {
         customElements.whenDefined("nightingale-sequence-heatmap").then(() => {
@@ -595,7 +475,6 @@ const NightingaleComponent = ({
     
             {/* Nightingale Manager with Table of Tracks */}
             <nightingale-manager>
-                <div id="tooltip" className="tooltip"></div>
                 <div>
                     {structures.map((structure, idx) => 
                         structure.isVisible ? (
@@ -607,7 +486,7 @@ const NightingaleComponent = ({
                     <tbody>
                         <tr className="track-row">
                             <td className="text-column"></td>
-                            <td><nightingale-navigation ref={navigationRef} height="15"/></td>
+                            <td><nightingale-navigation ref={navigationRef}/></td>
                         </tr>
 
                         <tr className="track-row">
@@ -644,7 +523,7 @@ const NightingaleComponent = ({
                         {hasBetaStrandData && (
                             <tr className="track-row">
                                 <td className="text-column">Beta strand</td>
-                                <td style={{ height: `${trackHeight}px`, padding: "0"}}><nightingale-track ref={betastrandRef} /></td>
+                                <td ><nightingale-track ref={betastrandRef} /></td>
                             </tr>
                         )}
 
