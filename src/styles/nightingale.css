@@ -1,49 +1,20 @@
-#nightingale-manager-container {
+/* #nightingale-manager-container {
     display: flex;
     flex-direction: column;
     height: auto; 
-    margin-top: 10px;
+    margin-top: 1px;
     background-color: transparent;
-} 
-/* 
-#nightingale-manager-container table {
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-    border-spacing: 0;
-    height: auto; 
-    max-height: 1.5em;
-} 
+}  */
 
-#nightingale-manager-container td.text-column {
-    width: 80px;
-    white-space: nowrap; 
-    text-align: center; 
-    padding: 2px; 
-}
-
-#nightingale-manager-container td,
-#nightingale-manager-container th {
-    padding: 0px; 
-    border: 1px solid #ddd;
-    text-align: left;
-    vertical-align: middle;
-}  
-
-#nightingale-manager-container .track-row td {
-    padding: 0px;  
-    height: auto; 
-    min-height: 15px; 
-    max-height: 45px; 
-} */
 
 #nightingale-manager-container .track-row td:nth-child(2) {
-    padding: 5px; /* Remove extra padding */
+    padding: 0px; /* Remove extra padding */
+    background-color: transparent;
 }
 
 #nightingale-manager-container td,
 #nightingale-manager-container th {
-    padding: 0px; /* Ensure minimal padding */
+    padding: 1px; /* Ensure minimal padding */
     border: 1px solid #ddd;
 }  
 
@@ -51,20 +22,44 @@
     background-color: transparent;
 }
 
-#nightingale-manager-container .track-row td:nth-child(2) {
-    background-color: transparent;
-}
 
 
-
-nightingale-navigation,
+/* nightingale-navigation,
 nightingale-sequence,
 nightingale-track,
 nightingale-sequence-heatmap {
     width: 100%;
    /* height: auto;*/
-    margin: 0;
-    padding: 0px;
- display: block; 
+    /* margin: 0;
+    padding: 1px;
+    display: block;  */
   /* max-height: 70px; */
+
+
+@media (max-width: 768px) {
+    nightingale-navigation, nightingale-sequence, nightingale-track, nightingale-sequence-heatmap {
+        min-width: 100%; /* Ensure full width on smaller screens */
+        max-height: 50px; /* Reduce height to fit small screens */
+    }
+}
+
+/* @media (min-width: 769px) {
+    nightingale-navigation, nightingale-sequence, nightingale-track, nightingale-sequence-heatmap {
+        min-width: 1200px; 
+        height: auto;
+    }
+} */
+
+:root {
+    --font-size-normal: 16px;
+    --font-size-large: 18px;
+    --legend-item-margin: 15px;
+}
+
+@media (max-width: 768px) {
+    :root {
+        --font-size-normal: 14px;
+        --font-size-large: 16px;
+        --legend-item-margin: 10px;
+    }
 }

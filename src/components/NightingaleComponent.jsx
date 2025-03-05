@@ -64,6 +64,7 @@ const NightingaleComponent = ({
 
     const structureRefs = useRef(experimentIDsList.map(() => React.createRef()));
     const [trackHeight, setTrackHeight] = useState(null);
+    const [fontSize, setFontSize] = useState('16px');
 
     const proteinName = proteinData.proteinName;
 
@@ -114,10 +115,42 @@ const NightingaleComponent = ({
     ].filter(Boolean);
 
     useEffect(() => {
+        const handleResize = () => {
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            
+            let newFontSize = '16px'; 
+            if (screenWidth < 768) {
+                newFontSize = '12px'; 
+            } else if (screenWidth >= 768) {
+                newFontSize = '18px'; 
+            }
+    
+            if (screenHeight < 400) {
+                newFontSize = '10px'; 
+            } else if (screenHeight > 800) {
+                newFontSize = '20px'; 
+            }
+            console.log("newfontsiue", newFontSize);
+    
+            setFontSize(newFontSize);
+        };
+    
+        window.addEventListener('resize', handleResize);
+        handleResize(); 
+    
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+    
+
+    useEffect(() => {
         const updateHeight = () => {
             const managerContainer = document.getElementById("nightingale-manager-container");
             if (managerContainer) {
                 const totalHeight = managerContainer.getBoundingClientRect().height;
+                console.log("totalheight", totalHeight);
                 const structureHeight = totalHeight * 0.4;
                 structureRefs.current.forEach((structureRef) => {
                     if (structureRef.current) {
@@ -133,8 +166,7 @@ const NightingaleComponent = ({
                     availableTrackHeight / ( tracks_len|| 1), 
                     15
                 ), 40);
-        
-                setTrackHeight(dynamicTrackHeight);
+                setTrackHeight(15);
             }
         };
     
@@ -152,9 +184,7 @@ const NightingaleComponent = ({
             window.removeEventListener("touchstart", handleTouchStart);
         };
     }, [visibleTracks.length]); 
-    
-    
-    
+     
     const checkDimensions = (element) => {
         if (element) {
             if ('offsetWidth' in element && 'offsetHeight' in element) {
@@ -254,22 +284,34 @@ const NightingaleComponent = ({
         };
 
         const updateTracks = () => {
-            const trackIds = ["domain", "region", "site", "binding", "chain", "disulfid", "betastrand"];
+            const trackIds = ["domain", "region", "site", "binding", "chain", "disulfide-bond", "beta-strand"];
             trackIds.forEach(id => {
                 const trackElement = document.querySelector(`#${id}`);
                 if (trackElement) {
-                    const trackFeatures = mappedFeatures.filter(({ type }) => type.toUpperCase() === id.toUpperCase());
+                    let trackFeatures = mappedFeatures.filter(({ type }) => type.toUpperCase() === id.toUpperCase());
+        
+                    // Update tooltipContent for features of type 'BINDING'
+                    if (id.toUpperCase() === "BINDING") {
+                        trackFeatures = trackFeatures.map(feature => {
+                            if (feature.type.toUpperCase() === "BINDING" && feature.ligand && feature.ligand.name) {
+                                return { ...feature, tooltipContent: feature.ligand.name };
+                            }
+                            return feature;
+                        });
+                    }
+        
                     trackElement.data = trackFeatures;
                 }
             });
         };
+        
 
         updateElementAttributes(navigationRef, "navigation");
         updateElementAttributes(domainRef, "domain");
         updateElementAttributes(bindingRef, "binding");
         updateElementAttributes(chainRef, "chain");
-        updateElementAttributes(disulfidRef, "disulfid");
-        updateElementAttributes(betastrandRef, "betastrand");
+        updateElementAttributes(disulfidRef, "disulfide-bond");
+        updateElementAttributes(betastrandRef, "beta-strand");
         updateElementAttributes(siteRef, "site");
         updateElementAttributes(regionRef, "region");
 
@@ -283,7 +325,6 @@ const NightingaleComponent = ({
             sequenceRef.current.setAttribute(key, attributes[key]);
         });
     
-
         updateTracks();
     }, [mappedFeatures]);
 
@@ -358,7 +399,6 @@ const NightingaleComponent = ({
             }
         });
     }, [proteinData.barcodeSequence]);
- 
 
     useEffect(() => {
         customElements.whenDefined("nightingale-sequence-heatmap").then(() => {
@@ -422,14 +462,14 @@ const NightingaleComponent = ({
     return (
         <div  id="nightingale-manager-container">
             <p>{selectedExperiment}</p>
-            <p style={{ color: '#1a1a1a', fontSize: '18px' }}>{proteinData?.proteinDescription}</p>
+            <p style={{ color: '#1a1a1a',fontSize: 'var(--font-size-large)' }}>{proteinData?.proteinDescription}</p>
             
             {/* LiP Scores Legend */}
             <div>
                 <p>LiP Scores Legend</p>
-                <div style={{ display: 'flex', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', marginBottom: '4px' }}>
                     {legendData.map((item, index) => (
-                        <div key={index} style={{ display: 'flex', alignItems: 'center', marginRight: '15px' }}>
+                        <div key={index} style={{ display: 'flex', alignItems: 'center', marginRight: 'var(--legend-item-margin)' }}>
                             <div
                                 style={{
                                     width: '20px',
@@ -450,6 +490,7 @@ const NightingaleComponent = ({
                             id="experiment-dropdown"
                             value={selectedExperimentDropdown}
                             onChange={handleDropdownChange}
+                            style={{ fontSize: 'var(--font-size-normal)' }}
                         >
                             {experimentIDsList.map((experimentID) => (
                                 <option key={experimentID} value={experimentID}>
@@ -484,58 +525,58 @@ const NightingaleComponent = ({
                 </div>
                 <table>
                     <tbody>
-                        <tr className="track-row">
-                            <td className="text-column"></td>
+                        <tr style={{ height: `${trackHeight}px` }} >
+                            <td ></td>
                             <td><nightingale-navigation ref={navigationRef}/></td>
                         </tr>
 
-                        <tr className="track-row">
-                            <td className="text-column">Sequence</td>
+                        <tr style={{ height: `${trackHeight}px` }}>
+                            <td >Sequence</td>
                             <td><nightingale-sequence ref={sequenceRef} /></td>
                         </tr>
 
                         {hasDomainData && (
-                            <tr className="track-row">
-                                <td className="text-column">Domain</td>
+                            <tr style={{ height: `${trackHeight}px` }}>
+                                <td>Domain</td>
                                 <td><nightingale-track ref={domainRef} /></td>
                             </tr>
                         )}
 
                         {hasBindingData && (
-                            <tr className="track-row">
+                            <tr  style={{ height: `${trackHeight}px` }}>
                                 <td className="text-column">Binding site</td>
                                 <td><nightingale-track ref={bindingRef} /></td>
                             </tr>
                         )}
 
                         {hasChainData && (
-                            <tr className="track-row">
+                            <tr style={{ height: `${trackHeight}px` }}>
                                 <td className="text-column">Chain</td>
                                 <td><nightingale-track ref={chainRef} /></td>
                             </tr>
                         )}
                         {hasDisulfidData && (
-                            <tr className="track-row">
+                            <tr style={{ height: `${trackHeight}px` }}>
                                 <td className="text-column">Disulfide bond</td>
                                 <td><nightingale-track ref={disulfidRef} /></td>
                             </tr>
                         )}
                         {hasBetaStrandData && (
-                            <tr className="track-row">
+                            <tr style={{ height: `${trackHeight}px` }}>
                                 <td className="text-column">Beta strand</td>
                                 <td ><nightingale-track ref={betastrandRef} /></td>
                             </tr>
                         )}
 
                         {hasSiteData && (
-                            <tr className="track-row">
+                            <tr style={{ height: `${trackHeight}px` }}>
                                 <td className="text-column">Site</td>
                                 <td><nightingale-track ref={siteRef} /></td>
                             </tr>
                         )}
 
                         {hasRegionData && (
-                            <tr className="track-row">
+                            <tr style={{ height: `${trackHeight}px` }}>
                                 <td className="text-column">Region</td>
                                 <td><nightingale-track ref={regionRef} /></td>
                             </tr>
