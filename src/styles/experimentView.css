@@ -1,14 +1,13 @@
 .experiment-protein-container {
-    display: flex; /* Enable flexbox */
-    flex-direction: column; /* Stack content vertically */
-    justify-content: center; /* Center content vertically */
-    align-items: center; /* Center content horizontally */
-    width: 100%; /* Full width */
-    padding: 20px; /* Add some padding around the container */
-    box-sizing: border-box; /* Include padding in width/height calculations */
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box; 
 }
 
-/* Results container styling */
 .experiment-protein-container table {
     width: 100%;
     max-width: 1200px;
@@ -18,8 +17,7 @@
     text-align: center;
   }
   
-
-  .rexperiment-protein-container th {
+  .experiment-protein-container th {
     padding: 10px;
     text-align: center;
     background-color: #f5f5f5;
@@ -32,7 +30,6 @@
     border-bottom: 1px solid #ddd;
     vertical-align: middle;
   }
-
 
 .experiment-metadata-container {
     font-family: 'Raleway', sans-serif;

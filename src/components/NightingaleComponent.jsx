@@ -3,9 +3,10 @@ import "@nightingale-elements/nightingale-sequence";
 import "@nightingale-elements/nightingale-navigation";
 import "@nightingale-elements/nightingale-manager";
 import "@nightingale-elements/nightingale-colored-sequence";
-import "@nightingale-elements/nightingale-track";
+//import "@nightingale-elements/nightingale-track";
 
 import "@dspa-nightingale/nightingale-structure/nightingale-structure";
+import "@dspa-nightingale/nightingale-track/nightingale-track";
 //import "@dspa-nightingale/nightingale-sequence/nightingale-sequence";
 
 import "@nightingale-elements/nightingale-msa";
@@ -15,10 +16,10 @@ import { debounce } from 'lodash';
 const defaultAttributes = {
     "min-width": "1200",
     length: 0, // This will be set dynamically
-    height: 40, // Default height, can be updated dynamically
+    height: 15, // Default height, can be updated dynamically
     "display-start": "1",
     "display-end": 0, // This will be set dynamically
-    "margin-left": "40",
+    "margin-left": "0",
     "margin-color": "white",
     "highlight-event": "onmouseover",
     "highlight-color": "rgb(235, 190, 234)"
@@ -166,7 +167,7 @@ const NightingaleComponent = ({
                     availableTrackHeight / ( tracks_len|| 1), 
                     15
                 ), 40);
-                setTrackHeight(15);
+                setTrackHeight(dynamicTrackHeight);
             }
         };
     
@@ -263,6 +264,7 @@ const NightingaleComponent = ({
     useEffect(() => {
         if (proteinData?.featuresData?.features && trackHeight) {
             defaultAttributes.length = proteinData.featuresData.sequence.length;
+            defaultAttributes.height = trackHeight;
             defaultAttributes['display-end'] = proteinData.featuresData.sequence.length;
 
             setMappedFeatures(proteinData.featuresData.features.map(ft => ({
@@ -525,59 +527,59 @@ const NightingaleComponent = ({
                 </div>
                 <table>
                     <tbody>
-                        <tr style={{ height: `${trackHeight}px` }} >
+                        <tr >
                             <td ></td>
                             <td><nightingale-navigation ref={navigationRef}/></td>
                         </tr>
 
-                        <tr style={{ height: `${trackHeight}px` }}>
+                        <tr>
                             <td >Sequence</td>
                             <td><nightingale-sequence ref={sequenceRef} /></td>
                         </tr>
 
                         {hasDomainData && (
-                            <tr style={{ height: `${trackHeight}px` }}>
+                            <tr >
                                 <td>Domain</td>
                                 <td><nightingale-track ref={domainRef} /></td>
                             </tr>
                         )}
 
                         {hasBindingData && (
-                            <tr  style={{ height: `${trackHeight}px` }}>
-                                <td className="text-column">Binding site</td>
+                            <tr >
+                                <td>Binding site</td>
                                 <td><nightingale-track ref={bindingRef} /></td>
                             </tr>
                         )}
 
                         {hasChainData && (
-                            <tr style={{ height: `${trackHeight}px` }}>
-                                <td className="text-column">Chain</td>
+                            <tr >
+                                <td>Chain</td>
                                 <td><nightingale-track ref={chainRef} /></td>
                             </tr>
                         )}
                         {hasDisulfidData && (
-                            <tr style={{ height: `${trackHeight}px` }}>
-                                <td className="text-column">Disulfide bond</td>
+                            <tr>
+                                <td>Disulfide bond</td>
                                 <td><nightingale-track ref={disulfidRef} /></td>
                             </tr>
                         )}
                         {hasBetaStrandData && (
-                            <tr style={{ height: `${trackHeight}px` }}>
-                                <td className="text-column">Beta strand</td>
+                            <tr>
+                                <td>Beta strand</td>
                                 <td ><nightingale-track ref={betastrandRef} /></td>
                             </tr>
                         )}
 
                         {hasSiteData && (
-                            <tr style={{ height: `${trackHeight}px` }}>
-                                <td className="text-column">Site</td>
+                            <tr>
+                                <td>Site</td>
                                 <td><nightingale-track ref={siteRef} /></td>
                             </tr>
                         )}
 
                         {hasRegionData && (
-                            <tr style={{ height: `${trackHeight}px` }}>
-                                <td className="text-column">Region</td>
+                            <tr>
+                                <td>Region</td>
                                 <td><nightingale-track ref={regionRef} /></td>
                             </tr>
                         )}

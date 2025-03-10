@@ -1,47 +1,35 @@
-/* #nightingale-manager-container {
-    display: flex;
-    flex-direction: column;
-    height: auto; 
+ #nightingale-manager-container {
     margin-top: 1px;
     background-color: transparent;
-}  */
-
-
-#nightingale-manager-container .track-row td:nth-child(2) {
-    padding: 0px; /* Remove extra padding */
-    background-color: transparent;
-}
-
-#nightingale-manager-container td,
-#nightingale-manager-container th {
-    padding: 1px; /* Ensure minimal padding */
-    border: 1px solid #ddd;
+    padding: 0px;
+    box-sizing: border-box; 
 }  
-
-#nightingale-manager-container .track-row td {
-    background-color: transparent;
-}
-
-
-
-/* nightingale-navigation,
-nightingale-sequence,
-nightingale-track,
-nightingale-sequence-heatmap {
-    width: 100%;
-   /* height: auto;*/
-    /* margin: 0;
+#nightingale-manager-container  td {
     padding: 1px;
-    display: block;  */
-  /* max-height: 70px; */
+    white-space: nowrap;
+  }
+#nightingale-manager-container  td:first-child {
+    background-color: transparent;
+    font: 1em "Raleway", sans-serif;
+    white-space: nowrap;
+  }
+#nightingale-manager-container  td:nth-child(2) {
+    background-color: transparent;
+    white-space: nowrap;
+  }
+  #nightingale-manager-container  tr:nth-child(-n + 3) > td {
+    background-color: transparent;
+    white-space: nowrap;
+  }
 
 
-@media (max-width: 768px) {
+
+/* @media (max-width: 768px) {
     nightingale-navigation, nightingale-sequence, nightingale-track, nightingale-sequence-heatmap {
-        min-width: 100%; /* Ensure full width on smaller screens */
-        max-height: 50px; /* Reduce height to fit small screens */
+        min-width: 100%; 
+        max-height: 50px; 
     }
-}
+} */
 
 /* @media (min-width: 769px) {
     nightingale-navigation, nightingale-sequence, nightingale-track, nightingale-sequence-heatmap {

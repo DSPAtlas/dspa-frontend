@@ -4,8 +4,8 @@
     font-size: 16px; /* Adjust size as needed */
     text-align: center;
     background-color: #f9f9f9; /* Light grey background */
-    color: #333; /* Dark grey text */
-    padding: 10px;
+    color: hsl(0, 0%, 20%); /* Dark grey text */
+    padding: 5px;
     border: 1px solid #ccc;
     cursor: pointer;
 }
@@ -21,8 +21,6 @@
     background-color: #e0e0e0;
 }
 
-
-
 .highlighted {
     stroke: black;
     stroke-width: 1.5px;
@@ -31,23 +29,14 @@
 text.pep-key-label, text.protein-name-label {
     fill: black;
     stroke: none;
-    pointer-events: none; /* Prevents tooltip from interfering with mouse events */
-}
-
-
-.container {
-    display: flex;
-    flex-direction: column; 
-    padding-top: 60px;
-    width: 100%;
+    pointer-events: none; 
 }
 
 .treatment-section-wrapper {
-    display: flex;
-    flex-direction: column; /* Stack containers vertically */
-    gap: 20px; /* Space between sections */
-    width: 100%; /* Full width of the parent container */
-    box-sizing: border-box; /* Include padding and border in size */
+    flex-direction: column; 
+    gap: 20px;
+    width: 100%; 
+    box-sizing: border-box; 
 }
 
 /* Shared styles for all sections */
@@ -58,14 +47,12 @@ text.pep-key-label, text.protein-name-label {
     background-color: #fff; /* Background for consistency */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
     box-sizing: border-box; /* Include padding and borders in width */
-    padding: 20px; /* Internal spacing */
+    padding: 10px; /* Internal spacing */
 }
 
-
-
 .treatment-row {
-    margin: 20px ; /* Adds 20px top and bottom, 10px left and right */
-    padding: 10px; /* Optional: Adds padding inside the row */
+    margin: 2px ; /* Adds 20px top and bottom, 10px left and right */
+    padding: 0px; /* Optional: Adds padding inside the row */
     box-sizing: border-box; /* Ensures padding and borders are included in size calculations */
     display: flex;
     flex-wrap: wrap;
@@ -84,10 +71,11 @@ text.pep-key-label, text.protein-name-label {
     gap: 20px;
     z-index: 10; 
     width: 100%;
+    box-sizing: border-box; 
 }
 
 .treatment-table-container {
-    flex: 0 0 20%; /* Flex-shrink: 0, Flex-grow: 0, Basis: 20% */
+    flex: 0 0 35%; /* Flex-shrink: 0, Flex-grow: 0, Basis: 20% */
     max-height: calc(100vh - 120px); /* Dynamic height based on viewport */
     overflow-y: auto; /* Allow vertical scrolling */
     border: 1px solid #ddd; /* Optional: Border for clarity */
@@ -95,15 +83,14 @@ text.pep-key-label, text.protein-name-label {
     padding: 10px;
 }
 
-/* Set 80% width for the protein container */
+
 .treatment-protein-container {
-    flex: 0 0 80%; /* Flex-shrink: 0, Flex-grow: 0, Basis: 80% */
-    max-height: calc(100vh - 120px); /* Dynamic height based on viewport */
-    overflow: hidden; /* Disable scrolling */
-    border: 1px solid #ddd; /* Optional: Border for clarity */
-    box-sizing: border-box;
+    border: 1px solid #ddd; 
+    flex: 0 0 65%;
     padding: 10px;
+    box-sizing: border-box; 
 }
+
 
 .treatment-table-container table {
     width: 100%;
@@ -121,16 +108,14 @@ text.pep-key-label, text.protein-name-label {
 
 .treatment-protein-experiment-wrapper {
     display: flex;
-    justify-content: space-between;
-    align-items: stretch;
-    gap: 20px; 
+   /* justify-content: space-between;*/
+   /* align-items: stretch;*/
+    gap: 0px; 
     width: 100%; /* Full width */
     box-sizing: border-box;
 }
 
 .treatment-table-container h2, .treatment-protein-container h2 {
-    min-height: 50px; /* Set consistent height */
-    line-height: 50px; /* Vertically center text */
     margin: 0; /* Reset default margins */
     text-align: center; /* Center-align headings */
 }
@@ -151,9 +136,9 @@ text.pep-key-label, text.protein-name-label {
 
 .treatment-protein-experiment-wrapper {
     display: flex;
-    justify-content: space-between; 
-    gap: 20px; 
-    align-items: stretch;
+   justify-content: space-between; 
+    gap: 2px; 
+    /*align-items: stretch;*/
     flex-grow: 1;
 }
 
@@ -329,7 +314,8 @@ select:focus {
 }
 
 table {
-    width: 100%; /* Ensures the table stretches to fit the width of its container */
+    width: 100%; 
+    box-sizing: border-box; 
 }
 
 /* Optional: Style adjustments to ensure visual consistency */
