@@ -15,10 +15,10 @@ import { debounce } from 'lodash';
 
 const defaultAttributes = {
     "min-width": "1200",
-    length: 0, // This will be set dynamically
-    height: 15, // Default height, can be updated dynamically
+    length: 0, 
+    height: 15, 
     "display-start": "1",
-    "display-end": 0, // This will be set dynamically
+    "display-end": 0, 
     "margin-left": "0",
     "margin-color": "white",
     "highlight-event": "onmouseover",
@@ -36,7 +36,6 @@ const NightingaleComponent = ({
     containerRef
 }) => {
     
-    const structureRef = useRef(null); 
     const sequenceRef = useRef(null);
     const navigationRef = useRef(null);
     const domainRef = useRef(null);
@@ -109,8 +108,8 @@ const NightingaleComponent = ({
         hasBindingData && "binding",
         hasSiteData && "site",
         hasChainData && "chain",
-        hasDisulfidData && "disulfide-bond",
-        hasBetaStrandData && "beta-strand",
+        hasDisulfidData && "disulfid",
+        hasBetaStrandData && "strand",
         hasRegionData && "region",
         showHeatmap && "heatmap"
     ].filter(Boolean);
@@ -132,8 +131,6 @@ const NightingaleComponent = ({
             } else if (screenHeight > 800) {
                 newFontSize = '20px'; 
             }
-            console.log("newfontsiue", newFontSize);
-    
             setFontSize(newFontSize);
         };
     
@@ -151,7 +148,6 @@ const NightingaleComponent = ({
             const managerContainer = document.getElementById("nightingale-manager-container");
             if (managerContainer) {
                 const totalHeight = managerContainer.getBoundingClientRect().height;
-                console.log("totalheight", totalHeight);
                 const structureHeight = totalHeight * 0.4;
                 structureRefs.current.forEach((structureRef) => {
                     if (structureRef.current) {
@@ -286,13 +282,12 @@ const NightingaleComponent = ({
         };
 
         const updateTracks = () => {
-            const trackIds = ["domain", "region", "site", "binding", "chain", "disulfide-bond", "beta-strand"];
+            const trackIds = ["domain", "region", "site", "binding", "chain", "disulfid", "strand"];
             trackIds.forEach(id => {
                 const trackElement = document.querySelector(`#${id}`);
                 if (trackElement) {
                     let trackFeatures = mappedFeatures.filter(({ type }) => type.toUpperCase() === id.toUpperCase());
         
-                    // Update tooltipContent for features of type 'BINDING'
                     if (id.toUpperCase() === "BINDING") {
                         trackFeatures = trackFeatures.map(feature => {
                             if (feature.type.toUpperCase() === "BINDING" && feature.ligand && feature.ligand.name) {
@@ -312,8 +307,8 @@ const NightingaleComponent = ({
         updateElementAttributes(domainRef, "domain");
         updateElementAttributes(bindingRef, "binding");
         updateElementAttributes(chainRef, "chain");
-        updateElementAttributes(disulfidRef, "disulfide-bond");
-        updateElementAttributes(betastrandRef, "beta-strand");
+        updateElementAttributes(disulfidRef, "disulfid");
+        updateElementAttributes(betastrandRef, "strand");
         updateElementAttributes(siteRef, "site");
         updateElementAttributes(regionRef, "region");
 
