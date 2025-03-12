@@ -1,4 +1,22 @@
- #nightingale-manager-container {
+#nightingale-manager-container #tooltip {
+    position: absolute;
+    visibility: hidden; 
+    background-color: rgba(252, 250, 250, 0.93);
+    color: #666666;
+    border-radius: 4px;
+    padding: 10px;
+    pointer-events: none; 
+    font-size: 18px;
+    font-family: 'Raleway', 'Arial', sans-serif;
+    z-index: 1000;
+    border: 2px solid #666666; 
+}
+
+#nightingale-manager-container .tooltip-visible {
+    visibility: visible; 
+}
+
+#nightingale-manager-container {
     margin-top: 1px;
     background-color: transparent;
     padding: 0px;

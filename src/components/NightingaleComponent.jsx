@@ -3,15 +3,13 @@ import "@nightingale-elements/nightingale-sequence";
 import "@nightingale-elements/nightingale-navigation";
 import "@nightingale-elements/nightingale-manager";
 import "@nightingale-elements/nightingale-colored-sequence";
-//import "@nightingale-elements/nightingale-track";
 
 import "@dspa-nightingale/nightingale-structure/nightingale-structure";
 import "@dspa-nightingale/nightingale-track/nightingale-track";
-//import "@dspa-nightingale/nightingale-sequence/nightingale-sequence";
 
 import "@nightingale-elements/nightingale-msa";
 import "@nightingale-elements/nightingale-sequence-heatmap";
-import { debounce } from 'lodash'; 
+
 
 const defaultAttributes = {
     "min-width": "1200",
@@ -271,6 +269,23 @@ const NightingaleComponent = ({
     }, [proteinData, trackHeight]);
 
     useEffect(() => {
+        const tooltip = document.getElementById("tooltip");
+        if (!tooltip) {
+              console.error("Tooltip element not found!");
+              return;
+          }
+        
+        const updateTooltip = (content, x, y) => {
+            tooltip.innerHTML = content;
+            tooltip.style.top = `${y + 10}px`;
+            tooltip.style.left = `${x + 10}px`;
+            tooltip.style.visibility = "visible";
+        };
+
+        const hideTooltip = () => {
+            tooltip.style.visibility = "hidden";
+        };
+
         const updateElementAttributes = (ref, id) => {
             if (ref.current) {
                 ref.current.setAttribute("id", id);
@@ -287,7 +302,7 @@ const NightingaleComponent = ({
                 const trackElement = document.querySelector(`#${id}`);
                 if (trackElement) {
                     let trackFeatures = mappedFeatures.filter(({ type }) => type.toUpperCase() === id.toUpperCase());
-        
+                
                     if (id.toUpperCase() === "BINDING") {
                         trackFeatures = trackFeatures.map(feature => {
                             if (feature.type.toUpperCase() === "BINDING" && feature.ligand && feature.ligand.name) {
@@ -295,14 +310,34 @@ const NightingaleComponent = ({
                             }
                             return feature;
                         });
+                    } else{
+                        trackFeatures = trackFeatures.map(feature => {
+                            if (feature.description) {
+                                return { ...feature, tooltipContent: feature.description };
+                            }
+                            return feature;
+                        });
+
                     }
-        
                     trackElement.data = trackFeatures;
+                    trackElement.addEventListener("mousemove", (event) => {
+                        // Calculate approximate position
+                        const trackLength = trackElement.getAttribute("length");
+                        const relativeX = event.offsetX / trackElement.clientWidth;
+                        const position = Math.floor(relativeX * trackLength);
+    
+                        // Find the closest feature to this position
+                        const feature = trackFeatures.find(f => f.start <= position && f.end >= position);
+                        if (feature) {
+                            updateTooltip(feature.tooltipContent, event.pageX, event.pageY);
+                      }
+                    });
+                    trackElement.addEventListener("mouseleave", hideTooltip);
+
                 }
             });
         };
         
-
         updateElementAttributes(navigationRef, "navigation");
         updateElementAttributes(domainRef, "domain");
         updateElementAttributes(bindingRef, "binding");
@@ -513,6 +548,7 @@ const NightingaleComponent = ({
     
             {/* Nightingale Manager with Table of Tracks */}
             <nightingale-manager>
+                <div id="tooltip" className="tooltip"></div>
                 <div>
                     {structures.map((structure, idx) => 
                         structure.isVisible ? (
