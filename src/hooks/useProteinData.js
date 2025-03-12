@@ -1,70 +1,92 @@
-import { useState, useCallback } from 'react';
+import { useState, useRef,useCallback, useEffect } from 'react';
 import config from '../config.json'; // Ensure you have config properly imported
 
-async function getPdbIds(uniprotAccession) {
+export async function getPdbIds(uniprotAccession) {
     const url = `https://rest.uniprot.org/uniprotkb/${uniprotAccession}.json`;
 
-    const alphafoldstructure = [
-        { id: `AF-${uniprotAccession}-F1`, properties: [
-            { key: 'Method', value: 'AlphaFold' }, 
-            { key: 'Resolution', value: ' ' }, 
-            { key: 'Chains', value: ' ' }] },
-       ];
+    const alphafoldStructure = [
+        { 
+            id: `AF-${uniprotAccession}-F1`, 
+            properties: [
+                { key: 'Method', value: 'AlphaFold' }, 
+                { key: 'Resolution', value: 'N/A' }, 
+                { key: 'Chains', value: 'N/A' }
+            ] 
+        },
+    ];
     
     try {
         const response = await fetch(url);
-        
         if (!response.ok) {
             throw new Error(`Failed to retrieve data for accession ${uniprotAccession}`);
         }
         
         const data = await response.json();
         const pdbIds = data.uniProtKBCrossReferences
-            .filter(ref => ref.database === 'PDB')
-            .map(ref=> ({
+            ?.filter(ref => ref.database === 'PDB')
+            .map(ref => ({
                 id: ref.id,
-                properties: ref.properties
-            }));
-        
-        return [...alphafoldstructure, ...pdbIds];
+                properties: ref.properties || [],
+            })) || [];
+
+        return [...alphafoldStructure, ...pdbIds];
     } catch (error) {
-        console.error(error);
-        return alphafoldstructure;
+        console.error(`Error fetching PDB IDs for ${uniprotAccession}:`, error);
+        return alphafoldStructure;
     }
 }
 
-// Custom hook for fetching protein data
+
+
 export const useProteinData = () => {
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [proteinData, setProteinData] = useState(null);
     const [pdbIds, setPdbIds] = useState([]);
+    const [selectedPdbId, setSelectedPdbId] = useState("");
+    const isMounted = useRef(true);
 
-    const fetchProteinData = useCallback(async (proteinName) => {
-        setLoading(true);
+    const fetchProteinData = useCallback(async (proteinName, signal) => {
+        if (!proteinName) return;
         setError('');
 
-        const queryParams = `proteinName=${encodeURIComponent(proteinName)}`;
-        const url = `${config.apiEndpoint}proteins?${queryParams}`;
-
         try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            const data = await response.json(); 
-            setProteinData(data.proteinData);
+            const queryParams = `proteinName=${encodeURIComponent(proteinName)}`;
+            const url = `${config.apiEndpoint}proteins?${queryParams}`;
+            const proteinResponse = await fetch(url, signal);
 
-            const pdbIds = await getPdbIds(proteinName);  
-            setPdbIds(pdbIds);
+            if (!proteinResponse.ok) {
+                throw new Error(`Failed to fetch protein data: ${proteinResponse.statusText}`);
+            }
+            const data = await proteinResponse.json();
+            const pdbResponse = await getPdbIds(proteinName); // Assuming getPdbIds is async
+
+            if (isMounted.current) {
+                console.log("itsworking")
+                setProteinData(data.proteinData || {});
+                setPdbIds(pdbResponse);
+                setSelectedPdbId(pdbIds[0].id);
+            }
         } catch (error) {
-            console.error("Error fetching data: ", error);
-            setError('Failed to load protein data');
-            setProteinData({});
+            if (isMounted.current) {
+                setError(`Error fetching protein data: ${error.message}`);
+                setProteinData({});
+                
+            }
         } finally {
-            setLoading(false);
+            if (isMounted.current) {
+                console.log("proteindata loaded");
+            }
         }
     }, []);
 
-    return { loading, error, proteinData, pdbIds, fetchProteinData };
+    useEffect(() => {
+        return () => {
+            isMounted.current = false;
+           // abortController.abort();
+        };
+    }, []);
+
+    return { error, proteinData, pdbIds, fetchProteinData, selectedPdbId, setSelectedPdbId };
 };
+
+

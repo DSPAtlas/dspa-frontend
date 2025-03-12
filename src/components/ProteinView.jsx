@@ -58,7 +58,6 @@ function sumScores(differentialAbundanceData) {
 
 
 function ProteinVisualizationComponents({ proteinData, pdbIds, loading, error }) {
-    const proteinfunction = proteinData.proteinDescription;
     const scoresSum = sumScores(proteinData.differentialAbundanceData);
     const [selectedPdbId, setSelectedPdbId] = useState("");
     const [selectedExperiment, setSelectedExperiment] = useState("");
@@ -71,7 +70,6 @@ function ProteinVisualizationComponents({ proteinData, pdbIds, loading, error })
     }, [pdbIds]);
 
     useEffect(() => {
-        console.log("experimentmetadata", proteinData.experimentMetaData);
         if (scoresSum) {
             const chartElement = document.getElementById("sumlipscorebarplot");
             if (chartElement) {
@@ -136,7 +134,6 @@ const ProteinVisualization = () => {
             }
             const data = await response.json(); 
             setProteinData(data.proteinData);
-            console.log("proteindata", data.proteinData);
 
             const pdbIds = await getPdbIds(proteinName);
             setPdbIds(pdbIds);

@@ -1,29 +1,17 @@
-/* .home-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding-top: 60px;
-    min-height: 100vh; 
-    text-align: center;
-  } */
-
 
   .home-container {
     background-image: url('./../protein_dynamics.gif');
-    background-size: contain; /* Keeps the entire GIF visible */
-    background-position: top center; /* Aligns the GIF at the top of the container */
-    background-repeat: no-repeat; /* Prevents repeating the GIF */
-    background-color: white; /* Fills the rest of the container with a white background */
+    background-size: contain; 
+    background-position: top center; 
+    background-repeat: no-repeat; 
+    background-color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between; /* Adjusts children to space out to top and bottom */
+    justify-content: space-between; 
     padding-top: 60px;
-    min-height: 100vh; /* Ensures the container covers at least the full height of the viewport */
+    min-height: 100vh; 
 }
-
-
 
   .logo-container {
     padding-top: 80px;

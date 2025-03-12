@@ -7,14 +7,14 @@ body, html {
 .navigation-bar {
   overflow: hidden;
   width: 100%;
-  background-color: #d5cdba; /* Light grey background */
-  color: #0A2F59; /* Dark text for contrast */
-  position: fixed; /* or sticky, if you want it to remain in place while scrolling */
+  background-color: #d5cdba; 
+  color: #0A2F59; 
+  position: fixed;  
   top: 0;
   left: 0;
   width: 100%;
-  height: 60px; /* Adjust the height of your navbar */
-  z-index: 1000; /* Ensure it's above other content */
+  height: 60px;
+  z-index: 1000; 
 }
 
 .navigation-white,.navigation-hover-white:hover{color:#0A2F59!important;background-color:#fff!important}
@@ -28,15 +28,15 @@ body, html {
   /* Individual items within the bar (links/buttons) */
 .navigation-bar .navigation-bar-item {
   padding: 8px 16px;
-  float: left; /* Align items horizontally */
-  width: auto; /* Adjust width based on content */
+  float: left; 
+  width: auto; 
   border: none;
   display: block;
   outline: 0;
-  text-align: center; /* Center the text inside the items */
-  background-color: inherit; /* Inherits background from parent */
-  color: inherit; /* Inherits text color from parent */
-  text-decoration: none; /* No underlines on the links */
+  text-align: center; 
+  background-color: inherit; 
+  color: inherit; 
+  text-decoration: none; 
 }
 
 .navigation-right-align{
@@ -47,7 +47,7 @@ body, html {
 .navigation-right{float:right!important}
 /* Hover effect for the items */
 .navigation-bar .navigation-bar-item:hover {
-  background-color: #d5cdba; /* Light grey background */
+  background-color: #d5cdba; 
   color: #0A2F59; 
 }
 
@@ -65,16 +65,16 @@ body, html {
   white-space:normal;
 }
 
-/* Active link styling */
+
 .navigation-bar .navigation-bar-item.navigation-button {
-  white-space: normal; /* Prevents text wrapping */
+  white-space: normal; 
 }
 
 /* Responsive behavior */
 @media (max-width: 600px) {
   .navigation-bar .navigation-bar-item {
       text-align: center;
-      float: none; /* Stack items vertically on smaller screens */
+      float: none; 
   }
 }
 

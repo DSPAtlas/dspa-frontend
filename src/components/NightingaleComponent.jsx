@@ -3,15 +3,25 @@ import "@nightingale-elements/nightingale-sequence";
 import "@nightingale-elements/nightingale-navigation";
 import "@nightingale-elements/nightingale-manager";
 import "@nightingale-elements/nightingale-colored-sequence";
-import "@nightingale-elements/nightingale-track";
 
 import "@dspa-nightingale/nightingale-structure/nightingale-structure";
+import "@dspa-nightingale/nightingale-track/nightingale-track";
 
 import "@nightingale-elements/nightingale-msa";
 import "@nightingale-elements/nightingale-sequence-heatmap";
-import { e } from 'mathjs';
 
 
+const defaultAttributes = {
+    "min-width": "1200",
+    length: 0, 
+    height: 15, 
+    "display-start": "1",
+    "display-end": 0, 
+    "margin-left": "0",
+    "margin-color": "white",
+    "highlight-event": "onmouseover",
+    "highlight-color": "rgb(235, 190, 234)"
+};
 
 const NightingaleComponent = ({
     proteinData, 
@@ -20,15 +30,23 @@ const NightingaleComponent = ({
     setSelectedPdbId, 
     selectedExperiment, 
     showHeatmap = true,
-    passedExperimentIDs
+    passedExperimentIDs,
+    containerRef
 }) => {
     
-    const structureRef = useRef(null); 
-    const containerRef = useRef(null); 
-    const [availableHeight, setAvailableHeight] = useState(0);
-    const seqContainer = useRef(null);
+    const sequenceRef = useRef(null);
+    const navigationRef = useRef(null);
+    const domainRef = useRef(null);
+    const bindingRef = useRef(null);
+    const chainRef = useRef(null);
+    const disulfidRef = useRef(null);
+    const betastrandRef = useRef(null);
+    const siteRef = useRef(null);
+    const regionRef = useRef(null);
+
+    const [mappedFeatures, setMappedFeatures] = useState([]);
+
     const residuelevelContainer = useRef(null);
-    const featuresContainer = useRef(null);
     const multipleExperimentsContainer = useRef(null);
     const scoreBarcodeContainer = useRef(null);
     const sequenceLength = proteinData.proteinSequence.length;
@@ -43,15 +61,12 @@ const NightingaleComponent = ({
     const [selectedExperimentDropdown, setSelectedExperimentDropdown] = useState(experimentIDsList[0]);
 
     const structureRefs = useRef(experimentIDsList.map(() => React.createRef()));
-    const [trackHeight, setTrackHeight] = useState(15);
+    const [trackHeight, setTrackHeight] = useState(null);
+    const [fontSize, setFontSize] = useState('16px');
 
     const proteinName = proteinData.proteinName;
-    const margincolorFeatures = "#FF6699";
-    const highlightColor = "rgb(235, 190, 234)";
-    const minWidth = "1200";
-   
+
     const [structures, setStructures] = useState(() => {
-        // Ensure proteinData and experimentIDsList are valid
         if (!proteinData || !proteinData.proteinSequence || !experimentIDsList) {
             console.error("Invalid proteinData or experimentIDsList");
             return [];
@@ -73,21 +88,11 @@ const NightingaleComponent = ({
             return {
                 id: index + 1,
                 lipScoreString: lipScoreString,
-                isVisible: index === 0, // First experiment is visible
+                isVisible: index === 0,
             };
         });
     });
     
-    
-
-    const nightingaleTdStyleTrack = {
-        padding: "0",
-        margin: "0",
-        backgroundColor: "#f9f9f9",
-        borderBottom: "1px solid #ddd",
-        height: "30px",
-    };
-
     const hasDomainData = proteinData.featuresData?.features?.some(({ type }) => type === "DOMAIN");
     const hasRegionData = proteinData.featuresData.features.some(({ type }) => type === "REGION");
     const hasSiteData = proteinData.featuresData.features.some(({ type }) => type === "SITE");
@@ -101,43 +106,89 @@ const NightingaleComponent = ({
         hasBindingData && "binding",
         hasSiteData && "site",
         hasChainData && "chain",
-        hasDisulfidData && "disulfide-bond",
-        hasBetaStrandData && "beta-strand",
+        hasDisulfidData && "disulfid",
+        hasBetaStrandData && "strand",
         hasRegionData && "region",
         showHeatmap && "heatmap"
     ].filter(Boolean);
 
     useEffect(() => {
+        const handleResize = () => {
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            
+            let newFontSize = '16px'; 
+            if (screenWidth < 768) {
+                newFontSize = '12px'; 
+            } else if (screenWidth >= 768) {
+                newFontSize = '18px'; 
+            }
+    
+            if (screenHeight < 400) {
+                newFontSize = '10px'; 
+            } else if (screenHeight > 800) {
+                newFontSize = '20px'; 
+            }
+            setFontSize(newFontSize);
+        };
+    
+        window.addEventListener('resize', handleResize);
+        handleResize(); 
+    
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+    
+
+    useEffect(() => {
         const updateHeight = () => {
-            if (containerRef.current) {
-                const totalHeight = containerRef.current.getBoundingClientRect().height;
-                const structureHeight = structureRef.current
-                    ? structureRef.current.getBoundingClientRect().height
-                    : 0;
-                const navigationHeight = document.getElementById("navigation")
-                    ? document.getElementById("navigation").offsetHeight
-                    : 0;
-                const availableTrackHeight = totalHeight - structureHeight - navigationHeight - 80;
-                const dynamicTrackHeight = Math.max(
-                    availableTrackHeight / (visibleTracks.length || 1),
+            const managerContainer = document.getElementById("nightingale-manager-container");
+            if (managerContainer) {
+                const totalHeight = managerContainer.getBoundingClientRect().height;
+                const structureHeight = totalHeight * 0.4;
+                structureRefs.current.forEach((structureRef) => {
+                    if (structureRef.current) {
+                        structureRef.current.setAttribute('style', `--custom-structure-height: ${structureHeight}px;`);
+                        structureRef.current.style.setProperty('--custom-structure-height', `${structureHeight}px`);
+                    }
+                });
+
+                const tracks_len = visibleTracks.length + 2;
+    
+                const availableTrackHeight = structureHeight;
+                const dynamicTrackHeight = Math.min(Math.max(
+                    availableTrackHeight / ( tracks_len|| 1), 
                     15
-                ); // Minimum height
-                setAvailableHeight(availableTrackHeight);
+                ), 40);
                 setTrackHeight(dynamicTrackHeight);
             }
         };
     
+        const handleTouchStart = () => {
+            updateHeight();
+        };
+    
         window.addEventListener("resize", updateHeight);
+        window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    
         updateHeight();
     
-        return () => window.removeEventListener("resize", updateHeight);
-    }, [visibleTracks.length]);
-    
-    
+        return () => {
+            window.removeEventListener("resize", updateHeight);
+            window.removeEventListener("touchstart", handleTouchStart);
+        };
+    }, [visibleTracks.length]); 
+     
     const checkDimensions = (element) => {
-        return element && element.offsetWidth > 0 && element.offsetHeight > 0;
+        if (element) {
+            if ('offsetWidth' in element && 'offsetHeight' in element) {
+                return element.offsetWidth > 0 && element.offsetHeight > 0;
+            }
+        }
+        return false;
     };
-
+    
     const handleButtonClick = (experimentID, index) => {
         setSelectedButton((prevIndex) => (prevIndex === index ? null : index)); 
         if (selectedButton === index) {
@@ -156,8 +207,6 @@ const NightingaleComponent = ({
             }))
         );
     };
-    
-    
 
     const handleDropdownChange = (event) => {
         const selectedExperiment = event.target.value;
@@ -169,16 +218,6 @@ const NightingaleComponent = ({
             handleButtonClick(selectedExperiment, experimentIndex);
         }
     };
-    
-
-    const handleRowClick = (id) => {
-        setSelectedPdbId(id);
-    };
-
-    const getPropertyValue = (properties, key) => {
-        const property = properties.find(prop => prop.key === key);
-        return property ? property.value : '';
-    };
 
     const getLipScoreDataByExperimentID = (experimentID) => {
         if (!proteinData || !proteinData.lipscoreList) return null;
@@ -187,8 +226,8 @@ const NightingaleComponent = ({
     };
 
     const handleExperimentClick = (experimentID, index) => {
-        if (experimentID === 0) { // Ensure proper comparison with ===
-            const sequenceLength = 100000//proteinData.proteinSequence.length;
+        if (experimentID === 0) {
+            const sequenceLength = proteinData.proteinSequence.length;
             const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1));
     
             setStructures(prevStructures =>
@@ -200,7 +239,6 @@ const NightingaleComponent = ({
             ); 
         } else {
             const lipScoreArray = getLipScoreDataByExperimentID(experimentID);
-    
             if (lipScoreArray) {
                 const lipScoreString = JSON.stringify(lipScoreArray);
     
@@ -216,79 +254,163 @@ const NightingaleComponent = ({
             }
         }
     };
-    
 
     useEffect(() => {
-        const sequenceLength = proteinData.proteinSequence.length;
-        const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1)); 
+        if (proteinData?.featuresData?.features && trackHeight) {
+            defaultAttributes.length = proteinData.featuresData.sequence.length;
+            defaultAttributes.height = trackHeight;
+            defaultAttributes['display-end'] = proteinData.featuresData.sequence.length;
 
-        if (selectedExperiment) {
-            const lipScoreArray = getLipScoreDataByExperimentID(selectedExperiment);
-
-            const lipScoreString = lipScoreArray ? JSON.stringify(lipScoreArray) : defaultLipScoreString;
-
-            setStructures(prevStructures =>
-                prevStructures.map((structure, idx) => ({
-                    ...structure,
-                    lipScoreString: idx === 0 ? lipScoreString : defaultLipScoreString,
-                    isVisible: idx === 0  
-                }))
-            );
-        } else {
-            setStructures(prevStructures =>
-                prevStructures.map((structure, idx) => ({
-                    ...structure,
-                    lipScoreString: defaultLipScoreString,
-                    isVisible: idx === 0  
-                }))
-            );
+            setMappedFeatures(proteinData.featuresData.features.map(ft => ({
+                ...ft,
+                start: ft.start || ft.begin
+            })));
         }
-    }, [selectedExperiment, proteinData.proteinSequence.length]);
-    
-    useEffect(() => {
-        structures.forEach((structure, idx) => {
-            const structureRef = structureRefs.current[idx]?.current;
-            if (structureRef) {
-                console.log(`Structure ${idx} ID:`, structureRef.structureId);
-            }
-        });
-    }, [selectedPdbId, structures]);
+    }, [proteinData, trackHeight]);
 
     useEffect(() => {
-        const adjustDimensions = () => {
-            const container = document.querySelector('#nightingale-manager-container');
-            if (container) {
-                const width = container.offsetWidth;
-                const height = container.offsetHeight;
-                console.log(`Container dimensions: ${width}x${height}`);
+        const tooltip = document.getElementById("tooltip");
+        if (!tooltip) {
+              console.error("Tooltip element not found!");
+              return;
+          }
+        
+        const updateTooltip = (content, x, y) => {
+            tooltip.innerHTML = content;
+            tooltip.style.top = `${y + 10}px`;
+            tooltip.style.left = `${x + 10}px`;
+            tooltip.style.visibility = "visible";
+        };
+
+        const hideTooltip = () => {
+            tooltip.style.visibility = "hidden";
+        };
+
+        const updateElementAttributes = (ref, id) => {
+            if (ref.current) {
+                ref.current.setAttribute("id", id);
+                Object.keys(defaultAttributes).forEach(key => {
+                    ref.current.setAttribute(key, defaultAttributes[key]);
+                });
+                ref.current.addEventListener('customEvent', handleCustomEvent);
             }
         };
-        window.addEventListener('resize', adjustDimensions);
-        adjustDimensions();
+
+        const updateTracks = () => {
+            const trackIds = ["domain", "region", "site", "binding", "chain", "disulfid", "strand"];
+            trackIds.forEach(id => {
+                const trackElement = document.querySelector(`#${id}`);
+                if (trackElement) {
+                    let trackFeatures = mappedFeatures.filter(({ type }) => type.toUpperCase() === id.toUpperCase());
+                
+                    if (id.toUpperCase() === "BINDING") {
+                        trackFeatures = trackFeatures.map(feature => {
+                            if (feature.type.toUpperCase() === "BINDING" && feature.ligand && feature.ligand.name) {
+                                return { ...feature, tooltipContent: feature.ligand.name };
+                            }
+                            return feature;
+                        });
+                    } else{
+                        trackFeatures = trackFeatures.map(feature => {
+                            if (feature.description) {
+                                return { ...feature, tooltipContent: feature.description };
+                            }
+                            return feature;
+                        });
+
+                    }
+                    trackElement.data = trackFeatures;
+                    trackElement.addEventListener("mousemove", (event) => {
+                        // Calculate approximate position
+                        const trackLength = trackElement.getAttribute("length");
+                        const relativeX = event.offsetX / trackElement.clientWidth;
+                        const position = Math.floor(relativeX * trackLength);
     
-        return () => window.removeEventListener('resize', adjustDimensions);
-    }, []);
+                        // Find the closest feature to this position
+                        const feature = trackFeatures.find(f => f.start <= position && f.end >= position);
+                        if (feature) {
+                            updateTooltip(feature.tooltipContent, event.pageX, event.pageY);
+                      }
+                    });
+                    trackElement.addEventListener("mouseleave", hideTooltip);
+
+                }
+            });
+        };
+        
+        updateElementAttributes(navigationRef, "navigation");
+        updateElementAttributes(domainRef, "domain");
+        updateElementAttributes(bindingRef, "binding");
+        updateElementAttributes(chainRef, "chain");
+        updateElementAttributes(disulfidRef, "disulfid");
+        updateElementAttributes(betastrandRef, "strand");
+        updateElementAttributes(siteRef, "site");
+        updateElementAttributes(regionRef, "region");
+
+        const attributes = {
+            ...defaultAttributes,
+            sequence: proteinData.featuresData.sequence,
+            id: "sequence",
+        };
     
+        Object.keys(attributes).forEach(key => {
+            sequenceRef.current.setAttribute(key, attributes[key]);
+        });
+    
+        updateTracks();
+    }, [mappedFeatures]);
+
+
+    const handleCustomEvent = (e) => {
+        console.log('Event received:', e.detail);
+      };
+
+    useEffect(() => {
+        let isMounted = true;
+    
+        const fetchLipScoreData = async () => {
+            const sequenceLength = proteinData.proteinSequence.length;
+            const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1));
+            let lipScoreString = defaultLipScoreString;
+    
+            if (selectedExperiment) {
+                try {
+                    const lipScoreArray = await getLipScoreDataByExperimentID(selectedExperiment);
+                    if (lipScoreArray) {
+                        lipScoreString = JSON.stringify(lipScoreArray);
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch lip score data:", error);
+                }
+            }
+    
+            if (isMounted) {
+                setStructures(prevStructures =>
+                    prevStructures.map((structure, idx) => ({
+                        ...structure,
+                        lipScoreString: idx === 0 ? lipScoreString : defaultLipScoreString,
+                        isVisible: idx === 0
+                    }))
+                );
+            }
+        };
+        fetchLipScoreData();
+        return () => {
+            isMounted = false;  
+        };
+    }, [selectedExperiment, proteinData.proteinSequence.length]);
 
     useEffect(() => {
         structures.forEach((structure, idx) => {
             const structureRef = structureRefs.current[idx].current;
             if (structureRef && structure.isVisible) {
-                structureRef.proteinAccession = proteinName;
-                structureRef.structureId = selectedPdbId;
-                structureRef.lipscoreArray = structure.lipScoreString;
-                structureRef.marginColor = "transparent";
-                structureRef.backgroundColor = "transparent";
-                structureRef.highlightColor = "red";
+                structureRef.setAttribute('protein-accession', proteinName);
+                structureRef.setAttribute('structure-id', selectedPdbId);
+                structureRef.setAttribute('highlight-color', '#FF6699');
+                structureRef.setAttribute('lipscore-array',  structure.lipScoreString);
             }
         });
     }, [structures, proteinName, selectedPdbId]);
-
-    useEffect(()=> {
-        if(seqContainer && customElements.whenDefined("nightingale-sequence")) {
-          seqContainer.current.data = proteinData.featuresData.sequence;
-        }
-      }, [proteinData.featuresData.sequence]);
 
     useEffect(() => {
         customElements.whenDefined("nightingale-colored-sequence").then(() => {
@@ -309,125 +431,6 @@ const NightingaleComponent = ({
             }
         });
     }, [proteinData.barcodeSequence]);
-
-    useEffect(() => {
-        customElements.whenDefined("nightingale-track").then(() => {
-            if (featuresContainer.current && proteinData.featuresData.features && checkDimensions(featuresContainer.current)) {
-                const tooltip = document.getElementById("tooltip");
-                if (!tooltip) {
-                    console.error("Tooltip element not found!");
-                    return;
-                }
-        
-                const mappedFeatures = proteinData.featuresData.features.map((ft) => ({
-                    ...ft,
-                    start: ft.start || ft.begin,
-                    tooltipContent: ft.type === "BINDING" && !ft.description ? 
-                    `Ligand: ${ft.ligand?.name || "No ligand information"}` : 
-                    (ft.description || "No description available"),
-                }));
-
-                const updateTooltip = (content, x, y) => {
-                    tooltip.innerHTML = `
-                        <div class="simple-tooltip">
-                            ${content}
-                        </div>
-                    `;
-                    tooltip.style.top = `${y}px`;
-                    tooltip.style.left = `${x}px`;
-                    tooltip.style.visibility = "visible";
-                };
-        
-                const hideTooltip = () => {
-                    tooltip.style.visibility = "hidden";
-                };
-
-                const trackIds = [
-                    { id: "domain", type: "DOMAIN" },
-                    { id: "region", type: "REGION" },
-                    { id: "site", type: "SITE" },
-                    { id: "binding", type: "BINDING" },
-                    { id: "chain", type: "CHAIN" },
-                    { id: "disulfide-bond", type: "DISULFID" },
-                    { id: "beta-strand", type: "STRAND" }
-                ];
-
-                trackIds.forEach(({ id, type, label }) => {
-                    const trackElement = document.querySelector(`#${id}`);
-                    if (trackElement) {
-                        const trackFeatures = mappedFeatures.filter(({ type: featureType }) => featureType === type);
-                        
-                        trackElement.data = trackFeatures;
-
-                        trackElement.addEventListener("mousemove", (event) => {
-                                        // Calculate approximate position
-                                        const trackLength = trackElement.getAttribute("length");
-                                        const relativeX = event.offsetX / trackElement.clientWidth;
-                                        const position = Math.floor(relativeX * trackLength);
-                    
-                                        // Find the closest feature to this position
-                                        const feature = trackFeatures.find(f => f.start <= position && f.end >= position);
-                                        if (feature) {
-                                            updateTooltip(feature.tooltipContent, event.pageX, event.pageY);
-                                        }
-                                    });
-                        trackElement.setAttribute('show-label', '');  // Enable labels
-                        trackElement.setAttribute('label', label);    // Set the label text
-                    }
-                });
-                
-                const domain = document.querySelector("#domain");
-                const region = document.querySelector("#region");
-                const site = document.querySelector("#site");
-                const binding = document.querySelector("#binding");
-                const chain = document.querySelector("#chain");
-                const disulfide = document.querySelector("#disulfide-bond");
-                const betaStrand = document.querySelector("#beta-strand");
-    
-                if (domain) {
-                    const domainData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "DOMAIN");
-                    console.log("Domain Data: ", domainData);
-                    domain.data = domainData;
-                }
-    
-                if (region) {
-                    const regionData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "REGION");
-                    console.log("Region Data: ", regionData);
-                    region.data = regionData;
-                }
-    
-                if (site) {
-                    const siteData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "SITE");
-                    console.log("Site Data: ", siteData);
-                    site.data = siteData;
-                }
-    
-                if (binding) {
-                    const bindingData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "BINDING");
-                    console.log("Binding Data: ", bindingData);
-                    binding.data = bindingData;
-                }
-    
-                if (chain) {
-                    const chainData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "CHAIN");
-                    console.log("Chain Data: ", chainData);
-                    chain.data = chainData;
-                }
-    
-                if (disulfide) {
-                    const disulfideData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "DISULFID");
-                    console.log("Disulfide Data: ", disulfideData);
-                    disulfide.data = disulfideData;
-                }
-    
-                if (betaStrand) {
-                    const betaStrandData = mappedFeatures.filter(({ type }) => type.toUpperCase() === "STRAND");
-                    console.log("Beta Strand Data: ", betaStrandData);
-                    betaStrand.data = betaStrandData;
-                }
-            }
-        });
-    }, [proteinData.featuresData]);    
 
     useEffect(() => {
         customElements.whenDefined("nightingale-sequence-heatmap").then(() => {
@@ -479,27 +482,26 @@ const NightingaleComponent = ({
         });
     }
 
-
-    const legendData = [
-        { color: '#ff7d45', label: '0 - 2' },
-        { color: '#db13', label: '2 - 4' },
-        { color: '#65cbf3', label: '4 - 7' },
-        { color: '#0053d6', label: '> 7' },
-        { color: 'default', label: 'no LiP Score reported' }
+    const legendData = [ 
+        { color: '#acc1db', label: '0 - 3' },
+        { color: '#fbeaf5', label: '3 - 4' },
+        { color: '#f2c0e1', label: '4 - 5' },
+        { color: '#da49a9', label: '5 - 7' },
+        { color: '#782162', label: '> 7' },
+        { color: '#CCCCCC', label: 'no LiP Score reported' }
     ];
     
-
     return (
-        <div>
+        <div  id="nightingale-manager-container">
             <p>{selectedExperiment}</p>
-            <p style={{ color: '#1a1a1a', fontSize: '18px' }} >{proteinData?.proteinDescription}</p>
-
+            <p style={{ color: '#1a1a1a',fontSize: 'var(--font-size-large)' }}>{proteinData?.proteinDescription}</p>
+            
             {/* LiP Scores Legend */}
-            <div id="nightingale-manager-container">
+            <div>
                 <p>LiP Scores Legend</p>
-                <div style={{ display: 'flex', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', marginBottom: '4px' }}>
                     {legendData.map((item, index) => (
-                        <div key={index} style={{ display: 'flex', alignItems: 'center', marginRight: '15px' }}>
+                        <div key={index} style={{ display: 'flex', alignItems: 'center', marginRight: 'var(--legend-item-margin)' }}>
                             <div
                                 style={{
                                     width: '20px',
@@ -513,304 +515,132 @@ const NightingaleComponent = ({
                         </div>
                     ))}
                 </div>
-
-                <div>
-
-            {experimentIDsList.length > 5 ? (
-                // Render dropdown if more than 5 experiments
-                <div>
-                    <label htmlFor="experiment-dropdown">Color structure according to experiment:</label>
-                    <select
-                        id="experiment-dropdown"
-                        value={selectedExperimentDropdown}
-                        onChange={handleDropdownChange}
-                    >
-                        {experimentIDsList.map((experimentID) => (
-                            <option key={experimentID} value={experimentID}>
-                                {`Experiment ${experimentID}`}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            ) : (
-                // Render buttons if 5 or fewer experiments
-                <div className="experiment-buttons">
-                    {experimentIDsList.map((experimentID, index) => (
-                        <button
-                            key={experimentID}
-                            className={`experiment-button ${
-                                selectedButton === index ? "selected" : ""
-                            }`}
-                            onClick={() => handleButtonClick(experimentID, index)}
+                {experimentIDsList.length > 5 ? (
+                    <div>
+                        <label htmlFor="experiment-dropdown">Color structure according to experiment:</label>
+                        <select
+                            id="experiment-dropdown"
+                            value={selectedExperimentDropdown}
+                            onChange={handleDropdownChange}
+                            style={{ fontSize: 'var(--font-size-normal)' }}
                         >
-                            {`Experiment ${experimentID}`}
-                        </button>
-                    ))}
+                            {experimentIDsList.map((experimentID) => (
+                                <option key={experimentID} value={experimentID}>
+                                    {`Experiment ${experimentID}`}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                ) : (
+                    <div className="experiment-buttons">
+                        {experimentIDsList.map((experimentID, index) => (
+                            <button
+                                key={experimentID}
+                                className={`experiment-button ${selectedButton === index ? "selected" : ""}`}
+                                onClick={() => handleButtonClick(experimentID, index)}
+                            >
+                                {`Experiment ${experimentID}`}
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
+    
+            {/* Nightingale Manager with Table of Tracks */}
+            <nightingale-manager>
+                <div id="tooltip" className="tooltip"></div>
+                <div>
+                    {structures.map((structure, idx) => 
+                        structure.isVisible ? (
+                            <nightingale-structure key={idx} ref={structureRefs.current[idx]} />
+                        ) : null
+                    )}
                 </div>
-            )}
-        </div>
+                <table>
+                    <tbody>
+                        <tr >
+                            <td ></td>
+                            <td><nightingale-navigation ref={navigationRef}/></td>
+                        </tr>
 
-                {/* Nightingale Manager with Two Columns */}
-                <nightingale-manager>
-                    <div id="tooltip" className="tooltip"></div>
+                        <tr>
+                            <td >Sequence</td>
+                            <td><nightingale-sequence ref={sequenceRef} /></td>
+                        </tr>
 
-                    <div >
-                        {/* Left Column: Nightingale Structurestyle={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', width: '100%'cd */}
-                        <div style={{ position: 'relative', paddingRight: '20px', zIndex: '1' }}>
-                            {structures.map((structure, idx) =>
-                                structure.isVisible ? (
-                                    <nightingale-structure
-                                        key={structure.id}
-                                        ref={structureRefs.current[idx]}
-                                        protein-accession={proteinName}
-                                        structure-id={selectedPdbId}
-                                        margin-color="transparent"
-                                        background-color="white"
-                                        lipscore-array={structure.lipScoreString}
-                                        highlight-color="#FFEB3B66"
-                                    ></nightingale-structure>
-                                ) : null
-                            )}
-                        </div>
+                        {hasDomainData && (
+                            <tr >
+                                <td>Domain</td>
+                                <td><nightingale-track ref={domainRef} /></td>
+                            </tr>
+                        )}
 
-                        {/* Right Column: Other Nightingale Elements */}
-                        <div style={{ position: 'relative', paddingRight: '20px', zIndex: '2' }}>
-                            <table>
-                                <tbody>
-                                    <tr  className="navigation-row">
-                                    <td  className="text-column"></td>
-                                        <td >
-                                            <nightingale-navigation
-                                                id="navigation"
-                                                min-width={minWidth}
-                                                length={sequenceLength}
-                                                display-start="1"
-                                                height={trackHeight}
-                                                display-end={sequenceLength}
-                                                margin-color="white"
-                                                margin-left="50"
-                                                highlight-color="#FFEB3B66"
-                                            ></nightingale-navigation>
-                                        </td>
-                                    </tr>
-                                    <tr  className="sequence-row">
-                                        <td  className="text-column"> Sequence</td> 
-                                        <td>
-                                            <nightingale-sequence
-                                                ref={seqContainer}
-                                                sequence={proteinData.featuresData.sequence}
-                                                min-width={minWidth}
-                                                length={sequenceLength}
-                                                height={trackHeight}
-                                                display-start="1"
-                                                display-end={sequenceLength}
-                                                highlight-event="onmouseover"
-                                                highlight-color="#FFEB3B66"
-                                                margin-left="40"
-                                                margin-color="aliceblue"
-                                            ></nightingale-sequence>
-                                        </td>
-                                    </tr>
-                                    {/* Additional Track Elements */}
-                                    {hasDomainData && (
-                                        <tr className="track-row">
-                                         <td  className="text-column">Domain</td>
-                                        <td >
-                                                <nightingale-track
-                                                    ref={featuresContainer}
-                                                    id="domain"
-                                                    min-width={minWidth}
-                                                    height={trackHeight}
-                                                    length={sequenceLength}
-                                                    display-start="1"
-                                                    display-end={sequenceLength}
-                                                    margin-left="40"
-                                                    highlight-color="#FFEB3B66"
-                                                    highlight-event="onmouseover"
-                                                ></nightingale-track>
-                                            </td>
-                                        </tr>
-                                    )}
-                                    {hasBindingData && (
-                                  <tr className="track-row">
-                                         <td  className="text-column">Binding site
-                                        </td>
-                                        <td >
-                                        <nightingale-track
-                                            id="binding"
-                                            min-width={minWidth}
-                                            height={trackHeight}
-                                            length={sequenceLength} 
-                                            display-start="1"
-                                            display-end={sequenceLength} 
-                                            highlight-color="#FFEB3B66"
-                                            highlight-event="onmouseover"
-                                            margin-left="40"
-                                        ></nightingale-track>
-                                        </td>
-                                    </tr>
-                                    )}
-                               
-                              
-                             {hasChainData && (
-                           <tr className="track-row">
-                                <td  className="text-column">Chain </td>
-                                <td style={nightingaleTdStyleTrack}> 
-                                <nightingale-track
-                                    id="chain"
-                                    layout="non-overlapping"
-                                    min-width={minWidth}
-                                    height={trackHeight}
-                                    length={sequenceLength} 
-                                    display-start="1"
-                                    display-end={sequenceLength} 
-                                    highlight-color="#FFEB3B66"
-                                    highlight-event="onmouseover"
-                                    margin-left="40"
-                                ></nightingale-track>
+                        {hasBindingData && (
+                            <tr >
+                                <td>Binding site</td>
+                                <td><nightingale-track ref={bindingRef} /></td>
+                            </tr>
+                        )}
+
+                        {hasChainData && (
+                            <tr >
+                                <td>Chain</td>
+                                <td><nightingale-track ref={chainRef} /></td>
+                            </tr>
+                        )}
+                        {hasDisulfidData && (
+                            <tr>
+                                <td>Disulfide bond</td>
+                                <td><nightingale-track ref={disulfidRef} /></td>
+                            </tr>
+                        )}
+                        {hasBetaStrandData && (
+                            <tr>
+                                <td>Beta strand</td>
+                                <td ><nightingale-track ref={betastrandRef} /></td>
+                            </tr>
+                        )}
+
+                        {hasSiteData && (
+                            <tr>
+                                <td>Site</td>
+                                <td><nightingale-track ref={siteRef} /></td>
+                            </tr>
+                        )}
+
+                        {hasRegionData && (
+                            <tr>
+                                <td>Region</td>
+                                <td><nightingale-track ref={regionRef} /></td>
+                            </tr>
+                        )}
+
+                        {showHeatmap && (
+                            <tr className="track-row">
+                                <td className="text-column">Score-Barcode</td>
+                                <td>
+                                    <nightingale-sequence-heatmap
+                                        ref={scoreBarcodeContainer}
+                                        id="id-for-nightingale-sequence-heatmap"
+                                        heatmap-id="seq-heatmap"
+                                        min-width="1200"
+                                        length={sequenceLength}
+                                        height="100"
+                                        display-start="1"
+                                        margin-left="60"
+                                        display-end={sequenceLength}
+                                        highlight-event="onmouseover"
+                                        color-range="#ffe6f7:-2,#FF6699:2"
+                                    />
                                 </td>
                             </tr>
                         )}
-                            {hasDisulfidData && (
-                            <tr className="track-row">
-                                 <td  className="text-column">Disulfide bond</td>
-                                <td style={nightingaleTdStyleTrack}>
-                                <nightingale-track
-                                    id="disulfide-bond"
-                                    layout="non-overlapping"
-                                    min-width={minWidth}
-                                    height={trackHeight}
-                                    length={sequenceLength} 
-                                    display-start="1"
-                                    display-end={sequenceLength} 
-                                    highlight-color="#FFEB3B66"
-                                    highlight-event="onmouseover"
-                                    margin-left="40"
-                                ></nightingale-track>
-                                </td>
-                            </tr>
-                            )}
-                            {hasBetaStrandData && (
-                            <tr className="track-row">
-                                <td  className="text-column">Beta strand</td>
-                                <td style={nightingaleTdStyleTrack}>
-                                <nightingale-track
-                                    id="beta-strand"
-                                    min-width={minWidth}
-                                    length={sequenceLength} 
-                                    height={trackHeight}
-                                    display-start="1"
-                                    display-end={sequenceLength} 
-                                    highlight-color="#FFEB3B66"
-                                    highlight-event="onmouseover"
-                                    margin-left="40"
-                                ></nightingale-track>
-                                </td>
-                            </tr>
-                            )}
-                              {hasSiteData && (
-                               <tr className="track-row">
-                                    <td  className="text-column">Site</td>
-                                    <td >
-                                    <nightingale-track
-                                        id="site"
-                                        min-width={minWidth}
-                                        height={trackHeight}
-                                        length={sequenceLength} 
-                                        display-start="1"
-                                        display-end={sequenceLength} 
-                                        highlight-color="#FFEB3B66"
-                                        highlight-event="onmouseover"
-                                        margin-left="40"
-                                    ></nightingale-track>
-                                    </td>
-                                </tr>
-                            )}
-                             {hasRegionData && (
-                              <tr className="track-row">
-                                     <td  className="text-column">Region </td>
-                                    <td>
-                                    <nightingale-track
-                                        ref={featuresContainer}
-                                        id="region"
-                                        min-width={minWidth}
-                                        height={trackHeight}
-                                        length={sequenceLength} 
-                                        display-start="1"
-                                        display-end={sequenceLength} 
-                                        highlight-color="#FFEB3B66"
-                                        highlight-event="onmouseover"
-                                        margin-left="40"
-                                    ></nightingale-track>
-                                    </td>
-                                </tr>
-                            )}
-                             <tr className="track-row">
-                                <td  className="text-column"></td>
-                                <td style={nightingaleTdStyleTrack}>
-                                </td>
-                            </tr>
-                                 {/* Continue with other track elements */}
-                                 {showHeatmap && ( // Conditional rendering of heatmap
-                                     <tr>
-                                        <td>Score-Barcode</td>
-                                        <td>
-                                            <nightingale-sequence-heatmap
-                                                ref={scoreBarcodeContainer}
-                                                id="id-for-nightingale-sequence-heatmap"
-                                                heatmap-id="seq-heatmap"
-                                                min-width={minWidth}
-                                                length={sequenceLength} 
-                                                height="100"
-                                                display-start="1"
-                                                margin-left="60"
-                                                display-end={sequenceLength}
-                                                highlight-event="onmouseover"
-                                                highlight-color={highlightColor}
-                                                color-range="#ffe6f7:-2,#FF6699:2"
-                                            ></nightingale-sequence-heatmap>
-                                        </td>
-                                    </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </nightingale-manager>
-            </div>
-
-            {/* Table for PDB selection 
-           /* <div>
-                <table className="pdb-selection-container">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Method</th>
-                            <th>Resolution</th>
-                            <th>Chains</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {pdbIds.map((structure) => (
-                            <tr
-                                key={structure.id}
-                                onClick={() => handleRowClick(structure.id)}
-                                style={{
-                                    backgroundColor: selectedPdbId === structure.id ? '#f0f0f0' : 'white',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                <td>{structure.id}</td>
-                                <td>{getPropertyValue(structure.properties, 'Method')}</td>
-                                <td>{getPropertyValue(structure.properties, 'Resolution')}</td>
-                                <td>{getPropertyValue(structure.properties, 'Chains')}</td>
-                            </tr>
-                        ))}
                     </tbody>
                 </table>
-            </div>*/}
+            </nightingale-manager>
             <p>Selected PDB ID: {selectedPdbId}</p>
         </div>
     );
 };
 export default NightingaleComponent;
+    
