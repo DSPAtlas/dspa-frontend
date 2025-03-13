@@ -3,12 +3,11 @@ import "@nightingale-elements/nightingale-sequence";
 import "@nightingale-elements/nightingale-navigation";
 import "@nightingale-elements/nightingale-manager";
 import "@nightingale-elements/nightingale-colored-sequence";
+import "@nightingale-elements/nightingale-msa";
+import "@nightingale-elements/nightingale-sequence-heatmap";
 
 import "@dspa-nightingale/nightingale-structure/nightingale-structure";
 import "@dspa-nightingale/nightingale-track/nightingale-track";
-
-import "@nightingale-elements/nightingale-msa";
-import "@nightingale-elements/nightingale-sequence-heatmap";
 
 
 const defaultAttributes = {
@@ -51,14 +50,14 @@ const NightingaleComponent = ({
     const scoreBarcodeContainer = useRef(null);
     const sequenceLength = proteinData.proteinSequence.length;
     
-    const [selectedButton, setSelectedButton] = useState(0);
+    const [selectedButton, setSelectedButton] = useState(null);
     const [isHeatmapReady, setHeatmapReady] = useState(false);
     const experimentIDsList = passedExperimentIDs?.length > 0 
     ? passedExperimentIDs 
     : proteinData.experimentIDsList.length > 0
         ? proteinData.experimentIDsList
         : proteinData.lipscoreList.map(entry => entry.experimentID);
-    const [selectedExperimentDropdown, setSelectedExperimentDropdown] = useState(experimentIDsList[0]);
+    const [selectedExperimentDropdown, setSelectedExperimentDropdown] = useState(0);
 
     const structureRefs = useRef(experimentIDsList.map(() => React.createRef()));
     const [trackHeight, setTrackHeight] = useState(null);
@@ -206,18 +205,20 @@ const NightingaleComponent = ({
                 lipScoreString: JSON.stringify(Array(sequenceLength).fill(-1)), 
             }))
         );
+        setSelectedButton(null); // Resetting the button state when unselecting
     };
-
+    
     const handleDropdownChange = (event) => {
         const selectedExperiment = event.target.value;
-        if (selectedExperiment === "none") {
+        setSelectedExperimentDropdown(selectedExperiment);
+        if (selectedExperiment === "0") { // Make sure "0" or the appropriate value represents no selection
             handleUnselectColoring();
         } else {
-            setSelectedExperimentDropdown(selectedExperiment);
             const experimentIndex = experimentIDsList.indexOf(selectedExperiment);
             handleButtonClick(selectedExperiment, experimentIndex);
         }
     };
+    
 
     const getLipScoreDataByExperimentID = (experimentID) => {
         if (!proteinData || !proteinData.lipscoreList) return null;
