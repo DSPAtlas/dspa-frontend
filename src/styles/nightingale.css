@@ -41,6 +41,17 @@
   }
 
 
+.experiment-button {
+    background-color: white; /* Default background */
+    color: black; /* Default text color */
+}
+
+.experiment-button.selected {
+    background-color: #FF6699; /* Rose background for selected */
+    color: white; /* White text for better contrast */
+}
+
+
 
 /* @media (max-width: 768px) {
     nightingale-navigation, nightingale-sequence, nightingale-track, nightingale-sequence-heatmap {
