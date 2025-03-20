@@ -3,12 +3,11 @@ import "@nightingale-elements/nightingale-sequence";
 import "@nightingale-elements/nightingale-navigation";
 import "@nightingale-elements/nightingale-manager";
 import "@nightingale-elements/nightingale-colored-sequence";
+import "@nightingale-elements/nightingale-msa";
+import "@nightingale-elements/nightingale-sequence-heatmap";
 
 import "@dspa-nightingale/nightingale-structure/nightingale-structure";
 import "@dspa-nightingale/nightingale-track/nightingale-track";
-
-import "@nightingale-elements/nightingale-msa";
-import "@nightingale-elements/nightingale-sequence-heatmap";
 
 
 const defaultAttributes = {
@@ -28,7 +27,6 @@ const NightingaleComponent = ({
     pdbIds, 
     selectedPdbId, 
     setSelectedPdbId, 
-    selectedExperiment, 
     showHeatmap = true,
     passedExperimentIDs,
     containerRef
@@ -43,56 +41,34 @@ const NightingaleComponent = ({
     const betastrandRef = useRef(null);
     const siteRef = useRef(null);
     const regionRef = useRef(null);
+    const structureRef = useRef(null);
+
+    const [refreshStructureKey, setRefreshStructureKey] = useState(0);
 
     const [mappedFeatures, setMappedFeatures] = useState([]);
 
     const residuelevelContainer = useRef(null);
     const multipleExperimentsContainer = useRef(null);
     const scoreBarcodeContainer = useRef(null);
-    const sequenceLength = proteinData.proteinSequence.length;
     
-    const [selectedButton, setSelectedButton] = useState(0);
+    const [selectedButton, setSelectedButton] = useState(null);
+    const [selectedExperiment, setSelectedExperiment] = useState(null);
     const [isHeatmapReady, setHeatmapReady] = useState(false);
     const experimentIDsList = passedExperimentIDs?.length > 0 
     ? passedExperimentIDs 
     : proteinData.experimentIDsList.length > 0
         ? proteinData.experimentIDsList
         : proteinData.lipscoreList.map(entry => entry.experimentID);
-    const [selectedExperimentDropdown, setSelectedExperimentDropdown] = useState(experimentIDsList[0]);
 
-    const structureRefs = useRef(experimentIDsList.map(() => React.createRef()));
     const [trackHeight, setTrackHeight] = useState(null);
     const [fontSize, setFontSize] = useState('16px');
 
-    const proteinName = proteinData.proteinName;
+    const sequenceLength = proteinData.proteinSequence.length;
+    const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1));
+    const [lipscoreString, setLipscoreString] = useState(defaultLipScoreString);
 
-    const [structures, setStructures] = useState(() => {
-        if (!proteinData || !proteinData.proteinSequence || !experimentIDsList) {
-            console.error("Invalid proteinData or experimentIDsList");
-            return [];
-        }
-    
-        const sequenceLength = proteinData.proteinSequence.length;
-        const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1));
-    
-        return experimentIDsList.map((experimentID, index) => {
-            let lipScoreArray = null;
-            try {
-                lipScoreArray = getLipScoreDataByExperimentID(experimentID);
-            } catch (err) {
-                console.error(`Error fetching lip score for experimentID ${experimentID}:`, err);
-            }
-    
-            const lipScoreString = lipScoreArray ? JSON.stringify(lipScoreArray) : defaultLipScoreString;
-    
-            return {
-                id: index + 1,
-                lipScoreString: lipScoreString,
-                isVisible: index === 0,
-            };
-        });
-    });
-    
+    const proteinName = proteinData.proteinName;
+ 
     const hasDomainData = proteinData.featuresData?.features?.some(({ type }) => type === "DOMAIN");
     const hasRegionData = proteinData.featuresData.features.some(({ type }) => type === "REGION");
     const hasSiteData = proteinData.featuresData.features.some(({ type }) => type === "SITE");
@@ -147,15 +123,13 @@ const NightingaleComponent = ({
             if (managerContainer) {
                 const totalHeight = managerContainer.getBoundingClientRect().height;
                 const structureHeight = totalHeight * 0.4;
-                structureRefs.current.forEach((structureRef) => {
-                    if (structureRef.current) {
-                        structureRef.current.setAttribute('style', `--custom-structure-height: ${structureHeight}px;`);
-                        structureRef.current.style.setProperty('--custom-structure-height', `${structureHeight}px`);
-                    }
-                });
-
+ 
+                if (structureRef.current) {
+                    structureRef.current.setAttribute('style', `--custom-structure-height: ${structureHeight}px;`);
+                    structureRef.current.style.setProperty('--custom-structure-height', `${structureHeight}px`);
+                }
+          
                 const tracks_len = visibleTracks.length + 2;
-    
                 const availableTrackHeight = structureHeight;
                 const dynamicTrackHeight = Math.min(Math.max(
                     availableTrackHeight / ( tracks_len|| 1), 
@@ -171,7 +145,6 @@ const NightingaleComponent = ({
     
         window.addEventListener("resize", updateHeight);
         window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    
         updateHeight();
     
         return () => {
@@ -189,70 +162,28 @@ const NightingaleComponent = ({
         return false;
     };
     
-    const handleButtonClick = (experimentID, index) => {
-        setSelectedButton((prevIndex) => (prevIndex === index ? null : index)); 
-        if (selectedButton === index) {
-            handleExperimentClick(0, index);
-        } else {
-            handleExperimentClick(experimentID, index);
-        }
-    };
-
-    const handleUnselectColoring = () => {
-        setStructures((prevStructures) =>
-            prevStructures.map((structure) => ({
-                ...structure,
-                isVisible: false,
-                lipScoreString: JSON.stringify(Array(sequenceLength).fill(-1)), 
-            }))
-        );
-    };
-
-    const handleDropdownChange = (event) => {
-        const selectedExperiment = event.target.value;
-        if (selectedExperiment === "none") {
-            handleUnselectColoring();
-        } else {
-            setSelectedExperimentDropdown(selectedExperiment);
-            const experimentIndex = experimentIDsList.indexOf(selectedExperiment);
-            handleButtonClick(selectedExperiment, experimentIndex);
-        }
-    };
-
     const getLipScoreDataByExperimentID = (experimentID) => {
         if (!proteinData || !proteinData.lipscoreList) return null;
         const lipScoreEntry = proteinData.lipscoreList.find(entry => entry.experimentID === experimentID);
         return lipScoreEntry ? lipScoreEntry.data : null;
     };
 
-    const handleExperimentClick = (experimentID, index) => {
-        if (experimentID === 0) {
-            const sequenceLength = proteinData.proteinSequence.length;
-            const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1));
-    
-            setStructures(prevStructures =>
-                prevStructures.map((structure, idx) => ({
-                    ...structure,
-                    lipScoreString: defaultLipScoreString,
-                    isVisible: idx === 0
-                }))
-            ); 
+    const handleExperimentClick = (experimentID,index) => {
+        let lipScoreString = JSON.stringify(Array(sequenceLength).fill(-1));
+
+        if (experimentID === selectedExperiment) {
+            setSelectedExperiment(null);
         } else {
+            setSelectedExperiment(experimentID);
             const lipScoreArray = getLipScoreDataByExperimentID(experimentID);
-            if (lipScoreArray) {
-                const lipScoreString = JSON.stringify(lipScoreArray);
-    
-                setStructures(prevStructures =>
-                    prevStructures.map((structure, idx) =>
-                        idx === index
-                            ? { ...structure, lipScoreString, isVisible: true }
-                            : { ...structure, isVisible: false }
-                    )
-                );
-            } else {
-                console.error(`No data found for experiment ID: ${experimentID}`);
-            }
+            lipScoreString = JSON.stringify(lipScoreArray);  
         }
+
+        setLipscoreString(lipScoreString);
+
+        if(structureRef.current){
+            setRefreshStructureKey(refreshStructureKey => refreshStructureKey + 1);
+        } 
     };
 
     useEffect(() => {
@@ -321,7 +252,6 @@ const NightingaleComponent = ({
                     }
                     trackElement.data = trackFeatures;
                     trackElement.addEventListener("mousemove", (event) => {
-                        // Calculate approximate position
                         const trackLength = trackElement.getAttribute("length");
                         const relativeX = event.offsetX / trackElement.clientWidth;
                         const position = Math.floor(relativeX * trackLength);
@@ -366,51 +296,13 @@ const NightingaleComponent = ({
       };
 
     useEffect(() => {
-        let isMounted = true;
-    
-        const fetchLipScoreData = async () => {
-            const sequenceLength = proteinData.proteinSequence.length;
-            const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1));
-            let lipScoreString = defaultLipScoreString;
-    
-            if (selectedExperiment) {
-                try {
-                    const lipScoreArray = await getLipScoreDataByExperimentID(selectedExperiment);
-                    if (lipScoreArray) {
-                        lipScoreString = JSON.stringify(lipScoreArray);
-                    }
-                } catch (error) {
-                    console.error("Failed to fetch lip score data:", error);
-                }
+        if (structureRef.current) {
+            structureRef.current.setAttribute('protein-accession', proteinName);
+            structureRef.current.setAttribute('structure-id', selectedPdbId);
+            structureRef.current.setAttribute('highlight-color', '#FF6699');
+            structureRef.current.setAttribute('lipscore-array',  lipscoreString);
             }
-    
-            if (isMounted) {
-                setStructures(prevStructures =>
-                    prevStructures.map((structure, idx) => ({
-                        ...structure,
-                        lipScoreString: idx === 0 ? lipScoreString : defaultLipScoreString,
-                        isVisible: idx === 0
-                    }))
-                );
-            }
-        };
-        fetchLipScoreData();
-        return () => {
-            isMounted = false;  
-        };
-    }, [selectedExperiment, proteinData.proteinSequence.length]);
-
-    useEffect(() => {
-        structures.forEach((structure, idx) => {
-            const structureRef = structureRefs.current[idx].current;
-            if (structureRef && structure.isVisible) {
-                structureRef.setAttribute('protein-accession', proteinName);
-                structureRef.setAttribute('structure-id', selectedPdbId);
-                structureRef.setAttribute('highlight-color', '#FF6699');
-                structureRef.setAttribute('lipscore-array',  structure.lipScoreString);
-            }
-        });
-    }, [structures, proteinName, selectedPdbId]);
+    }, [ proteinName, selectedPdbId, lipscoreString]);
 
     useEffect(() => {
         customElements.whenDefined("nightingale-colored-sequence").then(() => {
@@ -520,8 +412,8 @@ const NightingaleComponent = ({
                         <label htmlFor="experiment-dropdown">Color structure according to experiment:</label>
                         <select
                             id="experiment-dropdown"
-                            value={selectedExperimentDropdown}
-                            onChange={handleDropdownChange}
+                            value={selectedExperiment}
+                            onChange={handleExperimentClick}
                             style={{ fontSize: 'var(--font-size-normal)' }}
                         >
                             {experimentIDsList.map((experimentID) => (
@@ -536,8 +428,8 @@ const NightingaleComponent = ({
                         {experimentIDsList.map((experimentID, index) => (
                             <button
                                 key={experimentID}
-                                className={`experiment-button ${selectedButton === index ? "selected" : ""}`}
-                                onClick={() => handleButtonClick(experimentID, index)}
+                                className={`experiment-button ${selectedExperiment === experimentID ? "selected" : ""}`}
+                                onClick={() => handleExperimentClick(experimentID, index)}
                             >
                                 {`Experiment ${experimentID}`}
                             </button>
@@ -550,11 +442,7 @@ const NightingaleComponent = ({
             <nightingale-manager>
                 <div id="tooltip" className="tooltip"></div>
                 <div>
-                    {structures.map((structure, idx) => 
-                        structure.isVisible ? (
-                            <nightingale-structure key={idx} ref={structureRefs.current[idx]} />
-                        ) : null
-                    )}
+                    <nightingale-structure key={refreshStructureKey} ref={structureRef} />
                 </div>
                 <table>
                     <tbody>
