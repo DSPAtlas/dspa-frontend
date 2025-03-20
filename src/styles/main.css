@@ -11,3 +11,15 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
   width: 100%;
 }
 
+/* CSS for normal view */
+.app {
+  transition: filter 0.3s;
+}
+
+/* CSS for blurred view */
+.blur {
+  filter: blur(5px); /* Adjust the px value to increase or decrease the blur */
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  color: transparent; /* Makes text transparent */
+  pointer-events: none; /* Disables interaction with elements */
+}
