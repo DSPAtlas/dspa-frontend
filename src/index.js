@@ -1,9 +1,8 @@
-import React from 'react';
+import React , { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-// Components Import
-//import App from './App';
+
 import Home from './components/Home';
 import ProteinSearch from './components/Search';
 import ProteinVisualization from './components/ProteinView';
@@ -12,6 +11,8 @@ import ExperimentsOverview from './components/ExperimentsOverview';
 import Impressum from './components/Impressum';
 import Treatment from './components/TreatmentView';
 import Pathway from './components/Pathway';
+import LoginForm from './components/LoginForm';
+
 
 // Styles Import
 import "./styles/main.css";
@@ -31,6 +32,22 @@ const root = createRoot(document.getElementById("root"));
 const NotFound = () => <div>Page not found.</div>;
 
 const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const handleLogin = (username, password) => {
+    if (username === process.env.USERNAME_WEBSITE && password === process.env.PASSWORD_WEBSITE){
+      setIsAuthenticated(true); 
+    } else{
+      setIsAuthenticated(false);
+      alert('Authentication failed, please check your username and password');
+    }
+  };
+
+  if (!isAuthenticated) {
+    return <div >
+      <LoginForm onLogin={handleLogin} />
+    </div>;
+  }
+
   return (
     <div>
       <header className="app-header">
@@ -64,6 +81,6 @@ const App = () => {
 
 root.render(
   <Router>
-    <App />
-  </Router>,
+    <App /> 
+  </Router>
 );
