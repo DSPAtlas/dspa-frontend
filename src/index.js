@@ -11,8 +11,6 @@ import ExperimentsOverview from './components/ExperimentsOverview';
 import Impressum from './components/Impressum';
 import Treatment from './components/TreatmentView';
 import Pathway from './components/Pathway';
-import LoginForm from './components/LoginForm';
-
 
 // Styles Import
 import "./styles/main.css";
