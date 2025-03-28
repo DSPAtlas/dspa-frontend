@@ -330,7 +330,7 @@ const NightingaleComponent = ({
 
                 const experimentMetaDataMap = new Map();
                 proteinData.experimentMetaData.forEach((meta) => {
-                    experimentMetaDataMap.set(meta.lipexperiment_id, meta);
+                    experimentMetaDataMap.set(meta.dpx_comparison, meta);
                 });
 
                 const dataHeatmap = Object.entries(proteinData.differentialAbundanceData).flatMap(([key, values]) =>

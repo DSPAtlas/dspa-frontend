@@ -71,8 +71,8 @@ const ProteinScoresTable = ({ experimentData, onProteinClick, displayedProtein, 
 
 
 
-const Treatment = () => {
-    const { selectedTreatment: treatmentParam } = useParams();
+const Condition = () => {
+    const { selectedcondition: conditionParam } = useParams();
    
     const chartRefGO = useRef(null);
     const chartRefVolcano = useRef(null);
@@ -85,7 +85,7 @@ const Treatment = () => {
     const navigate = useNavigate();
    
     const [loading, setLoading] = useState(false);
-    const [treatmentData, setTreatmentData] = useState([]);
+    const [conditionData, setconditionData] = useState([]);
     const [goEnrichmentData, setGoEnrichmentData] = useState([]);
     const [experimentIDs, setExperimentIDs] = useState([]);
     const [error, setError] = useState('');
@@ -94,27 +94,27 @@ const Treatment = () => {
     const [selectedPdbId, setSelectedPdbId] = useState("");
     
     const [selectedExperiment, setSelectedExperiment] = useState("");
-    const [treatments, setTreatments] = useState([]);
-    const [selectedTreatment, setSelectedTreatment] = useState(treatmentParam || treatments[0]);
+    const [conditions, setconditions] = useState([]);
+    const [selectedcondition, setSelectedcondition] = useState(conditionParam || conditions[0]);
    
     const [filteredExperimentData, setFilteredExperimentData] = useState([]); 
     const [selectedGoTerm, setSelectedGoTerm] = useState(null);
     const [displayedProteinData, setdisplayedProteinData] = useState(null);
 
-    const fetchTreatments = async (signal) => {
+    const fetchconditions = async (signal) => {
         try {
-            const response = await fetch(`${config.apiEndpoint}treatment/condition`, signal);
+            const response = await fetch(`${config.apiEndpoint}condition/condition`, signal);
             const data = await response.json();
 
             if (!isMounted.current) return;
 
             if (data.success && Array.isArray(data.conditions)) {
-                setTreatments(data.conditions);
+                setconditions(data.conditions);
             } else {
-                throw new Error(data.message || "Failed to fetch treatments");
+                throw new Error(data.message || "Failed to fetch conditions");
             }
         } catch (error) {
-            console.error("Error fetching treatments:", error);
+            console.error("Error fetching conditions:", error);
             if (isMounted.current) {
                 setError(error.message);
             }
@@ -123,7 +123,7 @@ const Treatment = () => {
 
     useEffect(() => {
         const abortController = new AbortController();
-        fetchTreatments(abortController.signal);
+        fetchconditions(abortController.signal);
         return () => {
             abortController.abort();
             isMounted.current = false;
@@ -180,11 +180,11 @@ const Treatment = () => {
     }, [pdbIds]);
     
     function processData(data) {
-        if (!data.treatmentData) {
-            throw new Error("treatmentData is missing from the response");
+        if (!data.conditionData) {
+            throw new Error("conditionData is missing from the response");
         }
     
-        const goEnrichmentData = data.treatmentData.goEnrichmentList.flatMap(experiment =>
+        const goEnrichmentData = data.conditionData.goEnrichmentList.flatMap(experiment =>
             experiment.data.map(d => ({
                 ...d,
                 experimentID: experiment.experimentID,
@@ -195,15 +195,15 @@ const Treatment = () => {
         const experimentIDs = Array.from(new Set(goEnrichmentData.map(d => d.experimentID)));
         const termMap = new Map();
     
-        if (data.treatmentData.goEnrichmentList?.length > 0) {
-            for (const item of data.treatmentData.goEnrichmentList) {
+        if (data.conditionData.goEnrichmentList?.length > 0) {
+            for (const item of data.conditionData.goEnrichmentList) {
                 for (const term of item.data) {
                     const accessions = term.accessions ? term.accessions.split(';').map(accession => accession.trim()) : [];
                     if (!termMap.has(term.term)) {
                         termMap.set(term.term, {
                             term: term.term,
                             adj_pval: term.adj_pval,
-                            lipexperiment_id: term.lipexperiment_id,
+                            dpx_comparison: term.dpx_comparison,
                             accessions
                         });
                     }
@@ -215,17 +215,17 @@ const Treatment = () => {
             goEnrichmentData,
             experimentIDs,
             allGoTerms: [...termMap.values()],
-            proteinData: data.treatmentData.proteinScoresTable,
-            initialProtein: data.treatmentData.proteinScoresTable?.[0]?.proteinAccession
+            proteinData: data.conditionData.proteinScoresTable,
+            initialProtein: data.conditionData.proteinScoresTable?.[0]?.proteinAccession
         };
     }
     
     useEffect(() => {
         const abortController = new AbortController();
       
-        const fetchTreatmentData = async (signal) =>{
+        const fetchconditionData = async (signal) =>{
             setLoading(true);
-            const url = `${config.apiEndpoint}treatment/treatment?treatment=${selectedTreatment}`;
+            const url = `${config.apiEndpoint}condition/condition?condition=${selectedcondition}`;
             try {
                 const rawData = await fetchData(url, signal);
                 if (!abortController.signal.aborted) {
@@ -237,7 +237,7 @@ const Treatment = () => {
                         initialProtein
                     } = processData(rawData);
                     
-                    setTreatmentData(rawData.treatmentData);
+                    setconditionData(rawData.conditionData);
                     setGoEnrichmentData(goEnrichmentData);
                     setExperimentIDs(experimentIDs);
                     setAllProteinData(proteinData);
@@ -255,13 +255,13 @@ const Treatment = () => {
                 setLoading(false);    
             }
         }
-        fetchTreatmentData(abortController.signal);
+        fetchconditionData(abortController.signal);
     
         return () => {
             abortController.abort(); 
             isMounted.current = false;
         };
-    }, [selectedTreatment])
+    }, [selectedcondition])
 
 
     const handleGoTermSelect = (selectedTerm) => {
@@ -281,10 +281,10 @@ const Treatment = () => {
         }
     };
     
-    const handleTreatmentChange = (event) => {
-        const newTreatment = event.target.value;
-        setSelectedTreatment(newTreatment);
-        navigate(`/treatment/${newTreatment}`);
+    const handleconditionChange = (event) => {
+        const newcondition = event.target.value;
+        setSelectedcondition(newcondition);
+        navigate(`/condition/${newcondition}`);
     };
 
     const handleProteinClick = (proteinAccession) => {
@@ -326,16 +326,16 @@ const Treatment = () => {
         });
     
         return (
-            <div className="treatment-section-wrapper">
+            <div className="condition-section-wrapper">
                 <div 
                     style={contentStyle(TABS.VOLCANO_PLOT)} 
                     ref={chartRefVolcano} 
-                    key={`volcano-plot-${selectedTreatment}`} 
-                    className="treatment-section goenrichment-chart-content"
+                    key={`volcano-plot-${selectedcondition}`} 
+                    className="condition-section goenrichment-chart-content"
                 >
-                    {treatmentData?.differentialAbundanceDataList && (
+                    {conditionData?.differentialAbundanceDataList && (
                         <VolcanoPlot
-                            differentialAbundanceDataList={treatmentData?.differentialAbundanceDataList}
+                            differentialAbundanceDataList={conditionData?.differentialAbundanceDataList}
                             chartRef={chartRefVolcano}
                             highlightedProtein={displayedProtein}
                         />
@@ -344,8 +344,8 @@ const Treatment = () => {
                 <div 
                     style={contentStyle(TABS.GENE_ONTOLOGY)} 
                     ref={chartRefGO} 
-                    key={`go-plot-${selectedTreatment}`} 
-                    className="treatment-section goenrichment-chart-content"
+                    key={`go-plot-${selectedcondition}`} 
+                    className="condition-section goenrichment-chart-content"
                 >
                     {goEnrichmentData && chartRefGO.current && (
                         <GOEnrichmentVisualization
@@ -362,15 +362,15 @@ const Treatment = () => {
    
     return (
         <div>
-            <div className="treatment-section treatment-dropdown">
-                <label htmlFor="treatmentSelect">Select Treatment: </label>
+            <div className="condition-section condition-dropdown">
+                <label htmlFor="conditionSelect">Select condition: </label>
                 <select 
-                    id="treatmentSelect" 
-                    value={selectedTreatment} 
-                    onChange={handleTreatmentChange}
+                    id="conditionSelect" 
+                    value={selectedcondition} 
+                    onChange={handleconditionChange}
                 >
-                    {treatments.map((treatment) => (
-                        <option key={treatment} value={treatment}>{treatment}</option>
+                    {conditions.map((condition) => (
+                        <option key={condition} value={condition}>{condition}</option>
                     ))}
                 </select>
             </div>
@@ -380,21 +380,21 @@ const Treatment = () => {
             ) : error ? (
                 <p>Error: {error}</p>
             ) : (
-                treatmentData && treatmentData.treatment && (
+                conditionData && conditionData.condition && (
                     <div>
-                        <h1>Treatment {treatmentData.treatment}</h1><br />
+                        <h1>condition {conditionData.condition}</h1><br />
                     </div>
                 )
             )}
 
             {renderTabNav()}
     
-            <div className="treatment-section-wrapper">
+            <div className="condition-section-wrapper">
                 {renderTabContent()}
             
             {/* Protein Experiment Section */}
-            <div className="treatment-section treatment-protein-experiment-wrapper">
-                <div className="treatment-table-container">
+            <div className="condition-section condition-protein-experiment-wrapper">
+                <div className="condition-table-container">
                     <h2>Proteins in {selectedGoTerm}</h2>
                     <ProteinScoresTable
                         experimentData={filteredExperimentData}
@@ -406,7 +406,7 @@ const Treatment = () => {
                 </div>
                 <div 
                     ref={containerRef} 
-                    className="treatment-protein-container">
+                    className="condition-protein-container">
                     <h2>{displayedProtein}</h2>
                     {displayedProteinData && pdbIds && experimentIDs &&(
                         <NightingaleComponent
@@ -424,7 +424,7 @@ const Treatment = () => {
             </div>
 
             {/* Experiment List Section */}
-            <div className="treatment-section treatment-experiment-container">
+            <div className="condition-section condition-experiment-container">
                 <h2>Experiments</h2>
                 <div className="experiment-boxes">
                     {experimentIDs.map((experimentID, index) => (
@@ -444,4 +444,4 @@ const Treatment = () => {
         </div>
     );
 };
-export default Treatment;
+export default Condition;

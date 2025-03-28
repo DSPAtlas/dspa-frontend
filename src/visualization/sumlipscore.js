@@ -6,8 +6,8 @@ export function SumLipScoreVisualization({ data, experimentMetaData }) {
     const formattedData = Object.entries(data).map(([key, value]) => ({
         experiment: key,
         score: value,
-        condition: experimentMetaData.find(meta => meta.lipexperiment_id === key)?.condition || "unknown",
-        perturbation: experimentMetaData.find(meta => meta.lipexperiment_id === key)?.perturbation || "unknown",
+        condition: experimentMetaData.find(meta => meta.dpx_comparison === key)?.condition || "unknown",
+        perturbation: experimentMetaData.find(meta => meta.dpx_comparison === key)?.perturbation || "unknown",
     })) 
     .sort((a, b) => b.score - a.score);
 

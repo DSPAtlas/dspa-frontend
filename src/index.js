@@ -9,7 +9,7 @@ import ProteinVisualization from './components/ProteinView';
 import ExperimentInfo from './components/ExperimentView';
 import ExperimentsOverview from './components/ExperimentsOverview';
 import Impressum from './components/Impressum';
-import Treatment from './components/TreatmentView';
+import Condition from './components/conditionView';
 import Pathway from './components/Pathway';
 import LoginForm from './components/LoginForm';
 
@@ -20,7 +20,7 @@ import "./styles/home.css";
 import "./styles/result.css";
 import "./styles/search.css";
 import "./styles/graphs.css";
-import "./styles/treatment.css";
+import "./styles/condition.css";
 import "./styles/proteinview.css";
 import "./styles/experimentView.css";
 import "./styles/nightingale.css";
@@ -30,21 +30,21 @@ const root = createRoot(document.getElementById("root"));
 const NotFound = () => <div>Page not found.</div>;
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const handleLogin = (username, password) => {
-    if (username === process.env.USERNAME_WEBSITE && password === process.env.PASSWORD_WEBSITE){
-      setIsAuthenticated(true); 
-    } else{
-      setIsAuthenticated(false);
-      alert('Authentication failed, please check your username and password');
-    }
-  };
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // const handleLogin = (username, password) => {
+  //   if (username === process.env.USERNAME_WEBSITE && password === process.env.PASSWORD_WEBSITE){
+  //     setIsAuthenticated(true); 
+  //   } else{
+  //     setIsAuthenticated(false);
+  //     alert('Authentication failed, please check your username and password');
+  //   }
+  // };
 
-  if (!isAuthenticated) {
-    return <div >
-      <LoginForm onLogin={handleLogin} />
-    </div>;
-  }
+  // if (!isAuthenticated) {
+  //   return <div >
+  //     <LoginForm onLogin={handleLogin} />
+  //   </div>;
+  // }
 
   return (
     <div>
@@ -68,7 +68,7 @@ const App = () => {
         <Route path="/visualize/:proteinName" element={<ProteinVisualization />} />
         <Route path="/experiment/:experimentID" element={<ExperimentInfo />} />
         <Route path="/experiments" element={<ExperimentsOverview />} />
-        <Route path="/treatment/:selectedTreatment" element={<Treatment />} />
+        <Route path="/condition/:selectedcondition" element={<Condition />} />
         <Route path="/pathway" element={<Pathway />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

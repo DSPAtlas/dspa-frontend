@@ -47,7 +47,7 @@ const ExperimentOverview = () => {
 
 
   const handleRowClick = (experiment) => {
-    navigate(`/experiment/${experiment.lipexperiment_id}`);
+    navigate(`/experiment/${experiment.dpx_comparison}`);
   };
 
   const handleTaxonomyFilterChange = (selectedOptions) => {
@@ -94,7 +94,7 @@ const ExperimentOverview = () => {
     <table className="experiment-table">
       <thead>
         <tr>
-          <th>ID</th>
+          <th>DynaProt Experiment ID </th>
           <th>
             Taxonomy ID
             <Select
@@ -149,8 +149,7 @@ const ExperimentOverview = () => {
       </thead>
       <tbody>
         {filteredExperiments.map(experiment => (
-          <tr key={experiment.lipexperiment_id} onClick={() => handleRowClick(experiment)}>
-            <td>{experiment.lipexperiment_id}</td>
+          <tr key={experiment.dynaprot_experiment} onClick={() => handleRowClick(experiment)}>
             <td>{experiment.taxonomy_id}</td>
             <td>{experiment.perturbation || 'N/A'}</td>
             <td>{experiment.condition || 'N/A'}</td>

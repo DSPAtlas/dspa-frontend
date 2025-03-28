@@ -32,7 +32,7 @@ text.pep-key-label, text.protein-name-label {
     pointer-events: none; 
 }
 
-.treatment-section-wrapper {
+.condition-section-wrapper {
     flex-direction: column; 
     gap: 20px;
     width: 100%; 
@@ -40,7 +40,7 @@ text.pep-key-label, text.protein-name-label {
 }
 
 /* Shared styles for all sections */
-.treatment-section {
+.condition-section {
     width: 100%; /* Full width of the container */
     border: 1px solid #ddd; /* Add consistent border */
     border-radius: 5px; /* Optional: Rounded corners */
@@ -50,7 +50,7 @@ text.pep-key-label, text.protein-name-label {
     padding: 10px; /* Internal spacing */
 }
 
-.treatment-row {
+.condition-row {
     margin: 2px ; /* Adds 20px top and bottom, 10px left and right */
     padding: 0px; /* Optional: Adds padding inside the row */
     box-sizing: border-box; /* Ensures padding and borders are included in size calculations */
@@ -59,14 +59,14 @@ text.pep-key-label, text.protein-name-label {
 }
 
 
-.treatment-content-wrapper {
+.condition-content-wrapper {
     display: flex;
     flex-direction: row; 
     justify-content: space-between;
     align-items: flex-start;
 }
 
-.treatment-container {
+.condition-container {
     display: flex;
     gap: 20px;
     z-index: 10; 
@@ -74,7 +74,7 @@ text.pep-key-label, text.protein-name-label {
     box-sizing: border-box; 
 }
 
-.treatment-table-container {
+.condition-table-container {
     flex: 0 0 35%; /* Flex-shrink: 0, Flex-grow: 0, Basis: 20% */
     max-height: calc(100vh - 120px); /* Dynamic height based on viewport */
     overflow-y: auto; /* Allow vertical scrolling */
@@ -84,7 +84,7 @@ text.pep-key-label, text.protein-name-label {
 }
 
 
-.treatment-protein-container {
+.condition-protein-container {
     border: 1px solid #ddd; 
     flex: 0 0 65%;
     padding: 10px;
@@ -92,21 +92,21 @@ text.pep-key-label, text.protein-name-label {
 }
 
 
-.treatment-table-container table {
+.condition-table-container table {
     width: 100%;
     border-collapse: collapse;
     table-layout: auto;
 }
 
-.treatment-table-container th,
-.treatment-table-container td {
+.condition-table-container th,
+.condition-table-container td {
     padding: 10px;
     text-align: center;
     border: 1px solid #ddd;
     word-wrap: break-word;
 }
 
-.treatment-protein-experiment-wrapper {
+.condition-protein-experiment-wrapper {
     display: flex;
    /* justify-content: space-between;*/
    /* align-items: stretch;*/
@@ -115,26 +115,26 @@ text.pep-key-label, text.protein-name-label {
     box-sizing: border-box;
 }
 
-.treatment-table-container h2, .treatment-protein-container h2 {
+.condition-table-container h2, .condition-protein-container h2 {
     margin: 0; /* Reset default margins */
     text-align: center; /* Center-align headings */
 }
 
 /* Scrollbar customization for better aesthetics */
-.treatment-table-container::-webkit-scrollbar {
+.condition-table-container::-webkit-scrollbar {
     width: 8px;
 }
 
-.treatment-table-container::-webkit-scrollbar-thumb {
+.condition-table-container::-webkit-scrollbar-thumb {
     background-color: #888;
     border-radius: 4px;
 }
 
-.treatment-table-container::-webkit-scrollbar-thumb:hover {
+.condition-table-container::-webkit-scrollbar-thumb:hover {
     background-color: #555;
 }
 
-.treatment-protein-experiment-wrapper {
+.condition-protein-experiment-wrapper {
     display: flex;
    justify-content: space-between; 
     gap: 2px; 
@@ -142,7 +142,7 @@ text.pep-key-label, text.protein-name-label {
     flex-grow: 1;
 }
 
-.treatment-dropdown {
+.condition-dropdown {
     display: block;
     width: 100%; 
     padding: 15px 20px; 
@@ -177,13 +177,13 @@ select:focus {
     border-color: #999; /* Highlight the border on focus */
 }
 
-.treatment-goenrichment-container {
+.condition-goenrichment-container {
     display: flex;
     flex-direction: column; /* Stack header and chart vertically */
     width: 100%; /* Full width */
 }
 
-.treatment-goenrichment-container {
+.condition-goenrichment-container {
     margin-top: 20px;
     width: 100%;
     flex-direction: column;
@@ -235,7 +235,7 @@ select:focus {
     text-align: center; /* Center-align heading text */
 }
 
-.treatment-experiment-container {
+.condition-experiment-container {
     display: flex;
     flex-direction: column;
     width: 100%;

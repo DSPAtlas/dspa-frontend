@@ -62,7 +62,7 @@ const ExperimentInfo = () => {
                     <div className="experiment-metadata-container">
                         {/* Experiment Header */}
                         <div className="experiment-header">
-                            <h1>LiP Experiment ID: <span>{experimentData.experimentID}</span></h1>
+                            <h1>DynaProt Experiment Comparison ID: <span>{experimentData.experimentID}</span></h1>
                         </div>
                 
                         {/* Metadata Sections */}
