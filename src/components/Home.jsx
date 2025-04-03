@@ -52,7 +52,7 @@ function Home() {
     const controller = new AbortController();
     const fetchconditions = async () => {
         try {
-            const response = await fetch(`${config.apiEndpoint}condition/condition`, { signal: controller.signal });
+            const response = await fetch(`${config.apiEndpoint}condition/allconditions`, { signal: controller.signal });
             const data = await response.json();
             if (data.success && Array.isArray(data.conditions)) {
                 setconditions(data.conditions);

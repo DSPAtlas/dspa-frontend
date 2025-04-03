@@ -103,7 +103,7 @@ const Condition = () => {
 
     const fetchconditions = async (signal) => {
         try {
-            const response = await fetch(`${config.apiEndpoint}condition/condition`, signal);
+            const response = await fetch(`${config.apiEndpoint}condition/allconditions`, signal);
             const data = await response.json();
 
             if (!isMounted.current) return;
@@ -192,7 +192,7 @@ const Condition = () => {
             }))
         ).filter(d => d.adj_pval < 0.9);
     
-        const experimentIDs = Array.from(new Set(goEnrichmentData.map(d => d.experimentID)));
+        const experimentIDs = Array.from(new Set(data.experimentIDsList.map(d => d.dpx_comparison)));
         const termMap = new Map();
     
         if (data.conditionData.goEnrichmentList?.length > 0) {
@@ -225,9 +225,10 @@ const Condition = () => {
       
         const fetchconditionData = async (signal) =>{
             setLoading(true);
-            const url = `${config.apiEndpoint}condition/condition?condition=${selectedcondition}`;
+            const url = `${config.apiEndpoint}condition/data?condition=${selectedcondition}`;
             try {
                 const rawData = await fetchData(url, signal);
+                console.log("rawdata", rawData);
                 if (!abortController.signal.aborted) {
                     const {
                         goEnrichmentData,
@@ -382,7 +383,7 @@ const Condition = () => {
             ) : (
                 conditionData && conditionData.condition && (
                     <div>
-                        <h1>condition {conditionData.condition}</h1><br />
+                        <h1>Condition: {conditionData.condition}</h1><br />
                     </div>
                 )
             )}

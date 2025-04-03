@@ -54,8 +54,8 @@ const App = () => {
             <a href="/" className="navigation-bar-item navigation-button navigation-wide">DYNAPROT</a>
             <div className="navigation-right navigation-hide-small">
               <a href="/" className="navigation-bar-item navigation-button">HOME</a>
-              <a href="/search" className="navigation-bar-item navigation-button"> SEARCH</a>
-              <a href="/experiments" className="navigation-bar-item navigation-button"> EXPERIMENT</a>
+              <a href="/search" className="navigation-bar-item navigation-button"> FIND PROTEINS</a>
+              <a href="/experiments" className="navigation-bar-item navigation-button"> EXPERIMENTS</a>
               <a href="/impressum" className="navigation-bar-item navigation-button"> IMPRESSUM</a>
             </div>
           </div>  
