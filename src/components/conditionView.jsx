@@ -191,8 +191,7 @@ const Condition = () => {
                 accessions: d.accessions ? d.accessions.split(";").map(a => a.trim()) : []
             }))
         ).filter(d => d.adj_pval < 0.9);
-    
-        const experimentIDs = Array.from(new Set(data.experimentIDsList.map(d => d.dpx_comparison)));
+
         const termMap = new Map();
     
         if (data.conditionData.goEnrichmentList?.length > 0) {
@@ -240,7 +239,7 @@ const Condition = () => {
                     
                     setconditionData(rawData.conditionData);
                     setGoEnrichmentData(goEnrichmentData);
-                    setExperimentIDs(experimentIDs);
+                    setExperimentIDs(rawData.conditionData.experimentIDsList);
                     setAllProteinData(proteinData);
                     setFilteredExperimentData(proteinData);
                     setAllGoTerms(allGoTerms);
