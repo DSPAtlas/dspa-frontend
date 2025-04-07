@@ -11,14 +11,16 @@ function Home() {
   const { searchResults: initialSearchResults } = location.state || {};
   const [searchResults, setSearchResults] = useState(initialSearchResults || null);
   const [conditions, setconditions] = useState([]);
+  // const [selectedCondition, setSelectedCondition] = useState(conditionParam || "");
 
 
   const navigate = useNavigate();
 
   const handleconditionChange = (event) => {
-    const selectedcondition = event.target.value;
-    if (selectedcondition) {
-      navigate(`/condition/${selectedcondition}`);
+    const selectedCondition = event.target.value;
+    if (selectedCondition) {
+     // setSelectedCondition(selectedCondition); 
+      navigate(`/condition/${selectedCondition}`);
     }
   };
 

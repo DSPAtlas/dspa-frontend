@@ -44,28 +44,30 @@ const GOEnrichmentVisualization = memo(({ goEnrichmentData, chartRef }) => {
 
     const setup = useMemo(() => {
         if (!goEnrichmentData || goEnrichmentData.length === 0) {
-            return null; // Return null if data is not available
+            return null; 
         }
-
+    
         const dynaprotColors = [
             "#be9fd2", "#d89853", "#b3c5da", "#d35eb6", "#71b6c8", "#d9ce74", "#99c2c5"
         ];
 
-        const experimentIDs = Array.from(new Set(goEnrichmentData.map(d => d.experimentID)));
-        const groupedData = d3.groups(goEnrichmentData, d => d.term);
+        const experimentIDs = Array.from(new Set(goEnrichmentData.map(d => d.dpx_comparison)));
+        const groupedData = d3.groups(goEnrichmentData, d => d.go_term);
         const maxAdjPValLog = d3.max(goEnrichmentData, d => -Math.log10(d.adj_pval) || 0);
+    
         const colorScale = d3.scaleOrdinal()
             .domain(experimentIDs)
             .range(dynaprotColors);
-
+    
         return { experimentIDs, groupedData, maxAdjPValLog, colorScale };
     }, [goEnrichmentData]);
+    
 
     const renderChart = (containerWidth) => {
         if (!setup || !isMounted.current) return;
         const { experimentIDs, groupedData, maxAdjPValLog, colorScale } = setup;
         const dynamicHeight = Math.max(400, maxAdjPValLog * 2 * groupedData.length);
-        let maxLabelWidth = d3.max(experimentIDs, id => id.length * 12);
+        let maxLabelWidth = d3.max(experimentIDs, id => (id ? id.length * 12 : 0));
         let margin = { top: 50, right: maxLabelWidth + 40, bottom: 250, left: 100 };
         let width = containerWidth - margin.left - margin.right;
         let height = dynamicHeight - margin.top - margin.bottom;
@@ -110,15 +112,19 @@ const GOEnrichmentVisualization = memo(({ goEnrichmentData, chartRef }) => {
             .data(groupedData)
             .enter().append("g")
             .attr("transform", d => `translate(${xScale(d[0])}, 0)`);
-
+        
         barGroups.selectAll("rect")
-            .data(d => d[1].map(data => ({ ...data, xGroup: d[0] })))
+            .data(d => d[1].map(data => ({
+                ...data,
+                experimentID: data.dpx_comparison // Fix: correctly extract experiment ID
+            })))
             .enter().append("rect")
-            .attr("x", d => xSubgroup(d.experimentID))
+            .attr("x", d => xSubgroup(d.experimentID))  // Corrected to use experimentID
             .attr("y", d => yScale(-Math.log10(d.adj_pval)))
             .attr("width", xSubgroup.bandwidth())
             .attr("height", d => height - yScale(-Math.log10(d.adj_pval)))
-            .attr("fill", d => colorScale(d.experimentID))
+            .attr("fill", d => colorScale(d.experimentID));
+        
            // .on("click", d => onGoTermClick(d.term, d.accessions));
 
         const legend = svg.append("g")

@@ -36,7 +36,7 @@ const ProteinScoresTable = ({ experimentData, onProteinClick, displayedProtein, 
                 >
                     <option value="">All</option>
                     {goTerms && goTerms.map((term, index) => (
-                        <option key={index} value={term.term}>{term.term}</option>
+                        <option key={index} value={term.go_term}>{term.go_term}</option>
                     ))}
                 </select>
             </div>
@@ -72,7 +72,8 @@ const ProteinScoresTable = ({ experimentData, onProteinClick, displayedProtein, 
 
 
 const Condition = () => {
-    const { selectedcondition: conditionParam } = useParams();
+    const { selectedCondition: conditionParam } = useParams();
+    const [selectedCondition, setSelectedCondition] = useState(conditionParam || "");
    
     const chartRefGO = useRef(null);
     const chartRefVolcano = useRef(null);
@@ -85,7 +86,7 @@ const Condition = () => {
     const navigate = useNavigate();
    
     const [loading, setLoading] = useState(false);
-    const [conditionData, setconditionData] = useState([]);
+    const [differentialAbundanceData, setDifferentialAbundanceData] = useState([]);
     const [goEnrichmentData, setGoEnrichmentData] = useState([]);
     const [experimentIDs, setExperimentIDs] = useState([]);
     const [error, setError] = useState('');
@@ -95,7 +96,7 @@ const Condition = () => {
     
     const [selectedExperiment, setSelectedExperiment] = useState("");
     const [conditions, setconditions] = useState([]);
-    const [selectedcondition, setSelectedcondition] = useState(conditionParam || conditions[0]);
+    
    
     const [filteredExperimentData, setFilteredExperimentData] = useState([]); 
     const [selectedGoTerm, setSelectedGoTerm] = useState(null);
@@ -179,72 +180,23 @@ const Condition = () => {
         }
     }, [pdbIds]);
     
-    function processData(data) {
-        if (!data.conditionData) {
-            throw new Error("conditionData is missing from the response");
-        }
-    
-        const goEnrichmentData = data.conditionData.goEnrichmentList.flatMap(experiment =>
-            experiment.data.map(d => ({
-                ...d,
-                experimentID: experiment.experimentID,
-                accessions: d.accessions ? d.accessions.split(";").map(a => a.trim()) : []
-            }))
-        ).filter(d => d.adj_pval < 0.9);
-
-        const termMap = new Map();
-    
-        if (data.conditionData.goEnrichmentList?.length > 0) {
-            for (const item of data.conditionData.goEnrichmentList) {
-                for (const term of item.data) {
-                    const accessions = term.accessions ? term.accessions.split(';').map(accession => accession.trim()) : [];
-                    if (!termMap.has(term.term)) {
-                        termMap.set(term.term, {
-                            term: term.term,
-                            adj_pval: term.adj_pval,
-                            dpx_comparison: term.dpx_comparison,
-                            accessions
-                        });
-                    }
-                }
-            }
-        }
-    
-        return {
-            goEnrichmentData,
-            experimentIDs,
-            allGoTerms: [...termMap.values()],
-            proteinData: data.conditionData.proteinScoresTable,
-            initialProtein: data.conditionData.proteinScoresTable?.[0]?.proteinAccession
-        };
-    }
-    
     useEffect(() => {
         const abortController = new AbortController();
       
         const fetchconditionData = async (signal) =>{
             setLoading(true);
-            const url = `${config.apiEndpoint}condition/data?condition=${selectedcondition}`;
+            const url = `${config.apiEndpoint}condition/data?condition=${selectedCondition}`;
             try {
                 const rawData = await fetchData(url, signal);
-                console.log("rawdata", rawData);
                 if (!abortController.signal.aborted) {
-                    const {
-                        goEnrichmentData,
-                        experimentIDs,
-                        allGoTerms,
-                        proteinData,
-                        initialProtein
-                    } = processData(rawData);
-                    
-                    setconditionData(rawData.conditionData);
-                    setGoEnrichmentData(goEnrichmentData);
+                    setSelectedCondition(rawData.conditionData.condition);
+                    setDifferentialAbundanceData(rawData.conditionData.differentialAbundanceDataList);
+                    setGoEnrichmentData(rawData.conditionData.goEnrichmentData);
                     setExperimentIDs(rawData.conditionData.experimentIDsList);
-                    setAllProteinData(proteinData);
-                    setFilteredExperimentData(proteinData);
-                    setAllGoTerms(allGoTerms);
-                    setDisplayedProtein(initialProtein);  
-                    
+                    setAllProteinData(rawData.conditionData.proteinScoresTable);
+                    setFilteredExperimentData(rawData.conditionData.proteinScoresTable);
+                    setAllGoTerms(rawData.conditionData.goTerms);
+                    setDisplayedProtein(rawData.conditionData.proteinScoresTable?.[0]?.proteinAccession);      
                 }
             } catch (error) {
                 if (!signal.aborted && isMounted.current) {
@@ -261,32 +213,43 @@ const Condition = () => {
             abortController.abort(); 
             isMounted.current = false;
         };
-    }, [selectedcondition])
+    }, [selectedCondition])
 
 
     const handleGoTermSelect = (selectedTerm) => {
         setSelectedGoTerm(selectedTerm);
-        if (selectedTerm === "" && isMounted.xurrent) {
+    
+        if (selectedTerm === "" && isMounted.current) {
             setFilteredExperimentData(allProteinData); 
-        } else {
-            const termDetails = allGoTerms.find(term => term.term === selectedTerm);
-            if (termDetails && termDetails.accessions && isMounted.current) {
+        } else if (allGoTerms) {
+         
+            const termDetails = allGoTerms.find(term => term.go_term === selectedTerm);
+            
+            if (termDetails) {
+                const accessionsArray = termDetails.accessions.map(accession => accession.trim());
+    
                 const filteredData = allProteinData.filter(proteinData =>
-                    termDetails.accessions.includes(proteinData.proteinAccession)
+                    accessionsArray.includes(proteinData.proteinAccession?.trim())
                 );
+    
                 setFilteredExperimentData(filteredData);
             } else {
                 setFilteredExperimentData([]); 
             }
+        } else {
+            console.warn("allGoTerms is not available or not an array");
+            setFilteredExperimentData([]); 
         }
     };
     
     const handleconditionChange = (event) => {
-        const newcondition = event.target.value;
-        setSelectedcondition(newcondition);
-        navigate(`/condition/${newcondition}`);
-    };
-
+        const selectedCondition = event.target.value;
+        if (selectedCondition) {
+          setSelectedCondition(selectedCondition); 
+          navigate(`/condition/${selectedCondition}`);
+        }
+      };
+      
     const handleProteinClick = (proteinAccession) => {
         setDisplayedProtein(proteinAccession);
         setSelectedExperiment(""); 
@@ -330,12 +293,12 @@ const Condition = () => {
                 <div 
                     style={contentStyle(TABS.VOLCANO_PLOT)} 
                     ref={chartRefVolcano} 
-                    key={`volcano-plot-${selectedcondition}`} 
+                    key={`volcano-plot-${selectedCondition}`} 
                     className="condition-section goenrichment-chart-content"
                 >
-                    {conditionData?.differentialAbundanceDataList && (
+                    {differentialAbundanceData && (
                         <VolcanoPlot
-                            differentialAbundanceDataList={conditionData?.differentialAbundanceDataList}
+                            differentialAbundanceDataList={differentialAbundanceData}
                             chartRef={chartRefVolcano}
                             highlightedProtein={displayedProtein}
                         />
@@ -344,7 +307,7 @@ const Condition = () => {
                 <div 
                     style={contentStyle(TABS.GENE_ONTOLOGY)} 
                     ref={chartRefGO} 
-                    key={`go-plot-${selectedcondition}`} 
+                    key={`go-plot-${selectedCondition}`} 
                     className="condition-section goenrichment-chart-content"
                 >
                     {goEnrichmentData && chartRefGO.current && (
@@ -366,7 +329,7 @@ const Condition = () => {
                 <label htmlFor="conditionSelect">Select condition: </label>
                 <select 
                     id="conditionSelect" 
-                    value={selectedcondition} 
+                    value={selectedCondition} 
                     onChange={handleconditionChange}
                 >
                     {conditions.map((condition) => (
@@ -380,9 +343,9 @@ const Condition = () => {
             ) : error ? (
                 <p>Error: {error}</p>
             ) : (
-                conditionData && conditionData.condition && (
+                differentialAbundanceData && selectedCondition && (
                     <div>
-                        <h1>Condition: {conditionData.condition}</h1><br />
+                        <h1>Condition: {selectedCondition}</h1><br />
                     </div>
                 )
             )}

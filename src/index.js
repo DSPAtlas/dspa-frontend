@@ -68,7 +68,7 @@ const App = () => {
         <Route path="/visualize/:proteinName" element={<ProteinVisualization />} />
         <Route path="/experiment/:experimentID" element={<ExperimentInfo />} />
         <Route path="/experiments" element={<ExperimentsOverview />} />
-        <Route path="/condition/:selectedcondition" element={<Condition />} />
+        <Route path="/condition/:selectedCondition" element={<Condition />} />
         <Route path="/pathway" element={<Pathway />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
