@@ -17,3 +17,18 @@
     border-color: #888;
     outline: none;
 }
+
+.protein-result-container {
+    overflow-y: auto; /* Scrollable overflow content */
+    padding: 20px;
+    padding-top: 80px;
+    background-color: transparent;
+    -webkit-font-smoothing: auto;
+    -moz-font-smoothing: auto;
+    -moz-osx-font-smoothing: grayscale;
+    font-smoothing: auto;
+    text-rendering: optimizeLegibility;
+    font-smooth: always;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}

@@ -7,19 +7,6 @@
 
 
 /* Results container styling */
-.result-container {
-    overflow-y: auto; /* Scrollable overflow content */
-    padding: 2px;
-    background-color: transparent;
-    -webkit-font-smoothing: auto;
-    -moz-font-smoothing: auto;
-    -moz-osx-font-smoothing: grayscale;
-    font-smoothing: auto;
-    text-rendering: optimizeLegibility;
-    font-smooth: always;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
-}
 
 /* Basic reset for margins and paddings */
 h1, h2, h3, p {

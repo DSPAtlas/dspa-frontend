@@ -152,23 +152,10 @@ const ProteinVisualization = () => {
         fetchProteinData();
     }, [fetchProteinData]);
 
-    const handleSearchTermChange = (event) => {
-        setSearchTerm(event.target.value);
-    };
-
-    const handleSubmit = async(event) => {
-        event.preventDefault();
-        
-        try {
-            navigate('/search', { state: { searchTerm: searchTerm } });
-        } catch (err) {
-            setError(err.message);
-        }
-    };
 
     return (
         <>
-            <div className="results-container">
+            <div className="protein-result-container">
                 {proteinData && <ProteinVisualizationComponents proteinData={proteinData} pdbIds={pdbIds} loading={loading} error={error}/>}
             </div>
         </>

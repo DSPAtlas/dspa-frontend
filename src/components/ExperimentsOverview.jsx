@@ -47,7 +47,7 @@ const ExperimentOverview = () => {
 
 
   const handleRowClick = (experiment) => {
-    navigate(`/experiment/${experiment.dpx_comparison}`);
+    navigate(`/experiment/${experiment.dynaprot_experiment}`);
   };
 
   const handleTaxonomyFilterChange = (selectedOptions) => {
@@ -90,7 +90,7 @@ const ExperimentOverview = () => {
 
   return (
     <div className="experiment-overview-container">
-    <h1>Experiments</h1>
+    <h1 className= "experiment-header">Experiments</h1>
     <table className="experiment-table">
       <thead>
         <tr>
@@ -148,16 +148,17 @@ const ExperimentOverview = () => {
         </tr>
       </thead>
       <tbody>
-        {filteredExperiments.map(experiment => (
-          <tr key={experiment.dynaprot_experiment} onClick={() => handleRowClick(experiment)}>
-            <td>{experiment.taxonomy_id}</td>
-            <td>{experiment.perturbation || 'N/A'}</td>
-            <td>{experiment.condition || 'N/A'}</td>
-            <td>{experiment.protease|| 'N/A'}</td>
-            <td>{experiment.submission_timestamp}</td>
-          </tr>
-        ))}
-      </tbody>
+      {filteredExperiments.map(experiment => (
+        <tr key={experiment.dynaprot_experiment} onClick={() => handleRowClick(experiment)}>
+          <td>{experiment.dynaprot_experiment}</td>
+          <td>{experiment.taxonomy_id}</td>
+          <td>{experiment.perturbation || 'N/A'}</td>
+          <td>{experiment.condition || 'N/A'}</td>
+          <td>{experiment.protease || 'N/A'}</td>
+          <td>{experiment.submission_timestamp}</td>
+        </tr>
+      ))}
+</tbody>
     </table>
   </div>
 );

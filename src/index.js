@@ -23,7 +23,9 @@ import "./styles/graphs.css";
 import "./styles/condition.css";
 import "./styles/proteinview.css";
 import "./styles/experimentView.css";
+import "./styles/experimentOverview.css";
 import "./styles/nightingale.css";
+import "./styles/impressum.css";
 
 const root = createRoot(document.getElementById("root"));
 

@@ -52,7 +52,7 @@
     font-size:120px!important
   }.dspa-jumbo{font-size:64px!important}
 
-  .dspa-text-blue {
+.dspa-text-blue {
     position: absolute; /* Maintains absolute positioning */
     top: 20%; /* Adjust this value to move it up or down to find the perfect center */
     left: 50%; /* Centers horizontally */
@@ -62,10 +62,12 @@
     text-align: center; /* Ensures the text itself is centered */
 }
 
-  .dspa-logo-text{
+.dspa-logo-text{
     margin-top: 100px;
     font-size:120px;
     color:#0A2F59;
+    z-index: 1;
+    position: relative;
 }
 
 @media (min-width:993px){.dspa-modal-content{
