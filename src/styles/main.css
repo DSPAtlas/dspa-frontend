@@ -23,3 +23,26 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
   color: transparent; /* Makes text transparent */
   pointer-events: none; /* Disables interaction with elements */
 }
+
+:root {
+  --bg-color: #ffffff; 
+  --select-color: #bfbfbf;       
+  --text-color: #262626;       /* Universal text color */
+  --line-color: #262626;       /* Universal border/line color */
+  --accent-color: #ff6699;     /* Optional: use for highlights */
+  --font-size-base: 17px;      /* Universal font size */
+  --font-family-base: 'Raleway', sans-serif;
+}
+
+
+svg text {
+  font-size: 17px;
+  font-family: inherit;
+  color: #262626;
+}
+
+html, body {
+  font-size: 17px;
+  font-family: 'Raleway','Arial', sans-serif; /* optional: set your desired font */
+  color:#262626 ;
+}

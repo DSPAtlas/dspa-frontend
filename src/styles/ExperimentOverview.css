@@ -12,20 +12,20 @@
   
   .experiment-table th,
   .experiment-table td {
-    border: 1px solid #ddd;
+    border: 1px solid var(--select-color); ;
     padding: 8px;
     text-align: left;
   }
   
   .experiment-table th {
-    background-color: #f2f2f2;
+    background-color: var(--bg-color); ;
     position: sticky;
     top: 0;
     z-index: 1; 
   }
   
   .experiment-table tr:hover {
-    background-color: #f1f1f1;
+    background-color: var(--bg-color); ;
   }
   
   .experiment-table tr {

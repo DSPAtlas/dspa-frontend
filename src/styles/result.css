@@ -16,7 +16,6 @@ h1, h2, h3, p {
 
 /* Protein header styling */
 .protein-header {
-    color: #333;
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 10px;
@@ -26,30 +25,24 @@ h1, h2, h3, p {
 /* Result text styling */
 .result-text {
     display: block;
-    color: #666;
-    font-size: 18px;
     margin-bottom: 15px;
 }
 
 /* Tooltip container styling */
 .tooltip-container {
-    background-color: #f4f4f4;
+    background-color:var(--bg-color); 
     padding: 10px;
     border-radius: 8px;
-    color: #333;
     font-family: "Raleway", sans-serif;
-    font-size: 14px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for consistency */
 }
 
 .simple-tooltip {
-    background-color: white;
-    border: 1px solid #333;
+    background-color: var(--bg-color); 
+    border: 1px solid var(--select-color); 
     border-radius: 4px;
     padding: 8px;
-    color: #333;
     font-family: "Raleway", sans-serif;
-    font-size: 18px;
     text-align: left;
    /*  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);*/
     white-space: nowrap; /* Prevents line breaks */
@@ -82,7 +75,7 @@ h1, h2, h3, p {
 }
 
 .pdb-selection-container thead {
-    background-color: #f9f9f9; /* Optional styling for header */
+    background-color: var(--bg-color);  /* Optional styling for header */
     position: sticky; /* Keeps the header fixed */
     top: 0;
     z-index: 1;
@@ -119,29 +112,26 @@ h1, h2, h3, p {
 }
 
 .experiment-button {
-    background-color: #ffffff; /* Consistent white background */
-    color: #444; /* Neutral text color */
+    background-color: var(--bg-color); 
     cursor: pointer; /* Indicate clickable buttons */
     padding: 10px 20px; /* Adequate padding for comfortable clicking */
     border-radius: 8px; /* Rounded corners for modern look */
-    border: 1px solid #ddd; /* Subtle border for clarity */
+    border: 1px solid var(--select-color); 
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
     min-width: 120px; /* Ensure buttons have a consistent width */
     text-align: center; /* Center align button text */
-    font-size: 16px; /* Maintain legible font size */
     transition: all 0.3s ease; /* Smooth transition for hover effects */
 }
 
 .experiment-button:hover {
-    background-color: #f5f5f5; /* Light hover effect */
-    border: 1px solid #bbb; /* Slightly darker border on hover */
+    background-color: var(--bg-color); 
+    border: 1px solid var(--select-color);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Enhance shadow on hover */
 }
 
 .experiment-button.selected {
-    background-color: #d9d9d9; /* Highlight for selected state */
-    color: #222; /* Slightly darker text for contrast */
-    border: 2px solid #444; /* Emphasized border */
+    background-color: var(--bg-color); /* Highlight for selected state */
+    border: 2px solid var(--select-color); 
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3); /* Stronger shadow */
 }
 

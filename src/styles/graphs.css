@@ -1,7 +1,6 @@
 /* styles.css */
 .axis text {
     font-family: "Raleway", sans-serif; 
-    font-size: 16px;
 }
 
 .title {
@@ -20,3 +19,8 @@
 .tooltip {
     font-family: "Raleway", sans-serif; 
 }
+
+svg text {
+    font-size: 17px;
+    font-family: inherit;
+  }

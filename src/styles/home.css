@@ -164,7 +164,6 @@
 }
   .box p.description {
     margin-top: 10px;
-    font-size: 14px;
     color: #555;
   }
   
@@ -181,7 +180,6 @@
   .box select,
   .box input {
     padding: 10px;
-    font-size: 16px;
     border: 1px solid #ddd;
     border-radius: 5px;
     width: 100%; /* Ensures the input fills the box width */
@@ -244,3 +242,4 @@
     display: block;
     margin-bottom: 30px; /* Adds space after the publication link */
   }
+

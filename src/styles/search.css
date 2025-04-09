@@ -24,9 +24,7 @@
 /* Heading for the search container */
 .search-container h2 {
     font-family: 'Raleway', sans-serif;
-    font-size: 24px;
     margin-bottom: 20px;
-    color: #333;
 }
 
 /* Wrapper for the search form */
@@ -42,7 +40,6 @@
 .search-input {
     width: 100%; /* Full width */
     padding: 15px;
-    font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
@@ -53,7 +50,6 @@
 /* Styling for the button */
 .search-button {
     padding: 10px 20px;
-    font-size: 16px;
     color: white;
     background-color: #0A2F59;
     border: none;
@@ -136,7 +132,6 @@
     color: #0A2F59; /* Link-style color */
     text-decoration: underline;
     cursor: pointer;
-    font-size: 16px;
     padding: 10px 20px; /* Add spacing around the button */
     transition: background-color 0.3s ease;
   }
@@ -159,9 +154,7 @@
   
   /* Adjust the no results message */
   .results-search-container p {
-    font-size: 16px;
     text-align: center;
     width: 100%;
     margin-top: 20px;
-    color: #666;
   }

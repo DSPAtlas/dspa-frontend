@@ -1,33 +1,30 @@
 /* Add this in your main.css or within a <style> tag in your component */
 .header-or-tab {
-    font-family: 'Raleway', Arial, sans-serif; /* Example font */
-    font-size: 16px; /* Adjust size as needed */
     text-align: center;
-    background-color: #f9f9f9; /* Light grey background */
-    color: hsl(0, 0%, 20%); /* Dark grey text */
+    background-color: var(--bg-color); /* Light grey background */
     padding: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--select-color);
     cursor: pointer;
 }
 
 .tab-button {
     padding: 10px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
+    border: 1px solid var(--select-color);
+    background-color: var(--bg-color);;
     cursor: pointer;
 }
 
 .tab-button.active {
-    background-color: #e0e0e0;
+    background-color:var(--bg-color);;
 }
 
 .highlighted {
-    stroke: black;
+    stroke: var(--text-color);
     stroke-width: 1.5px;
 }
 
 text.pep-key-label, text.protein-name-label {
-    fill: black;
+    fill: var(--text-color);
     stroke: none;
     pointer-events: none; 
 }
@@ -37,17 +34,19 @@ text.pep-key-label, text.protein-name-label {
     gap: 20px;
     width: 100%; 
     box-sizing: border-box; 
+    max-height: calc(60vh - 120px);
 }
 
 /* Shared styles for all sections */
 .condition-section {
     width: 100%; /* Full width of the container */
-    border: 1px solid #ddd; /* Add consistent border */
+    border: 1px solid var(--select-color); /* Add consistent border */
     border-radius: 5px; /* Optional: Rounded corners */
-    background-color: #fff; /* Background for consistency */
+    background-color: var(--bg-color); /* Background for consistency */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
     box-sizing: border-box; /* Include padding and borders in width */
     padding: 10px; /* Internal spacing */
+    max-height: calc(60vh - 120px);
 }
 
 .condition-row {
@@ -76,19 +75,20 @@ text.pep-key-label, text.protein-name-label {
 
 .condition-table-container {
     flex: 0 0 35%; /* Flex-shrink: 0, Flex-grow: 0, Basis: 20% */
-    max-height: calc(100vh - 120px); /* Dynamic height based on viewport */
+    max-height: calc(60vh - 120px);
     overflow-y: auto; /* Allow vertical scrolling */
-    border: 1px solid #ddd; /* Optional: Border for clarity */
+    border: 1px solid var(--select-color); /* Optional: Border for clarity */
     box-sizing: border-box;
     padding: 10px;
 }
 
 
 .condition-protein-container {
-    border: 1px solid #ddd; 
+    border: 1px solid var(--select-color); 
     flex: 0 0 65%;
     padding: 10px;
     box-sizing: border-box; 
+    max-height: calc(60vh - 120px);
 }
 
 
@@ -102,7 +102,7 @@ text.pep-key-label, text.protein-name-label {
 .condition-table-container td {
     padding: 10px;
     text-align: center;
-    border: 1px solid #ddd;
+    border: 1px solid var(--select-color);
     word-wrap: break-word;
 }
 
@@ -126,12 +126,11 @@ text.pep-key-label, text.protein-name-label {
 }
 
 .condition-table-container::-webkit-scrollbar-thumb {
-    background-color: #888;
     border-radius: 4px;
 }
 
 .condition-table-container::-webkit-scrollbar-thumb:hover {
-    background-color: #555;
+    background-color: var(--select-color);
 }
 
 .condition-protein-experiment-wrapper {
@@ -146,9 +145,8 @@ text.pep-key-label, text.protein-name-label {
     display: block;
     width: 100%; 
     padding: 15px 20px; 
-    font-size: 20px;
     line-height: 2; 
-    background-color: #ffffff; 
+    background-color: var(--bg-color); 
     border-radius: 4px; /* Rounded corners for a modern look */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
     -webkit-appearance: none; /* Removes default styling in WebKit browsers */
@@ -164,17 +162,16 @@ text.pep-key-label, text.protein-name-label {
 
 select {
     padding: 10px; /* Increase padding for better appearance */
-    font-size: 16px; /* Ensure the text is legible */
-    border: 1px solid #ccc; /* Add a border for visibility */
+    border: 1px solid var(--select-color); /* Add a border for visibility */
     border-radius: 4px; /* Round the edges */
-    background-color: #fff; /* Ensure the background is white */
+    background-color: var(--bg-color); /* Ensure the background is white */
     cursor: pointer;
     appearance: none; /* Remove the default dropdown arrow styling */
 }
 
 select:focus {
     outline: none; /* Remove the default blue outline */
-    border-color: #999; /* Highlight the border on focus */
+    border-color: var(--select-color); /* Highlight the border on focus */
 }
 
 .condition-goenrichment-container {
@@ -200,14 +197,16 @@ select:focus {
     max-width: 100%; /* Prevent overflow */
     overflow: hidden; /* Hide anything exceeding the bounds */
     resize: both; /* Allow resizing for debugging */
+    justify-content: center;  /* <-- vertical centering */
+    align-items: center;      /* <-- horizontal centering */
 }
 
 .goenrichment-chart-container {
     width: 100%; /* Full width of the container */
-    max-height: calc(100vh - 120px); /* Adjust height based on viewport */
+    max-height: calc(30vh - 120px); /* Adjust height based on viewport */
     overflow-y: auto; /* Allow vertical scrolling if needed */
     padding: 10px;
-    border: 1px solid #ddd; /* Optional: Border for clarity */
+    border: 1px solid var(--select-color); /* Optional: Border for clarity */
     box-sizing: border-box;
     margin: 20px 0; /* Add spacing around the container */
     display: flex;
@@ -240,10 +239,10 @@ select:focus {
     flex-direction: column;
     width: 100%;
     padding: 20px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--select-color);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
-    background-color: #fff;
+    background-color: var(--bg-color);
     box-sizing: border-box;
 }
 
@@ -259,10 +258,10 @@ select:focus {
     flex: 1 1 calc(20% - 20px); /* Each box takes 20% of width minus gap */
     max-width: 20%;
     padding: 20px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--select-color);
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background-color: #f9f9f9;
+    background-color: var(--bg-color);
     text-align: center;
     box-sizing: border-box;
     transition: all 0.3s ease;
@@ -270,23 +269,17 @@ select:focus {
 
 /* Hover effect for experiment boxes */
 .experiment-box:hover {
-    background-color: #f0f0f0;
+    background-color: var(--bg-color);
     transform: translateY(-2px); /* Slight lift effect */
 }
 
 /* Experiment box heading */
 .experiment-box h2 {
-    font-family: 'Raleway', sans-serif;
-    font-size: 18px;
     margin-bottom: 10px;
-    color: #333;
 }
 
 /* Placeholder text */
 .experiment-box p {
-    font-family: 'Raleway', sans-serif;
-    font-size: 14px;
-    color: #666;
     margin: 0;
 }
 
@@ -305,10 +298,9 @@ select:focus {
 .go-term-dropdown {
     width: 100%;
     padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--select-color);
     border-radius: 4px;
-    background-color: #fff;
+    background-color: var(--bg-color);
     cursor: pointer;
     appearance: none;
 }
@@ -318,7 +310,10 @@ table {
     box-sizing: border-box; 
 }
 
-/* Optional: Style adjustments to ensure visual consistency */
-table, .go-term-dropdown {
+
+
+.dose-response-d3-container text {
+    font-size: var(---font-size-base) !important;
     font-family: 'Raleway', Arial, sans-serif;
-}
+  }
+  
