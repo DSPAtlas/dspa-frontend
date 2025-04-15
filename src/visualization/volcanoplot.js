@@ -192,7 +192,7 @@ const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein}) => {
 
         </div>
         <div style={{ position: 'relative' }}>
-        <div id="html-tooltip" className="html-tooltip" />
+        <div id="html-tooltip" className="html-tooltip-volcano" />
       <div
         ref={svgRef}
         className="volcano-plot-section"

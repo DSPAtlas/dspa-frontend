@@ -481,3 +481,12 @@ table {
     background-color: var(--select-color); 
     border-left: var(--border); 
 }
+
+.html-tooltip-volcano{
+    background-color: var(--shading-color); 
+    font-family: var(---font-family-base);
+    font-size: var(---font-size-base)!important;
+    border: 2px solid #cc00cc; 
+    padding: var(--padding); 
+    border-radius: var(--border-radius); 
+}
