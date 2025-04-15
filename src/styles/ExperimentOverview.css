@@ -1,31 +1,31 @@
 .experiment-overview-container {
-    padding: 20px;
-    margin-top:120px;
+    padding: var(--gap);
+    margin-top: 120px;
   }
   
   .experiment-table {
     width: 100%;
     border-collapse: collapse;
     border-spacing: 0;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--box-shadow);
   }
   
   .experiment-table th,
   .experiment-table td {
-    border: 1px solid var(--select-color); ;
-    padding: 8px;
+    border:var(--border);
+    padding: var(--padding);
     text-align: left;
   }
   
   .experiment-table th {
-    background-color: var(--bg-color); ;
+    background-color: var(--bg-color); 
     position: sticky;
     top: 0;
     z-index: 1; 
   }
   
   .experiment-table tr:hover {
-    background-color: var(--bg-color); ;
+    background-color: var(--bg-color); 
   }
   
   .experiment-table tr {
@@ -33,10 +33,10 @@
   }
   
   .experiment-header{
-    color: #102e54; /* Dark grey for contrast */
-    font-size: 24px; /* Larger font size for emphasis */
-    font-weight: bold; /* Bold font for importance */
-    margin-bottom: 10px; /* Space below the header */
+    color: var(--text-color-header);
+    font-size: var(--font-size-header);
+    font-weight: bold; 
+    margin-bottom: 10px; 
     margin-top: 100px;
     text-align: center;
 }

@@ -19,7 +19,7 @@ const defaultAttributes = {
     "margin-left": "0",
     "margin-color": "white",
     "highlight-event": "onmouseover",
-    "highlight-color": "rgb(235, 190, 234)"
+    "highlight-color": "rgb(255, 210, 128)"
 };
 
 const NightingaleComponent = ({
@@ -42,6 +42,7 @@ const NightingaleComponent = ({
     const siteRef = useRef(null);
     const regionRef = useRef(null);
     const structureRef = useRef(null);
+    console.log("proteindata", proteinData);
 
     const [refreshStructureKey, setRefreshStructureKey] = useState(0);
 
@@ -61,7 +62,7 @@ const NightingaleComponent = ({
         : proteinData.lipscoreList.map(entry => entry.experimentID);
 
     const [trackHeight, setTrackHeight] = useState(null);
-    const [fontSize, setFontSize] = useState('16px');
+
 
     const sequenceLength = proteinData.proteinSequence.length;
     const defaultLipScoreString = JSON.stringify(Array(sequenceLength).fill(-1));
@@ -88,34 +89,7 @@ const NightingaleComponent = ({
         showHeatmap && "heatmap"
     ].filter(Boolean);
 
-    useEffect(() => {
-        const handleResize = () => {
-            const screenWidth = window.innerWidth;
-            const screenHeight = window.innerHeight;
-            
-            let newFontSize = '16px'; 
-            if (screenWidth < 768) {
-                newFontSize = '12px'; 
-            } else if (screenWidth >= 768) {
-                newFontSize = '18px'; 
-            }
-    
-            if (screenHeight < 400) {
-                newFontSize = '10px'; 
-            } else if (screenHeight > 800) {
-                newFontSize = '20px'; 
-            }
-            setFontSize(newFontSize);
-        };
-    
-        window.addEventListener('resize', handleResize);
-        handleResize(); 
-    
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-    
+
 
     useEffect(() => {
         const updateHeight = () => {
@@ -133,8 +107,8 @@ const NightingaleComponent = ({
                 const availableTrackHeight = structureHeight;
                 const dynamicTrackHeight = Math.min(Math.max(
                     availableTrackHeight / ( tracks_len|| 1), 
-                    15
-                ), 40);
+                    20
+                ), 30);
                 setTrackHeight(dynamicTrackHeight);
             }
         };
@@ -385,22 +359,20 @@ const NightingaleComponent = ({
     
     return (
         <div  id="nightingale-manager-container">
-            <p>{selectedExperiment}</p>
-            <p style={{ color: '#1a1a1a',fontSize: 'var(--font-size-large)' }}>{proteinData?.proteinDescription}</p>
-            
-            {/* LiP Scores Legend */}
+            <p style={{ textAlign: 'center' }}>{proteinData?.proteinDescription}</p> 
             <div>
-                <p>LiP Scores Legend</p>
-                <div style={{ display: 'flex', marginBottom: '4px' }}>
+             
+                <div className="volcano-plot-legend">
                     {legendData.map((item, index) => (
-                        <div key={index} style={{ display: 'flex', alignItems: 'center', marginRight: 'var(--legend-item-margin)' }}>
+                        <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
                             <div
                                 style={{
-                                    width: '20px',
-                                    height: '20px',
+                                    width: '18px',
+                                    height: '18px',
+                                    borderRadius: '50%',
                                     backgroundColor: item.color === 'default' ? 'transparent' : item.color,
                                     border: item.color === 'default' ? '1px solid #000' : 'none',
-                                    marginRight: '5px'
+                                    marginRight: '5px',
                                 }}
                             ></div>
                             <span>{item.label}</span>
@@ -414,7 +386,6 @@ const NightingaleComponent = ({
                             id="experiment-dropdown"
                             value={selectedExperiment}
                             onChange={handleExperimentClick}
-                            style={{ fontSize: 'var(--font-size-normal)' }}
                         >
                             {experimentIDsList.map((experimentID) => (
                                 <option key={experimentID} value={experimentID}>

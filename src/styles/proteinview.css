@@ -5,9 +5,9 @@
 }
 
 #experiment-dropdown {
-    padding: 10px;
-    border: 1px solid var(--select-color); ;
-    border-radius: 4px;
+    padding: var(--padding); 
+    border: var(--border); 
+    border-radius: var(--border-radius); 
     background-color: var(--bg-color); ;
     cursor: pointer;
 }
@@ -21,7 +21,7 @@
     overflow-y: auto; /* Scrollable overflow content */
     padding: 20px;
     padding-top: 80px;
-    background-color: transparent;
+    background-color: var(--bg-color); 
     -webkit-font-smoothing: auto;
     -moz-font-smoothing: auto;
     -moz-osx-font-smoothing: grayscale;
@@ -31,3 +31,136 @@
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
 }
+
+/* Styles for the overall layout container */
+.container {
+    display: flex;
+    flex-direction: row;
+    padding-top: var(--padding); 
+}
+
+
+/* Results container styling */
+
+
+/* Protein header styling */
+.protein-header {
+    font-size: var(--font-size-header); 
+    font-weight: bold;
+    margin-bottom: var(--margin-bottom); 
+    margin-top: 50px;
+}
+
+/* Result text styling */
+.result-text {
+    display: block;
+    margin-bottom: var(--margin-bottom); 
+}
+
+/* Tooltip container styling */
+.tooltip-container {
+    background-color: var(--bg-color); 
+    padding:var(--padding); 
+    border-radius: var(--border-radius); 
+    font-family: var(--font-family-base); 
+    box-shadow: var(--box-shadow); 
+}
+
+.simple-tooltip {
+    background-color: var(--bg-color); 
+    border: var(--border); 
+    border-radius: var(--border-radius); 
+    padding:var(--padding); 
+    font-family:var(--font-family-base); 
+    text-align: left;
+    white-space: nowrap; 
+}
+
+/* Tooltip link styling */
+.tooltip-link {
+    color: var(--main-color); 
+    text-decoration: none;
+}
+
+.tooltip-link:hover {
+    text-decoration: underline;
+}
+
+.flex-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%; 
+}
+
+.pdb-selection-container {
+    width: 100%; /* Make table fill the width */
+    table-layout: fixed; /* Distribute columns evenly */
+    border-collapse: collapse;
+}
+
+.pdb-selection-container thead {
+    background-color: var(--bg-color);  /* Optional styling for header */
+    position: sticky; /* Keeps the header fixed */
+    top: 0;
+    z-index: 1;
+}
+
+.pdb-selection-container tbody {
+    display: block;
+    max-height: 200px; /* Adjust as needed */
+    overflow-y: auto;
+    width: 100%;
+}
+
+.pdb-selection-container tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed; /* Consistent column sizing */
+}
+
+.pdb-selection-container th, .pdb-selection-container td {
+    padding: var(--padding); 
+    text-align: left;
+    border:var(--border); 
+    white-space: nowrap; /* Prevents text wrapping */
+}
+
+.experiment-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--gap);
+    margin-top: var(--margin-top); 
+    margin-bottom: var(--margin-bottom); 
+    font-family: var(--font-family-base); 
+}
+
+.experiment-button {
+    background-color: var(--bg-color); 
+    cursor: pointer; /* Indicate clickable buttons */
+    padding: 10px 20px; /* Adequate padding for comfortable clicking */
+    border-radius: var(--border-radius); 
+    border: var(--border); 
+    box-shadow: var(--box-shadow); 
+    min-width: 120px; /* Ensure buttons have a consistent width */
+    text-align: center; /* Center align button text */
+    transition: var(--transition); 
+    font-size: var(--font-size-base); 
+    font-family: var(--font-family-base); 
+}
+
+.experiment-button:hover {
+    background-color: var(--shading-color-hover); 
+    border: var(--border); 
+    box-shadow: var(--box-shadow); 
+}
+
+.experiment-button.selected {
+    background-color: var(--select-color); 
+    border: var(--border); 
+    box-shadow: var(--box-shadow-selected);
+    font-size: var(--font-size-base); 
+    font-family: var(--font-family-base); 
+    color: var(--text-color, #2a222a); 
+}
+

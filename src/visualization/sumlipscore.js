@@ -78,14 +78,12 @@ export function SumLipScoreVisualization({ data, experimentMetaData }) {
         .attr("transform", `translate(0,${height})`)
         .call(d3.axisBottom(x).tickSize(0))
         .selectAll("text")
-        .style("font-size", "16px")
         .style("font-family", "Raleway");
 
     // Add y-axis
     svg.append("g")
         .call(d3.axisLeft(y))
         .selectAll("text")
-        .style("font-size", "16px")
         .style("font-family", "Raleway");
 
     // Add bars

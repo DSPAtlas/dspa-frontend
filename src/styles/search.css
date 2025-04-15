@@ -13,25 +13,25 @@
     width: 100%; /* Full width */
     max-width: 1250px; /* Limit max width for better readability */
     padding: 20px;
-    border: 1px solid #ddd; /* Consistent border */
-    border-radius: 5px; /* Rounded corners */
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    box-sizing: border-box; /* Include padding in width calculations */
-    text-align: center; /* Center content inside */
+    border: var(--border);
+    border-radius: var(--border-radius);
+    background-color: var(--bg-color);
+    box-shadow: var(--box-shadow);
+    box-sizing: border-box; 
+    text-align: center; 
 }
 
 /* Heading for the search container */
 .search-container h2 {
-    font-family: 'Raleway', sans-serif;
-    margin-bottom: 20px;
+    font-family: var(--font-family-base);
+    margin-bottom: var(--margin-bottom);
 }
 
 /* Wrapper for the search form */
 .search-form-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--gap);
     justify-content: center;
     align-items: center;
 }
@@ -39,23 +39,23 @@
 /* Styling for the input field */
 .search-input {
     width: 100%; /* Full width */
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: var(--padding);
+    border: var(--border);
+    border-radius:var(--border-radius);
     box-sizing: border-box;
-    margin-bottom: 10px;
-    transition: border-color 0.3s ease-in-out;
+    margin-bottom:var(--margin-bottom);
+    transition: var(--transition);
 }
 
 /* Styling for the button */
 .search-button {
     padding: 10px 20px;
-    color: white;
-    background-color: #0A2F59;
+    color: var(--bg-color);
+    background-color: var(--main-color);
     border: none;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
+    transition: var(--transition);
 }
 
 /* Button hover effect */
@@ -69,7 +69,7 @@
     justify-content: center; /* Center content vertically */
     align-items: center; /* Center content horizontally */
     width: 100%; /* Full width */
-    padding: 20px; /* Add some padding around the container */
+    padding: var(--padding);
     box-sizing: border-box; /* Include padding in width/height calculations */
 }
 
@@ -78,23 +78,23 @@
     width: 100%;
     max-width: 1200px;
     border-collapse: collapse;
-    margin-top: 20px;
-    font-family: 'Raleway', sans-serif;
+    margin-top: var(--margin-top);
+    font-family: var(--font-family-base);
     text-align: center;
   }
   
 
   .results-search-container th {
-    padding: 10px;
+    padding: var(--padding);
     text-align: center;
-    background-color: #f5f5f5;
-    border-bottom: 2px solid #ddd;
+    background-color:var(--bg-color);
+    border-bottom: var(--border-bottom);
   }
   
   /* Table row styling */
   .results-search-container td {
-    padding: 15px;
-    border-bottom: 1px solid #ddd;
+    padding: var(--padding);
+    border-bottom: var(--border-bottom);
     vertical-align: middle;
   }
 
@@ -102,10 +102,10 @@
 .results-search-container {
   display: flex;
   justify-content: space-between;
-  padding: 20px;
+  padding: var(--padding);
   margin-top: 60px;
   background-color: transparent;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  box-shadow: var(--box-shadow);
 }
 
 /* Search form styling */
@@ -121,30 +121,30 @@
 .results-search-container button {
   flex: 1; /* Equal spacing for form items */
   margin: 0 10px;
-  padding: 10px;
+  padding: var(--padding);
 }
 
   
   /* Styling for the protein name buttons */
   .protein-name-button {
-    background: none;
+    background: var(--bg-color);
     border: none;
-    color: #0A2F59; /* Link-style color */
+    color: var(--main-color);
     text-decoration: underline;
     cursor: pointer;
     padding: 10px 20px; /* Add spacing around the button */
-    transition: background-color 0.3s ease;
+    transition: var(--transition);
   }
   
   /* Hover effect for protein name buttons */
   .protein-name-cdbutton:hover {
-    background-color: #f0f0f0;
-    border-radius: 4px;
+    background-color: var(--shading-color-hover);
+    border-radius: var(--border-radius);
   }
   
   /* Adjust table spacing and alignment */
   .results-search-container tr td:first-child {
-    padding-left: 20px; /* Add more spacing to the first column */
+    padding-left: 20px; 
     vertical-align: middle;
   }
   
@@ -156,5 +156,5 @@
   .results-search-container p {
     text-align: center;
     width: 100%;
-    margin-top: 20px;
+    margin-top: var(--margin-top);
   }

@@ -7,12 +7,9 @@ import NightingaleComponent from './NightingaleComponent.jsx';
 import { getPdbIds } from '../hooks/useProteinData.js'; 
 import "@nightingale-elements/nightingale-sequence";
 import VolcanoPlot from '../visualization/volcanoplot.js';
+import DoseResponseCurves from '../visualization/DoseResponse.js'
 
-const experimentTableStyles = {
-    border: "1px solid #ccc",
-    padding: "10px",
-    backgroundColor: "#f9f9f9",
-};
+
 
 const ProteinScoresTable = ({ experimentData, onProteinClick, displayedProtein, goTerms, onGoTermSelect }) => {
     const sortedExperimentData = useMemo(() => {
@@ -25,7 +22,7 @@ const ProteinScoresTable = ({ experimentData, onProteinClick, displayedProtein, 
     }
 
     return (
-        <div className="experiment-table-container">
+        <div className="condition-table-container">
             <div className="go-term-selector">
                 <label htmlFor="goTermSelect">Filter by GO Term: </label>
                 <select 
@@ -40,23 +37,20 @@ const ProteinScoresTable = ({ experimentData, onProteinClick, displayedProtein, 
                     ))}
                 </select>
             </div>
-            <table border="1" cellPadding="10" cellSpacing="0">
+            <table className="condition-protein-table">
                 <thead>
                     <tr>
-                        <th style={experimentTableStyles}>Protein Accession</th>
-                        <th style={experimentTableStyles}>Average LiP Score among Experiments</th>
-                        <th style={experimentTableStyles}>Description</th>
+                        <th className= "condition-protein-table">Protein Accession</th>
+                        <th className= "condition-protein-table">Average LiP Score among Experiments</th>
+                        <th className= "condition-protein-table">Description</th>
                     </tr>
                 </thead>
                 <tbody>
                     {sortedExperimentData.map((proteinData) => (
                         <tr 
-                            key={proteinData.proteinAccession}
-                            style={{
-                                cursor: 'pointer',
-                                backgroundColor: displayedProtein === proteinData.proteinAccession ? '#f0f0f0' : 'white'
-                            }}
-                            onClick={() => onProteinClick(proteinData.proteinAccession)}
+                        key={proteinData.proteinAccession}
+                        className={`protein-row ${displayedProtein === proteinData.proteinAccession ? 'selected' : ''}`}
+                        onClick={() => onProteinClick(proteinData.proteinAccession)}
                         >
                             <td>{proteinData.proteinAccession}</td>
                             <td>{Math.round(proteinData.averageScore || 0)}</td>
@@ -93,6 +87,8 @@ const Condition = () => {
     const [displayedProtein, setDisplayedProtein] = useState("");
     const [pdbIds, setPdbIds] = useState([]);
     const [selectedPdbId, setSelectedPdbId] = useState("");
+    const [doseResponseDataPlotCurve, setDoseResponseDataPlotCurve] = useState([]);
+    const [doseResponseDataPlotPoints, setDoseResponseDataPlotPoints] = useState([]);
     
     const [selectedExperiment, setSelectedExperiment] = useState("");
     const [conditions, setconditions] = useState([]);
@@ -138,6 +134,43 @@ const Condition = () => {
         }
         return await response.json();
     }
+
+   const fetchDoseResponseData = useCallback(async (dynaprotExperiment, proteinName, signal) => {
+        if (!proteinName) return;
+        setError('');
+        try {
+            const queryParams = `dynaprotExperiment=${encodeURIComponent(dynaprotExperiment)}&proteinName=${encodeURIComponent(proteinName)}`;
+            const url = `${config.apiEndpoint}doseresponse?${queryParams}`;
+            const response = await fetch(url, { signal });
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch protein data: ${response.statusText}`);
+            }
+
+            const data = await response.json(); 
+            console.log("data", data);
+            setDoseResponseDataPlotCurve(data.doseResponseDataPlotCurve);
+            setDoseResponseDataPlotPoints(data.doseResponseDataPlotPoints);
+            
+        } catch (error) {
+            if (isMounted.current) {
+                setError(`Error fetching protein data: ${error.message}`);
+                setdisplayedProteinData({});
+            }
+        }
+    }, []);
+
+    // 2. THEN use it here
+    useEffect(() => {
+        const abortController = new AbortController();
+        const defaultDynaprotExperiment = "DPX000012";
+
+        if (selectedCondition.toLowerCase() === "rapamycin") {
+            fetchDoseResponseData(defaultDynaprotExperiment, "P62942", abortController.signal);
+        }
+
+        return () => abortController.abort();
+    }, [selectedCondition, fetchDoseResponseData]);
 
     const fetchProteinData = useCallback(async (proteinName, signal) => {
         if (!proteinName) return;
@@ -196,7 +229,7 @@ const Condition = () => {
                     setAllProteinData(rawData.conditionData.proteinScoresTable);
                     setFilteredExperimentData(rawData.conditionData.proteinScoresTable);
                     setAllGoTerms(rawData.conditionData.goTerms);
-                    setDisplayedProtein(rawData.conditionData.proteinScoresTable?.[0]?.proteinAccession);      
+                    setDisplayedProtein(rawData.conditionData.proteinScoresTable?.[0]?.proteinAccession);   
                 }
             } catch (error) {
                 if (!signal.aborted && isMounted.current) {
@@ -284,45 +317,53 @@ const Condition = () => {
     );
     
     const renderTabContent = () => {
+        if (loading) {
+            return <div>Loading...</div>; 
+        }
+    
+        if (!differentialAbundanceData && !goEnrichmentData) {
+            return <div>No data available</div>; 
+        }
+    
         const contentStyle = (tabName) => ({
             display: activeTab === tabName ? 'block' : 'none'
         });
     
         return (
-            <div className="condition-section-wrapper">
-                <div 
-                    style={contentStyle(TABS.VOLCANO_PLOT)} 
-                    ref={chartRefVolcano} 
-                    key={`volcano-plot-${selectedCondition}`} 
-                    className="condition-section goenrichment-chart-content"
-                >
-                    {differentialAbundanceData && (
+            <div >
+                {differentialAbundanceData && Object.keys(differentialAbundanceData).length > 0 && (
+                     <div className="condition-section condition-volcano-plot-wrapper">
+                    <div 
+                        style={contentStyle(TABS.VOLCANO_PLOT)} 
+                        key={`volcano-plot-${selectedCondition}`} 
+                    >
                         <VolcanoPlot
                             differentialAbundanceDataList={differentialAbundanceData}
                             chartRef={chartRefVolcano}
                             highlightedProtein={displayedProtein}
                         />
-                    )}
-                </div>
-                <div 
-                    style={contentStyle(TABS.GENE_ONTOLOGY)} 
-                    ref={chartRefGO} 
-                    key={`go-plot-${selectedCondition}`} 
-                    className="condition-section goenrichment-chart-content"
-                >
-                    {goEnrichmentData && chartRefGO.current && (
+                    </div>
+                    </div>
+                )}
+                {goEnrichmentData && Object.keys(goEnrichmentData).length > 0  && chartRefGO.current && (
+                     <div className="condition-section condition-volcano-plot-wrapper">
+                    <div 
+                        style={contentStyle(TABS.GENE_ONTOLOGY)} 
+                        key={`go-plot-${selectedCondition}`} 
+                    >
                         <GOEnrichmentVisualization
                             goEnrichmentData={goEnrichmentData}
                             chartRef={chartRefGO}
                         />
-                    )}
-                </div>
+                    </div>
+                    </div>
+                )}
             </div>
         );
     };
-    
-    
-   
+ 
+
+
     return (
         <div>
             <div className="condition-section condition-dropdown">
@@ -345,7 +386,7 @@ const Condition = () => {
             ) : (
                 differentialAbundanceData && selectedCondition && (
                     <div>
-                        <h1>Condition: {selectedCondition}</h1><br />
+                        <h1>Condition - {selectedCondition}</h1><br />
                     </div>
                 )
             )}
@@ -386,25 +427,21 @@ const Condition = () => {
                 </div>
             </div>
 
-            {/* Experiment List Section */}
-            <div className="condition-section condition-experiment-container">
-                <h2>Experiments</h2>
-                <div className="experiment-boxes">
-                    {experimentIDs.map((experimentID, index) => (
-                        <div
-                            key={index}
-                            className="experiment-box"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => handleExperimentClick(experimentID)} 
-                        >
-                            <h2>{experimentID}</h2>
-                            <p>Placeholder text for experiment {experimentID}.</p>
-                        </div>
-                    ))}
+           {doseResponseDataPlotCurve && Object.keys(doseResponseDataPlotCurve).length > 0 && (
+            <div className="condition-section condition-dose-response-wrapper">
+                <div className="condition-dose-response-container">
+                    <h2>Dose-Response-Data for Peptides in {displayedProtein}</h2>
+                    <DoseResponseCurves
+                        points={doseResponseDataPlotPoints}
+                        curves={doseResponseDataPlotCurve}
+                    />
                 </div>
-                </div>
+            </div>
+        )}
+
                 </div>
         </div>
     );
 };
 export default Condition;
+

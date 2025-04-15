@@ -17,7 +17,6 @@ import LoginForm from './components/LoginForm';
 import "./styles/main.css";
 import "./styles/navigationbar.css";
 import "./styles/home.css";
-import "./styles/result.css";
 import "./styles/search.css";
 import "./styles/graphs.css";
 import "./styles/condition.css";
@@ -32,21 +31,21 @@ const root = createRoot(document.getElementById("root"));
 const NotFound = () => <div>Page not found.</div>;
 
 const App = () => {
-  // const [isAuthenticated, setIsAuthenticated] = useState(false);
-  // const handleLogin = (username, password) => {
-  //   if (username === process.env.USERNAME_WEBSITE && password === process.env.PASSWORD_WEBSITE){
-  //     setIsAuthenticated(true); 
-  //   } else{
-  //     setIsAuthenticated(false);
-  //     alert('Authentication failed, please check your username and password');
-  //   }
-  // };
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const handleLogin = (username, password) => {
+    if (username ==="lipatlas" && password === "lipatlas"){
+      setIsAuthenticated(true); 
+    } else{
+      setIsAuthenticated(false);
+      alert('Authentication failed, please check your username and password');
+    }
+  };
 
-  // if (!isAuthenticated) {
-  //   return <div >
-  //     <LoginForm onLogin={handleLogin} />
-  //   </div>;
-  // }
+  if (!isAuthenticated) {
+    return <div >
+      <LoginForm onLogin={handleLogin} />
+    </div>;
+  }
 
   return (
     <div>

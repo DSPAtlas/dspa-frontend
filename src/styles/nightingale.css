@@ -1,13 +1,13 @@
 #nightingale-manager-container #tooltip {
     position: absolute;
     visibility: hidden; 
-    background-color: rgba(252, 250, 250, 0.93);
-    border-radius: 4px;
-    padding: 10px;
+    background-color: var(--bg-color); 
+    border-radius: var(--border-radius); 
+    padding: var(--padding); 
     pointer-events: none; 
-    font-family: 'Raleway', 'Arial', sans-serif;
+    font-family: var(--font-family-base); 
     z-index: 1000;
-    border: 2px solid #666666; 
+    border: var(--border); 
 }
 
 #nightingale-manager-container .tooltip-visible {
@@ -38,15 +38,6 @@
     white-space: nowrap;
   }
 
-
-.experiment-button {
-    background-color: white; /* Default background */
-}
-
-.experiment-button.selected {
-    background-color: #FF6699; /* Rose background for selected */
-    color: white; /* White text for better contrast */
-}
 
 
 

@@ -32,9 +32,7 @@ const DoseResponseCurves = ({ points, curves }) => {
       if (!curveData || !pointData) return;
 
       const wrapper = container.append("div")
-        .style("width", "90%")
-        .style("height", "100%")
-        .style("box-sizing", "border-box");
+        .attr("class", "plot-wrapper");
 
       const svg = wrapper.append("svg")
         .attr("viewBox", `0 0 ${fullWidth} ${fullHeight}`)
@@ -108,15 +106,9 @@ const DoseResponseCurves = ({ points, curves }) => {
       <div
         ref={svgRef}
         className="dose-response-d3-container"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '20px',
-          padding: '10px'
-        }}
       />
       {totalPages > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px', gap: '20px' }}>
+          <div className="plot-grid-wrapper">
           <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}>
             &lt;
           </button>

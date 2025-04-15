@@ -100,8 +100,7 @@ const GOEnrichmentVisualization = memo(({ goEnrichmentData, chartRef }) => {
             .attr("transform", `translate(0, ${height})`)
             .call(d3.axisBottom(xScale))
             .selectAll(".tick text")
-            .style("font-size", "14px")
-            .style("font-family", "Raleway")
+
             .style("text-anchor", "middle")
             .call(wrapText, xScale.bandwidth());;
 
@@ -143,8 +142,6 @@ const GOEnrichmentVisualization = memo(({ goEnrichmentData, chartRef }) => {
                 .attr("x", 20)
                 .attr("y", index * 20 + 10)
                 .attr("dy", "0.35em")
-                .style("font-family", "Raleway")
-                .style("font-size", "12px")
                 .text(id);
         });
 
@@ -153,8 +150,6 @@ const GOEnrichmentVisualization = memo(({ goEnrichmentData, chartRef }) => {
             .attr("x", width / 2)
             .attr("y", -10)
             .attr("text-anchor", "middle")
-            .style("font-size", "16px")
-            .style("font-family", "Raleway")
             .text("Grouped Bar Plot of GO Enrichment by Experiment");
 
         // Add y-axis label
@@ -164,7 +159,6 @@ const GOEnrichmentVisualization = memo(({ goEnrichmentData, chartRef }) => {
             .attr("y", -margin.left + 20)
             .attr("text-anchor", "middle")
             .attr("transform", "rotate(-90)")
-            .style("font-family", "Raleway")
             .text("-log10(Adj-pValue)");
 
        

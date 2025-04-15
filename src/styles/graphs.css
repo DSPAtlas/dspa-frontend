@@ -1,26 +1,26 @@
 /* styles.css */
 .axis text {
-    font-family: "Raleway", sans-serif; 
+    font-family: var(--font-family-base); 
 }
 
 .title {
-    font-family: "Raleway", sans-serif; 
+    font-family:var(--font-family-base); 
 }
 
 .xlabel {
-    font-family: "Raleway", sans-serif; 
+    font-family: var(--font-family-base); 
 }
 
 .ylabel {
-    font-family: "Raleway", sans-serif; 
+    font-family: var(--font-family-base); 
 }
 
 
 .tooltip {
-    font-family: "Raleway", sans-serif; 
+    font-family:  var(--font-family-base); 
 }
 
 svg text {
-    font-size: 17px;
+    font-size:  var(--font-size-base); 
     font-family: inherit;
   }
