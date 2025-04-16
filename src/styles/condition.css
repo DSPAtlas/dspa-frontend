@@ -59,14 +59,12 @@ text.pep-key-label, text.protein-name-label {
 
 .goenrichment-chart-content svg {
     max-width: 100%;
-    height: 100%;
     display: block;
   }
 
   .condition-section svg,
   .goenrichment-chart-content svg {
     width: 100%;
-    height: 100%;
     display: block;
   }
   
@@ -492,3 +490,27 @@ table {
     border-radius: var(--border-radius); 
 }
 
+
+.go-enrichment-visualization{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 400px;
+    position: relative;
+    overflow: visible;
+    gap: var(--gap);
+    font-size: var(--font-size-base) !important;
+    
+}
+
+.tab-content {
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+  }
+  
+  .tab-content.active {
+    visibility: visible;
+    height: auto;
+  }

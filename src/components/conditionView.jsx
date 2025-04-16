@@ -225,6 +225,7 @@ const Condition = () => {
                     setSelectedCondition(rawData.conditionData.condition);
                     setDifferentialAbundanceData(rawData.conditionData.differentialAbundanceDataList);
                     setGoEnrichmentData(rawData.conditionData.goEnrichmentData);
+                    console.log("goenruchemnt", rawData.conditionData.goEnrichmentData);
                     setExperimentIDs(rawData.conditionData.experimentIDsList);
                     setAllProteinData(rawData.conditionData.proteinScoresTable);
                     setFilteredExperimentData(rawData.conditionData.proteinScoresTable);
@@ -345,7 +346,7 @@ const Condition = () => {
                     </div>
                     </div>
                 )}
-                {goEnrichmentData && Object.keys(goEnrichmentData).length > 0  && chartRefGO.current && (
+                {goEnrichmentData && Object.keys(goEnrichmentData).length > 0  &&  (
                      <div className="condition-section condition-volcano-plot-wrapper">
                     <div 
                         style={contentStyle(TABS.GENE_ONTOLOGY)} 
