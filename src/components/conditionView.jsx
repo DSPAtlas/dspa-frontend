@@ -372,6 +372,7 @@ const Condition = () => {
                     id="conditionSelect" 
                     value={selectedCondition} 
                     onChange={handleconditionChange}
+                    className="condition-dropdown"
                 >
                     {conditions.map((condition) => (
                         <option key={condition} value={condition}>{condition}</option>

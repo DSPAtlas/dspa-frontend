@@ -5,8 +5,8 @@
     padding: var(--padding);
     border: var(--border);
     cursor: pointer;
-    font-size: var(---font-size-base) !important;
-    font-family: var(---font-family-base);
+    font-size: var(--font-size-base) !important;
+    font-family: var(--font-family-base);
 }
 
 .tab-button {
@@ -14,8 +14,8 @@
     border: var(--border);
     background-color: var(--bg-color);;
     cursor: pointer;
-    font-size: var(---font-size-base) !important;
-    font-family: var(---font-family-base);
+    font-size: var(--font-size-base) !important;
+    font-family: var(--font-family-base);
 }
 
 .tab-button.active {
@@ -52,8 +52,8 @@ text.pep-key-label, text.protein-name-label {
     box-sizing: border-box;
     padding: var(--padding);
     display: block;
-    font-size: var(---font-size-base) !important;
-    font-family: var(---font-family-base);
+    font-size: var(--font-size-base) !important;
+    font-family: var(--font-family-base);
     height: 100%;
 }
 
@@ -101,8 +101,8 @@ text.pep-key-label, text.protein-name-label {
     border: var(--border); 
     box-sizing: border-box;
     padding: var(--padding);
-    font-size: var(---font-size-base) !important;
-    font-family: var(---font-family-base);
+    font-size: var(--font-size-base) !important;
+    font-family: var(--font-family-base);
     width: 100%;
 }
 
@@ -113,8 +113,8 @@ text.pep-key-label, text.protein-name-label {
     padding: var(--padding);
     box-sizing: border-box; 
     max-height: calc(60vh - 120px);
-    font-size: var(---font-size-base) !important;
-    font-family: var(---font-family-base);
+    font-size: var(--font-size-base) !important;
+    font-family: var(--font-family-base);
     width: 100%;
 }
 
@@ -166,23 +166,30 @@ text.pep-key-label, text.protein-name-label {
 }
 
 .condition-dropdown {
-    display: block;
-    width: 100%; 
-    padding:var(--padding);
-    line-height: 2; 
-    background-color: var(--bg-color); 
+    width: 100%;
+    padding: var(--padding);
+    border: var(--border);
     border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    -webkit-appearance: none; /* Removes default styling in WebKit browsers */
-    -moz-appearance: none; /* Removes default styling in Mozilla browsers */
-    appearance: none; /* Standard way to remove default arrow */
-    cursor: pointer; /* Indicates the dropdown can be interacted with */
-    margin-bottom: var(--margin); 
-    margin-top: 60px;
-    /* Ensure it appears above other components z-index: 1000;*/
-    position: relative; 
-    font-size: var(---font-size-base) !important;
-    font-family: var(---font-family-base);
+    background-color: var(--bg-color);
+    cursor: pointer;
+    appearance: none;
+    font-size: var(--font-size-base) !important;
+    font-family: var(--font-family-base);
+    margin-top: 50px;
+}
+
+.condition-dropdown option {
+    font-size: var(--font-size-base);
+    font-family: var(--font-family-base);
+    color: var(--text-color);
+    background-color: var(--bg-color); /* Optional: to match the dropdown bg */
+}
+
+.goenrichment-dropdown option {
+    font-size: var(--font-size-base);
+    font-family: var(--font-family-base);
+    color: var(--text-color);
+    background-color: var(--bg-color); /* Optional: to match the dropdown bg */
 }
 
 
@@ -203,8 +210,8 @@ select:focus {
     border: var(--border);
     padding: var(--padding);
     background-color: var(--bg-color); 
-    font-size: var(---font-size-base) !important;
-    font-family: var(---font-family-base);
+    font-size: var(--font-size-base) !important;
+    font-family: var(--font-family-base);
 }
 .condition-goenrichment-container {
     display: flex;
@@ -341,8 +348,8 @@ select:focus {
 .go-term-selector {
     margin-bottom: var(--margin-bottom);
     width: 100%;
-    font-size: var(---font-size-base) !important;
-    font-family: var(---font-family-base);
+    font-size: var(--font-size-base) !important;
+    font-family: var(--font-family-base);
 }
 
 .go-term-dropdown {
@@ -353,8 +360,8 @@ select:focus {
     background-color: var(--bg-color);
     cursor: pointer;
     appearance: none;
-    font-size: var(---font-size-base) !important;
-    font-family: var(---font-family-base);
+    font-size: var(--font-size-base) !important;
+    font-family: var(--font-family-base);
 }
 
 table {
@@ -363,26 +370,18 @@ table {
 }
 
 .dose-response-d3-container text {
-    font-size: var(---font-size-base) !important;
-    font-family: var(---font-family-base);
+    font-size: var(--font-size-base) !important;
+    font-family: var(--font-family-base);
   }
 
 .dose-response-d3-container {
-    font-size: var(---font-size-base) !important;
+    font-size: var(--font-size-base) !important;
     gap: var(--gap);
     display: grid;
     padding: var(--padding);
     grid-template-columns: repeat(4, 1fr);
   }
 
-  /* .volcano-plot-section {
-    font-size: var(---font-size-base) !important;
-    gap: var(--gap);
-    display: grid;
-    padding: var(--padding);
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  }
-    */
 
 .volcano-plot-section {
         display: flex;
@@ -390,11 +389,11 @@ table {
         justify-content: center;
         gap: var(--gap);
         width: 100%;
-        font-size: var(---font-size-base) !important;
+        font-size: var(--font-size-base) !important;
       }
       
   .volcano-plot-legend {
-    font-size: var(---font-size-base) !important;
+    font-size: var(--font-size-base) !important;
     gap: var(--gap);
     display: flex;
     justify-content: center;
@@ -407,7 +406,7 @@ table {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: var(---font-size-base) !important;
+    font-size: var(--font-size-base) !important;
   }
   
 .volcano-plot-grid {
@@ -446,7 +445,7 @@ table {
     width: 100%;
     height: auto;
     height: auto;
-    font-size: var(---font-size-base) !important;
+    font-size: var(--font-size-base) !important;
   }
   
   .volcano-plot-section .domain {
@@ -459,8 +458,8 @@ table {
   
   .volcano-plot-section .tick text {
     fill: var(--text-color);
-    font-family: var(---font-family-base);
-    font-size: var(---font-size-base)!important;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base)!important;
   }
   
 
@@ -484,9 +483,10 @@ table {
 
 .html-tooltip-volcano{
     background-color: var(--shading-color); 
-    font-family: var(---font-family-base);
-    font-size: var(---font-size-base)!important;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base)!important;
     border: 2px solid #cc00cc; 
     padding: var(--padding); 
     border-radius: var(--border-radius); 
 }
+

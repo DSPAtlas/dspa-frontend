@@ -95,9 +95,9 @@ function Home() {
         <div className="three-boxes-container">
           {/* Left Box - condition Dropdown */}
           <div className="box">
-            <label htmlFor="condition-select">Select Condition</label>
+            <label>Select Condition</label>
             <p className="description">Choose a condition condition to explore its impact on protein structures.</p>
-            <select id="condition-select" onChange={handleconditionChange}>
+            <select id="condition-select" onChange={handleconditionChange}  className="condition-dropdown-home">
               <option value="">Select a Condition</option>
               {conditions.map((condition, index) => (
                   <option key={index} value={condition}>{condition}</option>
@@ -108,7 +108,7 @@ function Home() {
          {/* Middle Box - Protein Search */}
         <div className="box">
           <form onSubmit={handleSubmit}>
-            <label htmlFor="protein-search">Protein Search</label>
+            <label>Protein Search</label>
             <p className="description">Search for proteins by name to view related structural dynamics data.</p>
             <input
               id="protein-search"

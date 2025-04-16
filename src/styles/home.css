@@ -34,6 +34,12 @@
     box-shadow: var(--box-shadow); 
     text-align: center;
   }
+
+.dspa-large{
+  color: var(--text-color-sub-header);
+  font-size: var(--font-size-base);
+
+}
   
 
 .dspa-display-left{
@@ -153,8 +159,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: var(---font-size-base) !important;
-  font-family: var(---font-family-base);
+  font-size: var(--font-size-base) !important;
+  font-family: var(--font-family-base);
 }
 
 @media (max-width: 600px) {
@@ -175,19 +181,22 @@
     font-weight: bold;
     margin-bottom: 10px;
     text-align: center; 
-    font-size: 1.75rem;
+    font-size:var(--font-size-header);
+    font-family: var(--font-family-base);
     color: inherit;
   }
   
   .box button,
   .box select,
   .box input {
-    padding: 10px;
+    padding: var(--padding);
     border: var(--border);
     border-radius: var(--border-radius);
     width: 100%; /* Ensures the input fills the box width */
     margin-top: 10px;
     text-align: center; /* Centers button text */
+    font-size: var(--font-size-base);
+    font-family: var(--font-family-base);
   }
   
   .box button {
@@ -209,6 +218,8 @@
   form label {
     margin-bottom: 8px;
     font-weight: bold;
+    font-size: var(--font-size-small-header);
+    font-family: var(--font-family-base);
   }
   
   
@@ -221,6 +232,8 @@
     box-sizing: border-box;
     border: var(--border);
     border-radius: var(--border-radius);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family-base);
   }
   
   form button {
@@ -232,6 +245,8 @@
     border: none;
     border-radius: var(--border-radius);
     cursor: pointer;
+    font-size: var(--font-size-base);
+    font-family: var(--font-family-base);
   }
 
   .publication-block h3 {
@@ -260,12 +275,16 @@
   
   .form-group label {
     margin-bottom: 5px;
+    font-size: var(--font-size-base);
+    font-family: var(--font-family-base);
+    font-weight: bold;
   }
   
   .form-group input,
   .form-group button {
-    padding: 8px;
-    font-size: 16px;
+    padding: var(--padding);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family-base);
   }
   
   .condition-select {
@@ -284,6 +303,31 @@
     margin-top: 60px;
     /* Ensure it appears above other components z-index: 1000;*/
     position: relative; 
-    font-size: var(---font-size-base) !important;
-    font-family: var(---font-family-base);
+    font-size: var(--font-size-base) !important;
+    font-family: var(--font-family-base);
+}
+.condition-dropdown-home {
+  width: 100%;
+  padding: var(--padding);
+  border: var(--border);
+  border-radius: var(--border-radius);
+  background-color: var(--bg-color);
+  cursor: pointer;
+  appearance: none;
+  font-size: var(--font-size-base) !important;
+  font-family: var(--font-family-base);
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.condition-dropdown-home option {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  padding: var(--padding);
 }
