@@ -15,10 +15,11 @@
 }
 
 #nightingale-manager-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
     margin-top: 1px;
-    background-color: transparent;
     padding: 0px;
-    box-sizing: border-box; 
 }  
 #nightingale-manager-container  td {
     padding: 1px;

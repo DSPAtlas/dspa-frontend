@@ -42,7 +42,6 @@ const NightingaleComponent = ({
     const siteRef = useRef(null);
     const regionRef = useRef(null);
     const structureRef = useRef(null);
-    console.log("proteindata", proteinData);
 
     const [refreshStructureKey, setRefreshStructureKey] = useState(0);
 

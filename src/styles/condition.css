@@ -96,7 +96,7 @@ text.pep-key-label, text.protein-name-label {
 
 .condition-table-container {
     flex: 0 0 35%; 
-    max-height: calc(60vh - 120px);
+    max-height: calc(65vh - 120px);
     overflow-y: auto; /* Allow vertical scrolling */
     border: var(--border); 
     box-sizing: border-box;
@@ -112,10 +112,12 @@ text.pep-key-label, text.protein-name-label {
     flex: 0 0 65%;
     padding: var(--padding);
     box-sizing: border-box; 
-    max-height: calc(60vh - 120px);
+    max-height: calc(65vh - 120px);
     font-size: var(--font-size-base) !important;
     font-family: var(--font-family-base);
     width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
 }
 
 

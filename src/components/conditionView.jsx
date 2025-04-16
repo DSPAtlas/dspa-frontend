@@ -166,11 +166,11 @@ const Condition = () => {
         const defaultDynaprotExperiment = "DPX000012";
 
         if (selectedCondition.toLowerCase() === "rapamycin") {
-            fetchDoseResponseData(defaultDynaprotExperiment, "P62942", abortController.signal);
+            fetchDoseResponseData(defaultDynaprotExperiment, displayedProtein, abortController.signal);
         }
 
         return () => abortController.abort();
-    }, [selectedCondition, fetchDoseResponseData]);
+    }, [selectedCondition, fetchDoseResponseData, displayedProtein]);
 
     const fetchProteinData = useCallback(async (proteinName, signal) => {
         if (!proteinName) return;
@@ -415,6 +415,7 @@ const Condition = () => {
                     <h2>{displayedProtein}</h2>
                     {displayedProteinData && pdbIds && experimentIDs &&(
                         <NightingaleComponent
+                            key={displayedProtein}
                             proteinData={displayedProteinData}
                             pdbIds={pdbIds}
                             selectedPdbId={selectedPdbId}
