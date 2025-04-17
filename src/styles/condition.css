@@ -514,3 +514,30 @@ table {
     visibility: visible;
     height: auto;
   }
+
+
+.go-tooltip {
+    position: absolute;
+    background:  var(--bg-color);
+    border:var(--border);
+    border-radius: var(--border-radius);
+    padding: var(--padding);
+    font-size: var(--font-size-base);
+    color:var(--text-color);
+    box-shadow: var(--box-shadow);
+    pointer-events: auto;
+    pointer-events: none;
+    max-width: 300px;
+    word-wrap: break-word;
+    z-index: 10;
+    transition: var(--transition);
+  }
+  
+.tooltip-protein {
+    margin: 2px 0;
+    cursor: pointer;
+    color: var(--text-color);
+}
+.tooltip-protein:hover {
+    text-decoration: underline;
+}

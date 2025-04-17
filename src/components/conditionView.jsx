@@ -355,6 +355,9 @@ const Condition = () => {
                         <GOEnrichmentVisualization
                             goEnrichmentData={goEnrichmentData}
                             chartRef={chartRefGO}
+                            onProteinSelect={(proteinAccession) => {
+                                setDisplayedProtein(proteinAccession);
+                            }}
                         />
                     </div>
                     </div>

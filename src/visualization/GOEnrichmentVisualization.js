@@ -36,7 +36,7 @@ function wrapText(selection, maxWidth, maxCharsPerLine = 25, maxLines = 25) {
     });
 }
 
-const GOEnrichmentVisualization = ({ goEnrichmentData }) => {
+const GOEnrichmentVisualization = ({ goEnrichmentData, onProteinSelect }) => {
     const chartRef = useRef();
 
     useEffect(() => {
@@ -85,6 +85,11 @@ const GOEnrichmentVisualization = ({ goEnrichmentData }) => {
             .nice()
             .range([height, 0]);
 
+        const tooltip = container.append("div")
+            .attr("class", "go-tooltip") 
+            .style("opacity", 0)
+            .style("pointer-events", "none");
+        
         svg.append("g")
             .attr("transform", `translate(0, ${height})`)
             .call(d3.axisBottom(xScale))
@@ -109,7 +114,39 @@ const GOEnrichmentVisualization = ({ goEnrichmentData }) => {
             .attr("y", d => yScale(-Math.log10(d.adj_pval)))
             .attr("width", xSubgroup.bandwidth())
             .attr("height", d => height - yScale(-Math.log10(d.adj_pval)))
-            .attr("fill", d => colorScale(d.experimentID));
+            .attr("fill", d => colorScale(d.experimentID))
+            .on("mouseover", (event, d) => {
+                const bounds = container.node().getBoundingClientRect();
+                const mouseX = event.clientX - bounds.left;
+                const mouseY = event.clientY - bounds.top;
+            
+                tooltip
+                    .html(() => {
+                        const proteins = d.accessions.split(',');
+                        return `<strong>Proteins:</strong><br>${proteins.map(p => `<div class="tooltip-protein" data-accession="${p}">${p}</div>`).join('')}`;
+                    })
+                    .style("left", `${mouseX + 10}px`)
+                    .style("top", `${mouseY - 20}px`)
+                    .transition().duration(200)
+                    .style("opacity", 1);
+                tooltip.selectAll(".tooltip-protein")
+                    .on("click", function() {
+                        const protein = d3.select(this).attr("data-accession");
+                        if (onProteinSelect) {
+                            onProteinSelect(protein);
+                        }
+                    });
+            })
+            .on("mouseout", () => {
+                tooltip.transition().duration(200)
+                    .style("opacity", 0);
+            })
+            .on("click", (event, d) => {
+                const accessions = d.accessions.split(',');
+                if (accessions.length > 0 && onProteinSelect) {
+                    onProteinSelect(accessions[0]); 
+                }
+            });
 
         const legend = svg.append("g")
             .attr("class", "legend")
@@ -143,7 +180,7 @@ const GOEnrichmentVisualization = ({ goEnrichmentData }) => {
             .attr("text-anchor", "middle")
             .attr("transform", "rotate(-90)")
             .text("-log10(Adj-pValue)");
-    }, [goEnrichmentData]);
+    }, [goEnrichmentData, onProteinSelect]);
 
     return (
         <div ref={chartRef} className="go-enrichment-visualization" />
