@@ -50,19 +50,28 @@ const GOEnrichmentVisualization = ({ goEnrichmentData, onProteinSelect }) => {
         ];
 
         const experimentIDs = Array.from(new Set(goEnrichmentData.map(d => d.dpx_comparison)));
-        const groupedData = d3.groups(goEnrichmentData, d => d.go_term);
         const maxAdjPValLog = d3.max(goEnrichmentData, d => -Math.log10(d.adj_pval) || 0);
 
         const colorScale = d3.scaleOrdinal()
             .domain(experimentIDs)
             .range(dynaprotColors);
 
-        const containerWidth = chartRef.current.offsetWidth || 800;
-        const dynamicHeight = Math.max(400, maxAdjPValLog * 2 * groupedData.length);
+        const groupedData = d3.groups(goEnrichmentData, d => d.go_term);
+            const numberOfGoTerms = groupedData.length;
+            
+
         const maxLabelWidth = d3.max(experimentIDs, id => (id ? id.length * 12 : 0));
-        const margin = { top: 50, right: maxLabelWidth + 40, bottom: 250, left: 100 };
+        const margin = { top: 50, right: maxLabelWidth + 20, bottom: 250, left: 100 };
+            
+        const minWidth = 600;
+        const widthPerTerm = 80; 
+        const containerWidth = Math.max(minWidth, numberOfGoTerms * widthPerTerm + margin.left + margin.right);
+        
+            
+        const dynamicHeight = 400;
         const width = containerWidth - margin.left - margin.right;
         const height = dynamicHeight - margin.top - margin.bottom;
+            
 
         const svg = container.append("svg")
             .attr("width", containerWidth)
@@ -73,7 +82,7 @@ const GOEnrichmentVisualization = ({ goEnrichmentData, onProteinSelect }) => {
         const xScale = d3.scaleBand()
             .domain(groupedData.map(d => d[0]))
             .range([0, width])
-            .padding(0.1);
+            .padding(numberOfGoTerms > 5 ? 0.2 : 0.5);
 
         const xSubgroup = d3.scaleBand()
             .domain(experimentIDs)
@@ -176,7 +185,7 @@ const GOEnrichmentVisualization = ({ goEnrichmentData, onProteinSelect }) => {
         svg.append("text")
             .attr("class", "ylabel")
             .attr("x", -height / 2)
-            .attr("y", -margin.left + 20)
+            .attr("y", -50)
             .attr("text-anchor", "middle")
             .attr("transform", "rotate(-90)")
             .text("-log10(Adj-pValue)");

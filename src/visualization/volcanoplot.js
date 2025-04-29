@@ -126,15 +126,17 @@ const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein}) => {
           }
         })
         .on("mouseover", function (event, d) {
+          if (!highlightedProtein) return;
+        
           tooltipBackground.attr("width", 0).attr("height", 0);
           d3.select(this)
             .attr("fill", "#cc00cc")
             .attr("r", 4.5)
             .attr("stroke", "#cc00cc")
             .attr("stroke-width", 1.5);
-
+        
           highlightOthers(d.pep_grouping_key, true);
-
+        
           const tooltip = d3.select("#html-tooltip");
           tooltip
             .style("display", "block")
@@ -144,10 +146,8 @@ const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein}) => {
             `)
             .style("left", `${event.pageX + 10}px`)
             .style("top", `${event.pageY - 40}px`);
-        
-
-          svg.selectAll(".tooltip").raise();
         })
+        
         .on("mouseout", function (event, d) {
           d3.select(this)
             .attr("fill", d.pg_protein_accessions === highlightedProtein ? "#ffa500" : "#d9d9d9")
