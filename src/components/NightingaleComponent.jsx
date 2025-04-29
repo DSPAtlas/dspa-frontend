@@ -379,7 +379,7 @@ const NightingaleComponent = ({
                     ))}
                 </div>
                 {experimentIDsList.length > 5 ? (
-                    <div>
+                    <div className="experiment-dropdown">
                         <label htmlFor="experiment-dropdown">Color structure according to experiment:</label>
                         <select
                             id="experiment-dropdown"
@@ -485,7 +485,6 @@ const NightingaleComponent = ({
                                         length={sequenceLength}
                                         height="100"
                                         display-start="1"
-                                        margin-left="60"
                                         display-end={sequenceLength}
                                         highlight-event="onmouseover"
                                         color-range="#ffe6f7:-2,#FF6699:2"

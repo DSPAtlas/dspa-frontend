@@ -4,18 +4,6 @@
     margin: 0 auto;
 }
 
-#experiment-dropdown {
-    padding: var(--padding); 
-    border: var(--border); 
-    border-radius: var(--border-radius); 
-    background-color: var(--bg-color); ;
-    cursor: pointer;
-}
-
-#experiment-dropdown:focus {
-    border-color: var(--select-color); ;
-    outline: none;
-}
 
 .protein-result-container {
     overflow-y: auto; /* Scrollable overflow content */
@@ -125,42 +113,23 @@
     white-space: nowrap; /* Prevents text wrapping */
 }
 
-.experiment-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--gap);
-    margin-top: var(--margin-top); 
-    margin-bottom: var(--margin-bottom); 
-    font-family: var(--font-family-base); 
-}
 
-.experiment-button {
-    background-color: var(--bg-color); 
-    cursor: pointer; /* Indicate clickable buttons */
-    padding: 10px 20px; /* Adequate padding for comfortable clicking */
+
+.centered-heading {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+.protein-view-section {
+    width: 100%; 
+    border: var(--border); 
     border-radius: var(--border-radius); 
-    border: var(--border); 
-    box-shadow: var(--box-shadow); 
-    min-width: 120px; /* Ensure buttons have a consistent width */
-    text-align: center; /* Center align button text */
-    transition: var(--transition); 
-    font-size: var(--font-size-base); 
-    font-family: var(--font-family-base); 
-}
-
-.experiment-button:hover {
-    background-color: var(--shading-color-hover); 
-    border: var(--border); 
-    box-shadow: var(--box-shadow); 
-}
-
-.experiment-button.selected {
-    background-color: var(--select-color); 
-    border: var(--border); 
-    box-shadow: var(--box-shadow-selected);
-    font-size: var(--font-size-base); 
-    font-family: var(--font-family-base); 
-    color: var(--text-color, #2a222a); 
+    background-color: var(--bg-color); 
+    box-sizing: border-box;
+    padding: var(--padding);
+    display: block;
+    font-size: var(--font-size-base) !important;
+    font-family: var(--font-family-base);
+    height: 100%;
 }
 
