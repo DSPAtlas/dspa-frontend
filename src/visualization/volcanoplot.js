@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import React, { useEffect, useRef, useState } from 'react';
 
 
-const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein}) => {
+const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein=null}) => {
   const svgRef = useRef();
   const [page, setPage] = useState(0);
 
@@ -126,7 +126,6 @@ const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein}) => {
           }
         })
         .on("mouseover", function (event, d) {
-          if (!highlightedProtein) return;
         
           tooltipBackground.attr("width", 0).attr("height", 0);
           d3.select(this)
@@ -176,10 +175,20 @@ const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein}) => {
       {/* Centered Legend and Buttons */}
      
       <div className="volcano-plot-legend">
-        <div className="volcano-plot-legend-item">
-          <div style={{ backgroundColor: '#ffa500', border: '1.5px solid black', borderRadius: '50%', width: 18, height: 18 }} />
-          <span>Peptides in {highlightedProtein}</span>
-        </div>
+            {highlightedProtein && (
+          <div className="volcano-plot-legend-item">
+            <div
+              style={{
+                backgroundColor: '#ffa500',
+                border: '1.5px solid black',
+                borderRadius: '50%',
+                width: 18,
+                height: 18,
+              }}
+            />
+            <span>Peptides in {highlightedProtein}</span>
+          </div>
+        )}
         <div className="volcano-plot-legend-item">
           <div style={{ backgroundColor: '#cc00cc', borderRadius: '50%', width: 18, height: 18 }} />
           <span>Selected Peptide</span>

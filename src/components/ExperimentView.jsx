@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import config from '../config.json';
+import VolcanoPlot from '../visualization/volcanoplot.js';
 
 const getTop20Proteins = (proteinScores) => {
     const sortedData = proteinScores.sort((a, b) => b.cumulativeScore - a.cumulativeScore);
@@ -11,7 +12,9 @@ const getTop20Proteins = (proteinScores) => {
 const ExperimentInfo = () => {
     const { experimentID } = useParams(); 
     const [experimentData, setExperimentData] = useState([]);
+    const [differentialAbundanceData, setDifferentialAbundanceData] = useState([]);
     const [topProteins, setTopProteins] = useState([]);
+    const chartRefVolcano = useRef(null);
 
     const fetchExperimentData = useCallback(async () => {
         const url = `${config.apiEndpoint}experiment?experimentID=${experimentID}`;
@@ -21,11 +24,15 @@ const ExperimentInfo = () => {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
           const data = await response.json();
+          console.log("dat", data);
           setExperimentData(data.experimentData);
+          setDifferentialAbundanceData(data.experimentData.differentialAbundanceDataList);
         } catch (error) {
           console.error("Error fetching data: ", error);
         }
       }, [experimentID]);
+
+    
     
     const handleDownloadPDF = () => {
         if (!experimentData.metaData.qc_pdf_file) {
@@ -69,7 +76,7 @@ const ExperimentInfo = () => {
                         <div className="metadata-section">
                             <h2>General Information</h2>
                             <div className="metadata-field">
-                                <strong>Perturbation:</strong> {experimentData.metaData.perturbation || 'N/A'}
+                                <strong>Perturbation:</strong> {experimentData.perturbation || 'N/A'}
                             </div>
                             <div className="metadata-field">
                                 <strong>Condition:</strong> {experimentData.metaData.condition || 'N/A'}
@@ -117,10 +124,16 @@ const ExperimentInfo = () => {
                     <div id="chart"></div>
                 </div>
                 <div >
-                    <div  className="experiment-header">
-                <h1>Top 20 Proteins by Cumulative LiP Score</h1><br />
-                </div>
-                <div className="experiment-protein-container">
+                <div className="condition-section condition-volcano-plot-wrapper">
+                <h2>Volcano Plots per comparison</h2><br />
+                    <div>
+                        <VolcanoPlot
+                            differentialAbundanceDataList={differentialAbundanceData}
+                        />
+                    </div>
+                    </div>
+                <div className="condition-section condition-volcano-plot-wrapper">
+                <h2>Top 20 Proteins by Cumulative LiP Score</h2><br />
                 <table>
                     <thead>
                         <tr>
