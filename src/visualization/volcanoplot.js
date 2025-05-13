@@ -5,6 +5,8 @@ import React, { useEffect, useRef, useState } from 'react';
 const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein=null}) => {
   const svgRef = useRef();
   const [page, setPage] = useState(0);
+  const [showAll, setShowAll] = useState(false);
+
 
   function cssSafeKey(key) {
     return key.replace(/[^\w-]/g, '_'); 
@@ -50,8 +52,9 @@ const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein=null}) 
     const yMax = d3.max(allData, d => -Math.log10(d.adj_pval));
     
     const plotsPerPage = 2;
-    const start = page * plotsPerPage;
-    const end = start + plotsPerPage;
+    const start = showAll ? 0 : page * plotsPerPage;
+    const end = showAll ? sortedDataList.length : start + plotsPerPage;
+
 
     const margin = { top: 30, right: 30, bottom: 30, left: 30 };
 
@@ -202,12 +205,13 @@ const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein=null}) 
         </div>
         <div style={{ position: 'relative' }}>
         <div id="html-tooltip" className="html-tooltip-volcano" />
-      <div
-        ref={svgRef}
-        className="volcano-plot-section"
-      />
+        <div
+          className={`volcano-plot-section ${showAll ? 'volcano-plot-section-expanded' : ''}`}
+          ref={svgRef}
+        />
 
-      {totalPages > 1 && (
+
+      {!showAll && totalPages > 1 && (
         <div className="plot-grid-wrapper-volcano">
           <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}>
             &lt;
@@ -218,6 +222,15 @@ const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein=null}) 
           </button>
         </div>
       )}
+     {(differentialAbundanceDataList?.length || 0) > 2 && (
+      <div className="volcano-plot-controls" style={{ marginTop: '10px', marginBottom: '10px' }}>
+        <button onClick={() => setShowAll(prev => !prev)}>
+          {showAll ? 'Show Less' : 'Show All'}
+        </button>
+      </div>
+    )}
+
+
     </div>
     </div>
     

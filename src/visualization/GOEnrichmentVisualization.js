@@ -36,7 +36,8 @@ function wrapText(selection, maxWidth, maxCharsPerLine = 25, maxLines = 25) {
     });
 }
 
-const GOEnrichmentVisualization = ({ goEnrichmentData, onProteinSelect }) => {
+const GOEnrichmentVisualization = ({ goEnrichmentData, onProteinSelect=null }) => {
+    console.log("goenruichmentdata", goEnrichmentData);
     const chartRef = useRef();
 
     useEffect(() => {

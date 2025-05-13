@@ -33,15 +33,20 @@ text.pep-key-label, text.protein-name-label {
     pointer-events: none; 
 }
 
-.condition-section-wrapper {
+/* .condition-section-wrapper {
     flex-direction: column; 
     gap: var(--gap);
     width: 100%; 
     box-sizing: border-box; 
     max-height: calc(60vh - 120px);
     height: 100%;
-}
-
+} */
+.condition-section-wrapper {
+    display: block;
+    width: 100%;
+    overflow: visible;
+  }
+  
 /* Shared styles for all sections */
 .condition-section {
     width: 100%; 
@@ -76,6 +81,11 @@ text.pep-key-label, text.protein-name-label {
     flex-wrap: wrap;
 }
 
+.condition-section.condition-protein-experiment-wrapper {
+    height: 100vh; /* or another suitable value */
+    min-height: 600px;
+}
+
 
 .condition-content-wrapper {
     display: flex;
@@ -93,29 +103,33 @@ text.pep-key-label, text.protein-name-label {
 }
 
 .condition-table-container {
-    flex: 0 0 35%; 
-    max-height: calc(65vh - 120px);
-    overflow-y: auto; /* Allow vertical scrolling */
-    border: var(--border); 
-    box-sizing: border-box;
+    flex: 0 0 35%;
+    overflow-y: auto;
     padding: var(--padding);
+    box-sizing: border-box;
     font-size: var(--font-size-base) !important;
     font-family: var(--font-family-base);
     width: 100%;
-}
+    max-height:100%;
+    align-self: stretch;
+  }
+  
 
 
 .condition-protein-container {
-    border: var(--border); 
     flex: 0 0 65%;
     padding: var(--padding);
-    box-sizing: border-box; 
-    max-height: calc(65vh - 120px);
+    box-sizing: border-box;
+    overflow: visible;
+    height: auto;
+    border: var(--border); 
+    padding: var(--padding);
     font-size: var(--font-size-base) !important;
     font-family: var(--font-family-base);
     width: 100%;
     max-width: 100%;
     overflow-x: auto;
+   
 }
 
 
@@ -133,12 +147,6 @@ text.pep-key-label, text.protein-name-label {
     word-wrap: break-word;
 }
 
-.condition-protein-experiment-wrapper {
-    display: flex;
-    gap: 0px; 
-    width: 100%; 
-    box-sizing: border-box;
-}
 
 .condition-table-container h2, .condition-protein-container h2 {
     margin: 0; /* Reset default margins */
@@ -160,10 +168,10 @@ text.pep-key-label, text.protein-name-label {
 
 .condition-protein-experiment-wrapper {
     display: flex;
-    justify-content: space-between; 
-    gap: 2px; 
-    flex-grow: 1;
-}
+    align-items: stretch; /* Important */
+    width: 100%;
+  }
+  
 
 .condition-dropdown {
     width: 100%;
@@ -279,8 +287,29 @@ select:focus {
     padding: var(--padding);
     position: relative;
     width: 100%;
-    height: 100%;
+    min-height: 350px; /* Default minimum height */
+    max-height: none; 
 }
+
+.condition-go-enrichment-wrapper {
+    flex: 1;
+    display: flex; 
+    justify-content: center; 
+    overflow: visible; 
+    padding: var(--padding);
+    position: relative;
+    width: 100%;
+    min-height: 350px; /* Default minimum height */
+    max-height: none; 
+}
+
+.volcano-plot-section-expanded {
+    max-height: none;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: stretch;
+  }
+  
 
 /* Heading for the chart section */
 .goenrichment-chart-container h2 {

@@ -148,7 +148,6 @@ const Condition = () => {
             }
 
             const data = await response.json(); 
-            console.log("data", data);
             setDoseResponseDataPlotCurve(data.doseResponseDataPlotCurve);
             setDoseResponseDataPlotPoints(data.doseResponseDataPlotPoints);
             
@@ -225,7 +224,6 @@ const Condition = () => {
                     setSelectedCondition(rawData.conditionData.condition);
                     setDifferentialAbundanceData(rawData.conditionData.differentialAbundanceDataList);
                     setGoEnrichmentData(rawData.conditionData.goEnrichmentData);
-                    console.log("goenruchemnt", rawData.conditionData.goEnrichmentData);
                     setExperimentIDs(rawData.conditionData.experimentIDsList);
                     setAllProteinData(rawData.conditionData.proteinScoresTable);
                     setFilteredExperimentData(rawData.conditionData.proteinScoresTable);
@@ -318,53 +316,36 @@ const Condition = () => {
     );
     
     const renderTabContent = () => {
-        if (loading) {
-            return <div>Loading...</div>; 
+        if (loading) return <div>Loading...</div>;
+        if (!differentialAbundanceData && !goEnrichmentData) return <div>No data available</div>;
+    
+        if (activeTab === TABS.VOLCANO_PLOT && differentialAbundanceData && Object.keys(differentialAbundanceData).length > 0) {
+            return (
+                <div className="condition-section condition-volcano-plot-wrapper" key={`volcano-plot-${selectedCondition}`}>
+                    <VolcanoPlot
+                        differentialAbundanceDataList={differentialAbundanceData}
+                        chartRef={chartRefVolcano}
+                        highlightedProtein={displayedProtein}
+                    />
+                </div>
+            );
         }
     
-        if (!differentialAbundanceData && !goEnrichmentData) {
-            return <div>No data available</div>; 
+        if (activeTab === TABS.GENE_ONTOLOGY && goEnrichmentData && Object.keys(goEnrichmentData).length > 0) {
+            return (
+                <div className="condition-section condition-go-enrichment-wrapper" key={`go-plot-${selectedCondition}`}>
+                    <GOEnrichmentVisualization
+                        goEnrichmentData={goEnrichmentData}
+                        chartRef={chartRefGO}
+                        onProteinSelect={setDisplayedProtein}
+                    />
+                </div>
+            );
         }
     
-        const contentStyle = (tabName) => ({
-            display: activeTab === tabName ? 'block' : 'none'
-        });
-    
-        return (
-            <div >
-                {differentialAbundanceData && Object.keys(differentialAbundanceData).length > 0 && (
-                     <div className="condition-section condition-volcano-plot-wrapper">
-                    <div 
-                        style={contentStyle(TABS.VOLCANO_PLOT)} 
-                        key={`volcano-plot-${selectedCondition}`} 
-                    >
-                        <VolcanoPlot
-                            differentialAbundanceDataList={differentialAbundanceData}
-                            chartRef={chartRefVolcano}
-                            highlightedProtein={displayedProtein}
-                        />
-                    </div>
-                    </div>
-                )}
-                {goEnrichmentData && Object.keys(goEnrichmentData).length > 0  &&  (
-                     <div className="condition-section condition-volcano-plot-wrapper">
-                    <div 
-                        style={contentStyle(TABS.GENE_ONTOLOGY)} 
-                        key={`go-plot-${selectedCondition}`} 
-                    >
-                        <GOEnrichmentVisualization
-                            goEnrichmentData={goEnrichmentData}
-                            chartRef={chartRefGO}
-                            onProteinSelect={(proteinAccession) => {
-                                setDisplayedProtein(proteinAccession);
-                            }}
-                        />
-                    </div>
-                    </div>
-                )}
-            </div>
-        );
+        return null;
     };
+    
  
 
 
@@ -398,42 +379,46 @@ const Condition = () => {
 
             {renderTabNav()}
     
+           {/* Tab Content (Volcano or GO) */}
             <div className="condition-section-wrapper">
                 {renderTabContent()}
-            
-            {/* Protein Experiment Section */}
-            <div className="condition-section condition-protein-experiment-wrapper">
-                <div className="condition-table-container">
-                    <h2>Proteins in {selectedGoTerm}</h2>
-                    <ProteinScoresTable
-                        experimentData={filteredExperimentData}
-                        onProteinClick={handleProteinClick}
-                        displayedProtein={displayedProtein}
-                        goTerms={allGoTerms}
-                        onGoTermSelect={handleGoTermSelect}
-                    />
-                </div>
-                <div 
-                    ref={containerRef} 
-                    className="condition-protein-container">
-                    <h2>{displayedProtein}</h2>
-                    {displayedProteinData && pdbIds && experimentIDs &&(
-                        <NightingaleComponent
-                            key={displayedProtein}
-                            proteinData={displayedProteinData}
-                            pdbIds={pdbIds}
-                            selectedPdbId={selectedPdbId}
-                            setSelectedPdbId={setSelectedPdbId}
-                            selectedExperiment={selectedExperiment}
-                            showHeatmap={false}
-                            passedExperimentIDs={experimentIDs}
-                            containerRef={containerRef}
-                        />
-                    )}
-                </div>
             </div>
+        
+           
+             {/* Protein Table and Nightingale Section (always shown) */}
+          
+        <div className="condition-section condition-protein-experiment-wrapper">
+            <div className="condition-table-container">
+                <h2>Proteins in {selectedGoTerm || 'All GO Terms'}</h2>
+                <ProteinScoresTable
+                    experimentData={filteredExperimentData}
+                    onProteinClick={handleProteinClick}
+                    displayedProtein={displayedProtein}
+                    goTerms={allGoTerms}
+                    onGoTermSelect={handleGoTermSelect}
+                />
+            </div>
+            <div ref={containerRef} className="condition-protein-container">
+                <h2>{displayedProtein}</h2>
+                {displayedProteinData && pdbIds && experimentIDs && (
+                    <NightingaleComponent
+                        key={displayedProtein}
+                        proteinData={displayedProteinData}
+                        pdbIds={pdbIds}
+                        selectedPdbId={selectedPdbId}
+                        setSelectedPdbId={setSelectedPdbId}
+                        selectedExperiment={selectedExperiment}
+                        showHeatmap={true}
+                        passedExperimentIDs={experimentIDs}
+                        containerRef={containerRef}
+                    />
+                )}
+            </div>
+        </div>
+      
 
-           {doseResponseDataPlotCurve && Object.keys(doseResponseDataPlotCurve).length > 0 && (
+        {/* Dose Response Plot (conditional) */}
+        {doseResponseDataPlotCurve && Object.keys(doseResponseDataPlotCurve).length > 0 && (
             <div className="condition-section condition-dose-response-wrapper">
                 <div className="condition-dose-response-container">
                     <h2>Dose-Response-Data for Peptides in {displayedProtein}</h2>
@@ -444,10 +429,8 @@ const Condition = () => {
                 </div>
             </div>
         )}
-
-                </div>
-        </div>
-    );
+    </div>
+);
 };
 export default Condition;
 

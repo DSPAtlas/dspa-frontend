@@ -487,7 +487,7 @@ const NightingaleComponent = ({
                                         display-start="1"
                                         display-end={sequenceLength}
                                         highlight-event="onmouseover"
-                                        color-range="#ffe6f7:-2,#FF6699:2"
+                                        color-range="#fbeaf5:-2,#782162:2"
                                     />
                                 </td>
                             </tr>
