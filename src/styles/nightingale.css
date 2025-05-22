@@ -1,15 +1,13 @@
 #nightingale-manager-container #tooltip {
     position: absolute;
     visibility: hidden; 
-    background-color: rgba(252, 250, 250, 0.93);
-    color: #666666;
-    border-radius: 4px;
-    padding: 10px;
+    background-color: var(--bg-color); 
+    border-radius: var(--border-radius); 
+    padding: var(--padding); 
     pointer-events: none; 
-    font-size: 18px;
-    font-family: 'Raleway', 'Arial', sans-serif;
+    font-family: var(--font-family-base); 
     z-index: 1000;
-    border: 2px solid #666666; 
+    border: var(--border); 
 }
 
 #nightingale-manager-container .tooltip-visible {
@@ -17,10 +15,11 @@
 }
 
 #nightingale-manager-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
     margin-top: 1px;
-    background-color: transparent;
     padding: 0px;
-    box-sizing: border-box; 
 }  
 #nightingale-manager-container  td {
     padding: 1px;
@@ -41,42 +40,69 @@
   }
 
 
+
+  .experiment-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--gap);
+    margin-top: var(--margin-top); 
+    margin-bottom: var(--margin-bottom); 
+    font-family: var(--font-family-base); 
+}
+
+.experiment-dropdown {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--gap);
+  margin-top: var(--margin-top); 
+  margin-bottom: var(--margin-bottom); 
+  min-width: 120px; /* Ensure buttons have a consistent width */
+  text-align: center; /* Center align button text */
+  transition: var(--transition); 
+  font-size: var(--font-size-base); 
+  font-family: var(--font-family-base); 
+}
+
 .experiment-button {
-    background-color: white; /* Default background */
-    color: black; /* Default text color */
+    background-color: var(--bg-color); 
+    cursor: pointer; /* Indicate clickable buttons */
+    padding: 10px 20px; /* Adequate padding for comfortable clicking */
+    border-radius: var(--border-radius); 
+    border: var(--border); 
+    box-shadow: var(--box-shadow); 
+    min-width: 120px; /* Ensure buttons have a consistent width */
+    text-align: center; /* Center align button text */
+    transition: var(--transition); 
+    font-size: var(--font-size-base); 
+    font-family: var(--font-family-base); 
+}
+
+.experiment-button:hover {
+    background-color: var(--shading-color-hover); 
+    border: var(--border); 
+    box-shadow: var(--box-shadow); 
 }
 
 .experiment-button.selected {
-    background-color: #FF6699; /* Rose background for selected */
-    color: white; /* White text for better contrast */
+    background-color: var(--select-color); 
+    border: var(--border); 
+    box-shadow: var(--box-shadow-selected);
+    font-size: var(--font-size-base); 
+    font-family: var(--font-family-base); 
+    color: var(--text-color, #2a222a); 
 }
 
-
-
-/* @media (max-width: 768px) {
-    nightingale-navigation, nightingale-sequence, nightingale-track, nightingale-sequence-heatmap {
-        min-width: 100%; 
-        max-height: 50px; 
-    }
-} */
-
-/* @media (min-width: 769px) {
-    nightingale-navigation, nightingale-sequence, nightingale-track, nightingale-sequence-heatmap {
-        min-width: 1200px; 
-        height: auto;
-    }
-} */
-
-:root {
-    --font-size-normal: 16px;
-    --font-size-large: 18px;
-    --legend-item-margin: 15px;
+#experiment-dropdown {
+  padding: var(--padding); 
+  border: var(--border); 
+  border-radius: var(--border-radius); 
+  background-color: var(--bg-color); ;
+  cursor: pointer;
 }
 
-@media (max-width: 768px) {
-    :root {
-        --font-size-normal: 14px;
-        --font-size-large: 16px;
-        --legend-item-margin: 10px;
-    }
+#experiment-dropdown:focus {
+  border-color: var(--select-color); ;
+  outline: none;
 }

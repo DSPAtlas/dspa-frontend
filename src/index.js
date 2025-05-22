@@ -1,6 +1,7 @@
 import React , { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 
 import Home from './components/Home';
@@ -9,7 +10,7 @@ import ProteinVisualization from './components/ProteinView';
 import ExperimentInfo from './components/ExperimentView';
 import ExperimentsOverview from './components/ExperimentsOverview';
 import Impressum from './components/Impressum';
-import Treatment from './components/TreatmentView';
+import Condition from './components/conditionView';
 import Pathway from './components/Pathway';
 import LoginForm from './components/LoginForm';
 
@@ -17,24 +18,30 @@ import LoginForm from './components/LoginForm';
 import "./styles/main.css";
 import "./styles/navigationbar.css";
 import "./styles/home.css";
-import "./styles/result.css";
 import "./styles/search.css";
 import "./styles/graphs.css";
-import "./styles/treatment.css";
+import "./styles/condition.css";
 import "./styles/proteinview.css";
 import "./styles/experimentView.css";
+import "./styles/experimentOverview.css";
 import "./styles/nightingale.css";
+import "./styles/impressum.css";
 
 const root = createRoot(document.getElementById("root"));
 
 const NotFound = () => <div>Page not found.</div>;
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('isAuthenticated') === 'true';
+  });
+
   const handleLogin = (username, password) => {
-    if (username === process.env.USERNAME_WEBSITE && password === process.env.PASSWORD_WEBSITE){
-      setIsAuthenticated(true); 
-    } else{
+    if (username === "lipatlas" && password === "lipatlas") {
+      localStorage.setItem('isAuthenticated', 'true');
+      setIsAuthenticated(true);
+    } else {
+      localStorage.setItem('isAuthenticated', 'false');
       setIsAuthenticated(false);
       alert('Authentication failed, please check your username and password');
     }
@@ -49,13 +56,13 @@ const App = () => {
   return (
     <div>
       <header className="app-header">
-        <div className="navbar-top">
+          <div className="navbar-top">
           <div className="navigation-bar navigation-white navigation-card">
             <a href="/" className="navigation-bar-item navigation-button navigation-wide">DYNAPROT</a>
             <div className="navigation-right navigation-hide-small">
               <a href="/" className="navigation-bar-item navigation-button">HOME</a>
-              <a href="/search" className="navigation-bar-item navigation-button"> SEARCH</a>
-              <a href="/experiments" className="navigation-bar-item navigation-button"> EXPERIMENT</a>
+              <a href="/search" className="navigation-bar-item navigation-button"> FIND PROTEINS</a>
+              <a href="/experiments" className="navigation-bar-item navigation-button"> EXPERIMENTS</a>
               <a href="/impressum" className="navigation-bar-item navigation-button"> IMPRESSUM</a>
             </div>
           </div>  
@@ -68,7 +75,7 @@ const App = () => {
         <Route path="/visualize/:proteinName" element={<ProteinVisualization />} />
         <Route path="/experiment/:experimentID" element={<ExperimentInfo />} />
         <Route path="/experiments" element={<ExperimentsOverview />} />
-        <Route path="/treatment/:selectedTreatment" element={<Treatment />} />
+        <Route path="/condition/:selectedCondition" element={<Condition />} />
         <Route path="/pathway" element={<Pathway />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

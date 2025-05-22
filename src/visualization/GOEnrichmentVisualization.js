@@ -1,8 +1,7 @@
 import * as d3 from 'd3';
-import React, { useEffect, useMemo, useRef,memo} from 'react';
+import React, { useEffect, useRef } from 'react';
 
 function wrapText(selection, maxWidth, maxCharsPerLine = 25, maxLines = 25) {
-   
     selection.each(function () {
         const text = d3.select(this);
         const fullText = text.text();
@@ -10,10 +9,10 @@ function wrapText(selection, maxWidth, maxCharsPerLine = 25, maxLines = 25) {
         const y = text.attr("y") || 0;
         const x = text.attr("x") || 0;
         const dy = parseFloat(text.attr("dy")) || 0;
-        const lineHeight = 1.2; // Line height in ems
+        const lineHeight = 1.2;
         let lineNumber = 0;
 
-        text.text(null); // Clear existing text
+        text.text(null);
 
         words.slice(0, maxLines).forEach((line, i) => {
             const tspan = text.append("tspan")
@@ -25,64 +24,66 @@ function wrapText(selection, maxWidth, maxCharsPerLine = 25, maxLines = 25) {
         });
 
         if (words.length > maxLines) {
-            const tspan = text.append("tspan")
+            text.append("tspan")
                 .attr("x", x)
                 .attr("y", y)
                 .attr("dy", `${lineNumber * lineHeight + dy}em`)
                 .text("...");
         }
 
-        // Apply rotation for better readability
         text.attr("transform", `rotate(-45)`)
             .style("text-anchor", "end");
     });
 }
 
+const GOEnrichmentVisualization = ({ goEnrichmentData, onProteinSelect=null }) => {
+    console.log("goenruichmentdata", goEnrichmentData);
+    const chartRef = useRef();
 
-const GOEnrichmentVisualization = memo(({ goEnrichmentData, chartRef }) => {
-    let isMounted = useRef(true);
+    useEffect(() => {
+        if (!goEnrichmentData || goEnrichmentData.length === 0) return;
 
-    const setup = useMemo(() => {
-        if (!goEnrichmentData || goEnrichmentData.length === 0) {
-            return null; // Return null if data is not available
-        }
+        const container = d3.select(chartRef.current);
+        container.selectAll("*").remove();
 
         const dynaprotColors = [
             "#be9fd2", "#d89853", "#b3c5da", "#d35eb6", "#71b6c8", "#d9ce74", "#99c2c5"
         ];
 
-        const experimentIDs = Array.from(new Set(goEnrichmentData.map(d => d.experimentID)));
-        const groupedData = d3.groups(goEnrichmentData, d => d.term);
+        const experimentIDs = Array.from(new Set(goEnrichmentData.map(d => d.dpx_comparison)));
         const maxAdjPValLog = d3.max(goEnrichmentData, d => -Math.log10(d.adj_pval) || 0);
+
         const colorScale = d3.scaleOrdinal()
             .domain(experimentIDs)
             .range(dynaprotColors);
 
-        return { experimentIDs, groupedData, maxAdjPValLog, colorScale };
-    }, [goEnrichmentData]);
+        const groupedData = d3.groups(goEnrichmentData, d => d.go_term);
+            const numberOfGoTerms = groupedData.length;
+            
 
-    const renderChart = (containerWidth) => {
-        if (!setup || !isMounted.current) return;
-        const { experimentIDs, groupedData, maxAdjPValLog, colorScale } = setup;
-        const dynamicHeight = Math.max(400, maxAdjPValLog * 2 * groupedData.length);
-        let maxLabelWidth = d3.max(experimentIDs, id => id.length * 12);
-        let margin = { top: 50, right: maxLabelWidth + 40, bottom: 250, left: 100 };
-        let width = containerWidth - margin.left - margin.right;
-        let height = dynamicHeight - margin.top - margin.bottom;
+        const maxLabelWidth = d3.max(experimentIDs, id => (id ? id.length * 12 : 0));
+        const margin = { top: 50, right: maxLabelWidth + 20, bottom: 250, left: 100 };
+            
+        const minWidth = 600;
+        const widthPerTerm = 80; 
+        const containerWidth = Math.max(minWidth, numberOfGoTerms * widthPerTerm + margin.left + margin.right);
+        
+            
+        const dynamicHeight = 400;
+        const width = containerWidth - margin.left - margin.right;
+        const height = dynamicHeight - margin.top - margin.bottom;
+            
 
-        const svgContainer = d3.select(chartRef.current);
-        svgContainer.selectAll("*").remove();
-
-        const svg = svgContainer.append("svg")
+        const svg = container.append("svg")
             .attr("width", containerWidth)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
-            const xScale = d3.scaleBand()
+        const xScale = d3.scaleBand()
             .domain(groupedData.map(d => d[0]))
             .range([0, width])
-            .padding(0.1);
+            .padding(numberOfGoTerms > 5 ? 0.2 : 0.5);
 
         const xSubgroup = d3.scaleBand()
             .domain(experimentIDs)
@@ -94,17 +95,19 @@ const GOEnrichmentVisualization = memo(({ goEnrichmentData, chartRef }) => {
             .nice()
             .range([height, 0]);
 
+        const tooltip = container.append("div")
+            .attr("class", "go-tooltip") 
+            .style("opacity", 0)
+            .style("pointer-events", "none");
+        
         svg.append("g")
             .attr("transform", `translate(0, ${height})`)
             .call(d3.axisBottom(xScale))
             .selectAll(".tick text")
-            .style("font-size", "14px")
-            .style("font-family", "Raleway")
             .style("text-anchor", "middle")
-            .call(wrapText, xScale.bandwidth());;
+            .call(wrapText, xScale.bandwidth());
 
-        svg.append("g")
-            .call(d3.axisLeft(yScale));
+        svg.append("g").call(d3.axisLeft(yScale));
 
         const barGroups = svg.selectAll("g.bar")
             .data(groupedData)
@@ -112,14 +115,48 @@ const GOEnrichmentVisualization = memo(({ goEnrichmentData, chartRef }) => {
             .attr("transform", d => `translate(${xScale(d[0])}, 0)`);
 
         barGroups.selectAll("rect")
-            .data(d => d[1].map(data => ({ ...data, xGroup: d[0] })))
+            .data(d => d[1].map(data => ({
+                ...data,
+                experimentID: data.dpx_comparison
+            })))
             .enter().append("rect")
             .attr("x", d => xSubgroup(d.experimentID))
             .attr("y", d => yScale(-Math.log10(d.adj_pval)))
             .attr("width", xSubgroup.bandwidth())
             .attr("height", d => height - yScale(-Math.log10(d.adj_pval)))
             .attr("fill", d => colorScale(d.experimentID))
-           // .on("click", d => onGoTermClick(d.term, d.accessions));
+            .on("mouseover", (event, d) => {
+                const bounds = container.node().getBoundingClientRect();
+                const mouseX = event.clientX - bounds.left;
+                const mouseY = event.clientY - bounds.top;
+            
+                tooltip
+                    .html(() => {
+                        const proteins = d.accessions.split(',');
+                        return `<strong>Proteins:</strong><br>${proteins.map(p => `<div class="tooltip-protein" data-accession="${p}">${p}</div>`).join('')}`;
+                    })
+                    .style("left", `${mouseX + 10}px`)
+                    .style("top", `${mouseY - 20}px`)
+                    .transition().duration(200)
+                    .style("opacity", 1);
+                tooltip.selectAll(".tooltip-protein")
+                    .on("click", function() {
+                        const protein = d3.select(this).attr("data-accession");
+                        if (onProteinSelect) {
+                            onProteinSelect(protein);
+                        }
+                    });
+            })
+            .on("mouseout", () => {
+                tooltip.transition().duration(200)
+                    .style("opacity", 0);
+            })
+            .on("click", (event, d) => {
+                const accessions = d.accessions.split(',');
+                if (accessions.length > 0 && onProteinSelect) {
+                    onProteinSelect(accessions[0]); 
+                }
+            });
 
         const legend = svg.append("g")
             .attr("class", "legend")
@@ -137,70 +174,27 @@ const GOEnrichmentVisualization = memo(({ goEnrichmentData, chartRef }) => {
                 .attr("x", 20)
                 .attr("y", index * 20 + 10)
                 .attr("dy", "0.35em")
-                .style("font-family", "Raleway")
-                .style("font-size", "12px")
                 .text(id);
         });
 
-        // Add title
         svg.append("text")
             .attr("x", width / 2)
             .attr("y", -10)
             .attr("text-anchor", "middle")
-            .style("font-size", "16px")
-            .style("font-family", "Raleway")
             .text("Grouped Bar Plot of GO Enrichment by Experiment");
 
-        // Add y-axis label
         svg.append("text")
             .attr("class", "ylabel")
             .attr("x", -height / 2)
-            .attr("y", -margin.left + 20)
+            .attr("y", -50)
             .attr("text-anchor", "middle")
             .attr("transform", "rotate(-90)")
-            .style("font-family", "Raleway")
             .text("-log10(Adj-pValue)");
-
-       
-    };
-
-    useEffect(() => {
-        const resizeObserver = new ResizeObserver(entries => {
-            for (let entry of entries) {
-                if (entry.target === chartRef.current) {
-                    renderChart(entry.contentRect.width);
-                }
-            }
-        });
-    
-        if (chartRef.current) {
-            resizeObserver.observe(chartRef.current);
-        }
-    
-        return () => {
-            if (chartRef.current) {
-                resizeObserver.unobserve(chartRef.current);
-            }
-            if (isMounted.current) {
-                d3.select(chartRef.current).selectAll("*").remove();
-            }
-        };
-    }, [setup, chartRef, renderChart]);
-    
-
-    useEffect(() => {
-        return () => {
-            isMounted.current = false;
-        };
-    }, []);
+    }, [goEnrichmentData, onProteinSelect]);
 
     return (
-        <div ref={chartRef} className="go-enrichment-visualization">
-        </div>
-    ); 
-});
+        <div ref={chartRef} className="go-enrichment-visualization" />
+    );
+};
 
 export default GOEnrichmentVisualization;
-
-
-

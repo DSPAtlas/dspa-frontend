@@ -4,16 +4,132 @@
     margin: 0 auto;
 }
 
-#experiment-dropdown {
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #fff;
-    cursor: pointer;
+
+.protein-result-container {
+    overflow-y: auto; /* Scrollable overflow content */
+    padding: 20px;
+    padding-top: 80px;
+    background-color: var(--bg-color); 
+    -webkit-font-smoothing: auto;
+    -moz-font-smoothing: auto;
+    -moz-osx-font-smoothing: grayscale;
+    font-smoothing: auto;
+    text-rendering: optimizeLegibility;
+    font-smooth: always;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
 }
 
-#experiment-dropdown:focus {
-    border-color: #888;
-    outline: none;
+/* Styles for the overall layout container */
+.container {
+    display: flex;
+    flex-direction: row;
+    padding-top: var(--padding); 
 }
+
+
+/* Results container styling */
+
+
+/* Protein header styling */
+.protein-header {
+    font-size: var(--font-size-header); 
+    font-weight: bold;
+    margin-bottom: var(--margin-bottom); 
+    margin-top: 50px;
+}
+
+/* Result text styling */
+.result-text {
+    display: block;
+    margin-bottom: var(--margin-bottom); 
+}
+
+/* Tooltip container styling */
+.tooltip-container {
+    background-color: var(--bg-color); 
+    padding:var(--padding); 
+    border-radius: var(--border-radius); 
+    font-family: var(--font-family-base); 
+    box-shadow: var(--box-shadow); 
+}
+
+.simple-tooltip {
+    background-color: var(--bg-color); 
+    border: var(--border); 
+    border-radius: var(--border-radius); 
+    padding:var(--padding); 
+    font-family:var(--font-family-base); 
+    text-align: left;
+    white-space: nowrap; 
+}
+
+/* Tooltip link styling */
+.tooltip-link {
+    color: var(--main-color); 
+    text-decoration: none;
+}
+
+.tooltip-link:hover {
+    text-decoration: underline;
+}
+
+.flex-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%; 
+}
+
+.pdb-selection-container {
+    width: 100%; /* Make table fill the width */
+    table-layout: fixed; /* Distribute columns evenly */
+    border-collapse: collapse;
+}
+
+.pdb-selection-container thead {
+    background-color: var(--bg-color);  /* Optional styling for header */
+    position: sticky; /* Keeps the header fixed */
+    top: 0;
+    z-index: 1;
+}
+
+.pdb-selection-container tbody {
+    display: block;
+    max-height: 200px; /* Adjust as needed */
+    overflow-y: auto;
+    width: 100%;
+}
+
+.pdb-selection-container tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed; /* Consistent column sizing */
+}
+
+.pdb-selection-container th, .pdb-selection-container td {
+    padding: var(--padding); 
+    text-align: left;
+    border:var(--border); 
+    white-space: nowrap; /* Prevents text wrapping */
+}
+
+
+
+.centered-heading {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+.protein-view-section {
+    width: 100%; 
+    border: var(--border); 
+    border-radius: var(--border-radius); 
+    background-color: var(--bg-color); 
+    box-sizing: border-box;
+    padding: var(--padding);
+    display: block;
+    font-size: var(--font-size-base) !important;
+    font-family: var(--font-family-base);
+    height: 100%;
+}
+

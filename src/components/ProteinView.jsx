@@ -88,20 +88,23 @@ function ProteinVisualizationComponents({ proteinData, pdbIds, loading, error })
             {loading ? <p>Loading...</p> : error ? <p>Error: {error}</p> : (
                 proteinData && proteinData.proteinName && (
                     <div>
-                    <span className="protein-header"> </span><br />
-                        <span className="protein-header">UniProt ID {proteinData.proteinName} </span><br />
+                        <div className="protein-view-section">
+                        <h2 className="centered-heading">UniProt ID {proteinData.proteinName}</h2>
+                        <div>
                         <NightingaleComponent 
                              proteinData={proteinData} 
                              pdbIds={pdbIds}
                              selectedPdbId={selectedPdbId}
                              setSelectedPdbId={setSelectedPdbId} 
                              selectedExperiment={selectedExperiment}/>
-                        <span className="protein-header"> </span><br />
-                        <h2>Summed LiP Score in Experiments for {proteinData.proteinName}</h2>
-                        <div className="results-experiment-search-container">
-                            <div id="sumlipscorebarplot"></div>
                         </div>
-                    </div>
+                        </div>
+                        <div className="protein-view-section">
+                        <h2 className="centered-heading">Summed LiP Score in Experiments for {proteinData.proteinName}</h2>
+                            <div id="sumlipscorebarplot"></div>
+                         </div>
+                        </div>
+                   
                 )
             )}
         </div>
@@ -152,23 +155,10 @@ const ProteinVisualization = () => {
         fetchProteinData();
     }, [fetchProteinData]);
 
-    const handleSearchTermChange = (event) => {
-        setSearchTerm(event.target.value);
-    };
-
-    const handleSubmit = async(event) => {
-        event.preventDefault();
-        
-        try {
-            navigate('/search', { state: { searchTerm: searchTerm } });
-        } catch (err) {
-            setError(err.message);
-        }
-    };
 
     return (
         <>
-            <div className="results-container">
+            <div className="protein-result-container">
                 {proteinData && <ProteinVisualizationComponents proteinData={proteinData} pdbIds={pdbIds} loading={loading} error={error}/>}
             </div>
         </>

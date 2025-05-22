@@ -10,15 +10,14 @@ function Home() {
   const [error, setError] = useState("");
   const { searchResults: initialSearchResults } = location.state || {};
   const [searchResults, setSearchResults] = useState(initialSearchResults || null);
-  const [treatments, setTreatments] = useState([]);
-
+  const [conditions, setconditions] = useState([]);
 
   const navigate = useNavigate();
 
-  const handleTreatmentChange = (event) => {
-    const selectedTreatment = event.target.value;
-    if (selectedTreatment) {
-      navigate(`/treatment/${selectedTreatment}`);
+  const handleconditionChange = (event) => {
+    const selectedCondition = event.target.value;
+    if (selectedCondition) {
+      navigate(`/condition/${selectedCondition}`);
     }
   };
 
@@ -50,24 +49,24 @@ function Home() {
 
   useEffect(() => {
     const controller = new AbortController();
-    const fetchTreatments = async () => {
+    const fetchconditions = async () => {
         try {
-            const response = await fetch(`${config.apiEndpoint}treatment/condition`, { signal: controller.signal });
+            const response = await fetch(`${config.apiEndpoint}condition/allconditions`, { signal: controller.signal });
             const data = await response.json();
             if (data.success && Array.isArray(data.conditions)) {
-                setTreatments(data.conditions);
+                setconditions(data.conditions);
             } else {
-                throw new Error(data.message || "Failed to fetch treatments");
+                throw new Error(data.message || "Failed to fetch conditions");
             }
         } catch (error) {
             if (error.name !== 'AbortError') {
-                console.error("Error fetching treatments:", error);
+                console.error("Error fetching conditions:", error);
                 setError(error.message);
             }
         }
     };
 
-    fetchTreatments();
+    fetchconditions();
 
     return () => {
         controller.abort(); 
@@ -94,14 +93,14 @@ function Home() {
         </div>
 
         <div className="three-boxes-container">
-          {/* Left Box - Treatment Dropdown */}
+          {/* Left Box - condition Dropdown */}
           <div className="box">
-            <label htmlFor="treatment-select">Select Condition</label>
-            <p className="description">Choose a treatment condition to explore its impact on protein structures.</p>
-            <select id="treatment-select" onChange={handleTreatmentChange}>
+            <label>Select Condition</label>
+            <p className="description">Choose a condition condition to explore its impact on protein structures.</p>
+            <select id="condition-select" onChange={handleconditionChange}  className="condition-dropdown-home">
               <option value="">Select a Condition</option>
-              {treatments.map((treatment, index) => (
-                  <option key={index} value={treatment}>{treatment}</option>
+              {conditions.map((condition, index) => (
+                  <option key={index} value={condition}>{condition}</option>
               ))}
           </select>
           </div>
@@ -109,7 +108,7 @@ function Home() {
          {/* Middle Box - Protein Search */}
         <div className="box">
           <form onSubmit={handleSubmit}>
-            <label htmlFor="protein-search">Protein Search</label>
+            <label>Protein Search</label>
             <p className="description">Search for proteins by name to view related structural dynamics data.</p>
             <input
               id="protein-search"
@@ -186,7 +185,7 @@ function Home() {
       </main>
 
        {/* Impressum */}
-       <footer style={{ textAlign: "center", marginTop: "20px", padding: "10px", backgroundColor: "white" }}>
+       <footer style={{ textAlign: "center", marginTop: "20px", padding: "10px"}}>
         <p>© 2024 Eidgenössische Technische Hochschule Zürich</p>
       </footer>
     </>
