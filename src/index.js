@@ -1,6 +1,7 @@
 import React , { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 
 import Home from './components/Home';
@@ -31,11 +32,16 @@ const root = createRoot(document.getElementById("root"));
 const NotFound = () => <div>Page not found.</div>;
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('isAuthenticated') === 'true';
+  });
+
   const handleLogin = (username, password) => {
-    if (username ==="lipatlas" && password === "lipatlas"){
-      setIsAuthenticated(true); 
-    } else{
+    if (username === "lipatlas" && password === "lipatlas") {
+      localStorage.setItem('isAuthenticated', 'true');
+      setIsAuthenticated(true);
+    } else {
+      localStorage.setItem('isAuthenticated', 'false');
       setIsAuthenticated(false);
       alert('Authentication failed, please check your username and password');
     }
@@ -50,7 +56,7 @@ const App = () => {
   return (
     <div>
       <header className="app-header">
-        <div className="navbar-top">
+          <div className="navbar-top">
           <div className="navigation-bar navigation-white navigation-card">
             <a href="/" className="navigation-bar-item navigation-button navigation-wide">DYNAPROT</a>
             <div className="navigation-right navigation-hide-small">
