@@ -4,10 +4,44 @@ import { useNavigate, useParams } from 'react-router-dom';
 import config from '../config.json';
 import GOEnrichmentVisualization  from '../visualization/GOEnrichmentVisualization.js';
 import NightingaleComponent from './NightingaleComponent.jsx';
-import { getPdbIds } from '../hooks/useProteinData.js'; 
 import "@nightingale-elements/nightingale-sequence";
 import VolcanoPlot from '../visualization/volcanoplot.js';
 import DoseResponseCurves from '../visualization/DoseResponse.js'
+
+export async function getPdbIds(uniprotAccession) {
+    const url = `https://rest.uniprot.org/uniprotkb/${uniprotAccession}.json`;
+
+    const alphafoldStructure = [
+        { 
+            id: `AF-${uniprotAccession}-F1`, 
+            properties: [
+                { key: 'Method', value: 'AlphaFold' }, 
+                { key: 'Resolution', value: 'N/A' }, 
+                { key: 'Chains', value: 'N/A' }
+            ] 
+        },
+    ];
+    
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Failed to retrieve data for accession ${uniprotAccession}`);
+        }
+        
+        const data = await response.json();
+        const pdbIds = data.uniProtKBCrossReferences
+            ?.filter(ref => ref.database === 'PDB')
+            .map(ref => ({
+                id: ref.id,
+                properties: ref.properties || [],
+            })) || [];
+
+        return [...alphafoldStructure, ...pdbIds];
+    } catch (error) {
+        console.error(`Error fetching PDB IDs for ${uniprotAccession}:`, error);
+        return alphafoldStructure;
+    }
+}
 
 
 

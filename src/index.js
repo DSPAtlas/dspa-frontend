@@ -11,7 +11,6 @@ import ExperimentInfo from './components/ExperimentView';
 import ExperimentsOverview from './components/ExperimentsOverview';
 import Impressum from './components/Impressum';
 import Condition from './components/conditionView';
-import Pathway from './components/Pathway';
 import LoginForm from './components/LoginForm';
 
 // Styles Import
@@ -58,12 +57,12 @@ const App = () => {
       <header className="app-header">
           <div className="navbar-top">
           <div className="navigation-bar navigation-white navigation-card">
-            <a href="/" className="navigation-bar-item navigation-button navigation-wide">DYNAPROT</a>
+            <Link to="/" className="navigation-bar-item navigation-button navigation-wide">DYNAPROT</Link>
             <div className="navigation-right navigation-hide-small">
-              <a href="/" className="navigation-bar-item navigation-button">HOME</a>
-              <a href="/search" className="navigation-bar-item navigation-button"> FIND PROTEINS</a>
-              <a href="/experiments" className="navigation-bar-item navigation-button"> EXPERIMENTS</a>
-              <a href="/impressum" className="navigation-bar-item navigation-button"> IMPRESSUM</a>
+            <Link to="/" className="navigation-bar-item navigation-button">HOME</Link>
+            <Link to="/search" className="navigation-bar-item navigation-button">FIND PROTEINS</Link>
+            <Link to="/experiments" className="navigation-bar-item navigation-button">EXPERIMENTS</Link>
+            <Link to="/impressum" className="navigation-bar-item navigation-button">IMPRESSUM</Link>
             </div>
           </div>  
         </div>    
@@ -76,7 +75,6 @@ const App = () => {
         <Route path="/experiment/:experimentID" element={<ExperimentInfo />} />
         <Route path="/experiments" element={<ExperimentsOverview />} />
         <Route path="/condition/:selectedCondition" element={<Condition />} />
-        <Route path="/pathway" element={<Pathway />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
