@@ -2,17 +2,23 @@ import * as d3 from 'd3';
 import React, { useEffect, useRef, useState } from 'react';
 
 const DoseResponseCurves = ({ points, curves }) => {
+  console.log("plotting dose response");
+  console.log("points", points);
+  console.log("curves", curves);
   const svgRef = useRef();
   const [page, setPage] = useState(0);
 
   useEffect(() => {
     if (!points || !curves) return;
 
-    const container = d3.select(svgRef.current);
-    container.selectAll('*').remove(); // Clear previous plots
+    const flatPoints = points.flat();
+    const flatCurves = curves.flat();
 
-    const groupedPoints = d3.group(points, d => d.pep_grouping_key);
-    const groupedCurves = d3.group(curves, d => d.pep_grouping_key);
+    const container = d3.select(svgRef.current);
+    container.selectAll('*').remove();
+
+    const groupedPoints = d3.group(flatPoints, d => d.pep_grouping_key);
+    const groupedCurves = d3.group(flatCurves, d => d.pep_grouping_key);
 
     const keys = Array.from(groupedPoints.keys());
     const plotsPerPage = 8;
