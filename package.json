@@ -4,8 +4,8 @@
   "private": true,
   "main": "/src/index.js",
   "dependencies": {
-    "@dspa-nightingale/nightingale-sequence":"github:DSPAtlas/dspa-nightingale-bundle",
-    "@dspa-nightingale/nightingale-structure": "github:DSPAtlas/dspa-nightingale-bundle",
+    "@dspa-nightingale/nightingale-sequence": "file:./external/dspa-nightingale-bundle/packages/sequence",
+"@dspa-nightingale/nightingale-structure": "file:./external/dspa-nightingale-bundle/packages/structure",
     "@nightingale-elements/nightingale-colored-sequence": "^5.4.1",
     "@nightingale-elements/nightingale-manager": "^5.4.1",
     "@nightingale-elements/nightingale-msa": "^5.4.1",
