@@ -78,6 +78,7 @@ const Condition = () => {
 
     const navigate = useNavigate();
 
+    const handleConditionChange = (event) => {
         const selected = event.target.value;
         setSelectedCondition(selected);
         navigate(`/condition/${selected}`);

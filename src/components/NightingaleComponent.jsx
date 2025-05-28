@@ -6,8 +6,8 @@ import "@nightingale-elements/nightingale-colored-sequence";
 import "@nightingale-elements/nightingale-msa";
 import "@nightingale-elements/nightingale-sequence-heatmap";
 
-import "@dspa-nightingale/nightingale-structure/nightingale-structure";
-import "@dspa-nightingale/nightingale-track/nightingale-track";
+import "@dspa-nightingale/nightingale-structure";
+import "@dspa-nightingale/nightingale-track";
 
 
 const defaultAttributes = {
