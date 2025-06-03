@@ -4,8 +4,9 @@ import "@nightingale-elements/nightingale-navigation";
 import "@nightingale-elements/nightingale-manager";
 import "@nightingale-elements/nightingale-colored-sequence";
 import "@nightingale-elements/nightingale-msa";
-import "@nightingale-elements/nightingale-sequence-heatmap";
 
+
+import "@dspa-nightingale/nightingale-sequence-heatmap";
 import "@dspa-nightingale/nightingale-structure";
 import "@dspa-nightingale/nightingale-track";
 
@@ -334,6 +335,7 @@ const NightingaleComponent = ({
         });
     }, [proteinData.differentialAbundanceData, proteinData.experimentMetaData]);
 
+
     if (isHeatmapReady) {
         const heatmapElement = document.getElementById("id-for-nightingale-sequence-heatmap");
         heatmapElement.heatmapInstance.setTooltip((d, x, y, xIndex, yIndex) => {
@@ -426,6 +428,26 @@ const NightingaleComponent = ({
                             <td><nightingale-sequence ref={sequenceRef} /></td>
                         </tr>
 
+                           {showHeatmap && (
+                            <tr>
+                                <td >Score-Barcode</td>
+                                <td>
+                                    <nightingale-sequence-heatmap
+                                        ref={scoreBarcodeContainer}
+                                        id="id-for-nightingale-sequence-heatmap"
+                                        heatmap-id="seq-heatmap"
+                                        min-width="1200"
+                                        length={sequenceLength}
+                                        height="100"
+                                        display-start="1"
+                                        display-end={sequenceLength}
+                                        highlight-event="onmouseover"
+                                        color-range="#fbeaf5:-2,#782162:2"
+                                    />
+                                </td>
+                            </tr>
+                        )}
+
                         {hasDomainData && (
                             <tr >
                                 <td>Domain</td>
@@ -473,25 +495,7 @@ const NightingaleComponent = ({
                             </tr>
                         )}
 
-                        {showHeatmap && (
-                            <tr className="track-row">
-                                <td className="text-column">Score-Barcode</td>
-                                <td>
-                                    <nightingale-sequence-heatmap
-                                        ref={scoreBarcodeContainer}
-                                        id="id-for-nightingale-sequence-heatmap"
-                                        heatmap-id="seq-heatmap"
-                                        min-width="1200"
-                                        length={sequenceLength}
-                                        height="100"
-                                        display-start="1"
-                                        display-end={sequenceLength}
-                                        highlight-event="onmouseover"
-                                        color-range="#fbeaf5:-2,#782162:2"
-                                    />
-                                </td>
-                            </tr>
-                        )}
+                       
                     </tbody>
                 </table>
             </nightingale-manager>
