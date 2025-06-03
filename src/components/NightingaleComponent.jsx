@@ -6,7 +6,7 @@ import "@nightingale-elements/nightingale-colored-sequence";
 import "@nightingale-elements/nightingale-msa";
 
 
-import "@dspa-nightingale/nightingale-sequence-heatmap";
+import "@nightingale-elements/nightingale-sequence-heatmap";
 import "@dspa-nightingale/nightingale-structure";
 import "@dspa-nightingale/nightingale-track";
 
