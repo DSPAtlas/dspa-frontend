@@ -2,6 +2,8 @@ import * as d3 from 'd3';
 import React, { useEffect, useRef, useState } from 'react';
 
 
+
+
 const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein=null}) => {
   const svgRef = useRef();
   const [page, setPage] = useState(0);
@@ -29,6 +31,36 @@ const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein=null}) 
         }
       });
   }
+
+  function downloadCSV() {
+    if (!Array.isArray(differentialAbundanceDataList)) return;
+
+    const rows = [["Experiment ID", "Peptide Key", "Protein Accession", "Fold Change (log2)", "q-value"]];
+    differentialAbundanceDataList.forEach(exp => {
+      exp.data.forEach(d => {
+        rows.push([
+          exp.experimentID,
+          d.pep_grouping_key,
+          d.pg_protein_accessions,
+          d.diff,
+          d.adj_pval
+        ]);
+      });
+    });
+
+    const csvContent = rows.map(r => r.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "differential_abundance_data.csv");
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   
 
   useEffect(() => {
@@ -38,8 +70,6 @@ const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein=null}) 
     container.selectAll('*').remove(); 
     const containerNode = svgRef.current;
     const containerRect = containerNode.getBoundingClientRect();
-
-
 
     const sortedDataList = [...differentialAbundanceDataList].sort((a, b) => {
       const aStats = getAxisRange(a.data);
@@ -56,11 +86,11 @@ const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein=null}) 
     const end = showAll ? sortedDataList.length : start + plotsPerPage;
 
 
-    const margin = { top: 30, right: 30, bottom: 30, left: 30 };
+    const margin = { top: 30, right: 40, bottom: 50, left: 50 };
 
 
-    const fullWidth =  250;
-    const fullHeight = 250;
+    const fullWidth =  270;
+    const fullHeight = 270;
 
     const width = fullWidth - margin.left - margin.right;
     const height = fullHeight - margin.top - margin.bottom;
@@ -83,8 +113,14 @@ const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein=null}) 
       
       const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
+      const rawXExtent = d3.extent(allData, d => d.diff);
+      const xPadding = 0.5 * (rawXExtent[1] - rawXExtent[0]) * 0.05; // 5% padding
+      const xExtent = [rawXExtent[0] - xPadding, rawXExtent[1] + xPadding];
+
+
       const x = d3.scaleLinear().domain(xExtent).range([0, width]);
-      const y = d3.scaleLinear().domain([0, yMax]).range([height, 0]);
+      const y = d3.scaleLinear().domain([-0.5, yMax]).range([height, 0]);
+
 
       const tooltip = g.append("g")
           .style("display", "none");
@@ -111,8 +147,23 @@ const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein=null}) 
       g.append("g")
           .attr("transform", `translate(0,${height})`)
           .call(d3.axisBottom(x).ticks(5));
-         
+
+      g.append("text")
+        .attr("text-anchor", "middle")
+        .attr("x", width / 2)
+        .attr("y", height + 40)
+        .attr("font-size", "12px")
+        .text("log2 Fold Change");
+  
       g.append("g").call(d3.axisLeft(y));
+
+      g.append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", `rotate(-90)`)
+        .attr("x", -height / 2)
+        .attr("y", -40)
+        .attr("font-size", "12px")
+        .text("-log10 Adjusted P-Value");
 
       g.selectAll("circle")
         .data(data)
@@ -222,13 +273,17 @@ const VolcanoPlot = ({ differentialAbundanceDataList, highlightedProtein=null}) 
           </button>
         </div>
       )}
-     {(differentialAbundanceDataList?.length || 0) > 2 && (
       <div className="volcano-plot-controls" style={{ marginTop: '10px', marginBottom: '10px' }}>
+      {(differentialAbundanceDataList?.length || 0) > 2 && (
         <button onClick={() => setShowAll(prev => !prev)}>
           {showAll ? 'Show Less' : 'Show All'}
         </button>
-      </div>
-    )}
+      )}
+      <button onClick={downloadCSV} className="download-button">
+        Download CSV
+      </button>
+    </div>
+
 
 
     </div>
